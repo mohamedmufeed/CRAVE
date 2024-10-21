@@ -1,0 +1,136 @@
+
+  <link rel="stylesheet" href="/admin/category.css">
+  <aside class="sidebar">
+    <div class="logo">
+      <img src="/images/logo.png" alt="Crave Logo">
+    </div>
+    <nav class="menu">
+      <ul>
+        <li><a href="/admin/dashboard">Dashboard</a></li>
+        <li><a  href="/admin/productManagement">Products</a></li>
+        <li><a href="/admin/orders">Orders</a></li>
+        <li><a href="/admin/customers">Customers</a></li>
+        <li><a href="/admin/reports">Reports</a></li>
+        <li><a href="/admin/settings">Settings</a></li>
+        <li><a href="/admin/userManagement">User Management</a></li>
+         <li><a href="/admin/Category"> Category</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <header class="dashboard-header">
+      <h1>Category</h1>
+      <div class="user-profile">
+        <img src="/images/user-icon.png" alt="User Icon" width="40" height="40">
+        <span>{{adminName}}</span>
+      </div>
+    </header>
+<button class="add-btn" onclick="addCategoryModal()">Add Category</button>
+    <!-- User Table Section -->
+    <section class="user-table">
+      <h2>All Products</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+           
+              <th>ID</th>
+              <th> Category Name</th>
+              <th>Material</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          
+     {{#each category}}
+<tr>
+  <td>{{this._id}}</td>
+  <td>{{this.name}}</td>
+   <td>{{this.material}}</td>
+
+  <td class="action-buttons">
+    <div class="buttons">
+ 
+    <button class="btn" onclick="openEditCtegoryModal('{{this.name}}','{{this._id}}')">Edit</button>  
+
+     
+      {{#if this.isListed}}
+        <form action="/admin/category/unlist/{{this._id}}" method="POST">
+          <button type="submit" class="btn unblock-btn">Unlist</button>
+        </form>
+      {{else}}
+        <form action="/admin/category/list/{{this._id}}" method="POST">
+          <button type="submit" class="btn block-btn">List</button>
+        </form>
+      {{/if}}
+    </div>
+  </td>
+</tr>
+{{/each}}
+
+{{!-- edit category modal --}}
+
+<div class="modal" id="editCategoryModal" style="display:none">
+  <div class="modal-content">
+    <span class="close" onclick="closeEditModal()">&times;</span>
+    <h2>Edit Category</h2>
+    <form id="editCategoryForm" method="POST" action="/admin/category/edit/{{this._id}}">
+      <input type="hidden" name="_method" value="PUT" />
+      <label for="categoryName">Category Name:</label>
+      <input type="text" id="categoryName" name="name" value="{{this.name}}" />
+      <label for="categoryMaterial">Material:</label>
+      <input type="text" id="categoryMaterial" name="material" value="{{this.material}}" required />
+      <button type="submit" class="btn">Update Category</button>
+    </form>
+  </div>
+</div>
+
+
+
+
+ 
+  {{!-- add category modal --}}
+ 
+<div class="modal" id="addCategoryModal" style="display:none;">
+  <div class="modal-content">
+    <span class="close" onclick="closeaddCategoryModal()">&times;</span>
+    <h2>Add Category</h2>
+    <form id="addCategoryForm" method="POST" action="/admin/category/add">
+      <label for="categoryName">Category Name:</label>
+      <input type="text" id="categoryName" name="name" required />
+      
+      <label for="categoryMaterial">Material:</label>
+      <input type="text" id="categoryMaterial" name="material" required />
+      
+      <button type="submit" class="btn">Add Category</button>
+    </form>
+  </div>
+</div>
+
+
+
+
+ <script>
+  function openEditCtegoryModal(categoryName, categoryId) {
+    document.getElementById("editCategoryModal").style.display = "block";
+    document.getElementById("categoryName").value = categoryName;
+   document.getElementById("editCategoryForm").action = "/admin/category/edit/" + categoryId;
+  }
+
+  function closeEditModal() {
+    document.getElementById("editCategoryModal").style.display = "none";
+  }
+
+   function addCategoryModal(){
+    document.getElementById("addCategoryModal").style.display="block"
+   }
+    function closeaddCategoryModal(){
+       document.getElementById("addCategoryModal").style.display="none"
+    }
+</script>
+
+  
+
+

@@ -1,0 +1,45 @@
+
+  <link rel="stylesheet" href="/admin/login.css">
+{{!-- Check if there are any flash messages --}}
+   
+    <div class="login-container">
+<div class="toast align-items-center" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+            {{message}}
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+        <h1>Login</h1>
+       
+        <form action="/admin/login" method="post">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" >
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" >
+
+            <button type="submit">Login</button>
+        </form>
+        <div class="footer">
+            <p><a href="#">Forgot Password?</a></p>
+        </div>
+    </div>
+
+
+
+<script>
+
+
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const toastEl = document.querySelector('.toast');
+    const toast = new bootstrap.Toast(toastEl);
+    if ("{{message}}") {
+      toast.show();
+    }
+  });
+
+
+</script>

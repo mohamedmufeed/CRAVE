@@ -1,0 +1,47 @@
+.body{
+    padding: 0%;
+}
+.left-panel {
+    background-color: #3b5d50;
+    border-radius: 12px;
+   
+}
+
+.right-panel {
+    background-color: #fff;
+    border-radius: 12px;
+   
+}
+
+.forgot-password {
+    text-align: right;
+    display: block;
+    color: #000;
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+.main-conainer {
+    display: flex;
+    padding: 200px;
+    margin-left: 90px;
+    
+}
+
+.big{
+
+    display: flex;
+    border: 1px solid #fff;
+    border-radius: 12px; /* This will create a radius of 15 pixels */
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3); /* Horizontal offset, vertical offset, blur radius, color */
+    padding: 0px;
+  
+  
+}
+.link{
+    display: flex;
+    justify-content: space-between;
+
+}

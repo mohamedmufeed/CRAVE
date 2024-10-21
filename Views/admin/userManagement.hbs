@@ -1,0 +1,78 @@
+
+  <link rel="stylesheet" href="/admin/userMangement.css">
+  <aside class="sidebar">
+    <div class="logo">
+      <img src="/images/logo.png" alt="Crave Logo">
+    </div>
+    <nav class="menu">
+      <ul>
+        <li><a href="/admin/dashboard">Dashboard</a></li>
+        <li><a href="/admin/productManagement">Products</a></li>
+        <li><a href="/admin/orders">Orders</a></li>
+        <li><a href="/admin/customers">Customers</a></li>
+        <li><a href="/admin/reports">Reports</a></li>
+        <li><a href="/admin/settings">Settings</a></li>
+        <li><a >User Management</a></li>
+         <li><a href="/admin/Category"> Category</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <header class="dashboard-header">
+      <h1>User Management</h1>
+      <div class="user-profile">
+        <img src="/images/user-icon.png" alt="User Icon" width="40" height="40">
+        <span>{{adminName}}</span>
+      </div>
+    </header>
+
+    <!-- User Table Section -->
+    <section class="user-table">
+      <h2>All Users</h2>
+      <div class="table-container">
+        <table>
+          <thead >
+            <tr>
+              <th >ID</th>
+              <th>Username</th>
+              <th >Email</th>
+              <th>Status</th>
+              <th >Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          
+            {{#each users}}
+              <tr>
+                <td>{{this.id}}</td>
+                <td>{{this.username}}</td>
+                <td>{{this.email}}</td>
+                <td>{{#if this.isBlocked}}Blocked{{else}}Active{{/if}}</td>
+               <td class="action-buttons">
+  {{#if this.isBlocked}}
+    <form action="/admin/userManagement/unblock/{{this._id}}" method="POST">
+      <button type="submit" class="btn unblock-btn">Unblock</button>
+    </form>
+  {{else}}
+    <form action="/admin/userManagement/block/{{this._id}}" method="POST">
+      <button type="submit" class="btn block-btn">Block</button>
+    </form>
+  {{/if}}
+  
+  
+ 
+</td>
+
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="/js/script.js"></script> <!-- Link to your JavaScript file -->
+
+
