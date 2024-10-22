@@ -200,7 +200,26 @@ const login = async (req, res) => {
   }
 };
 
+const demologin = async (req, res) => {
+  
+  try {
+      const { email, password } = req.body;
+      if (email === "demo@gmail.com" && password === "demo12345") {
+          res.redirect("/");
+      } else {
+          res.status(401).send("Invalid Credentials");
+      }
+  } catch (error) {
+      console.error("Demo login not successful", error);
+      res.status(500).send("Internal Server Error");
+  }
+};
 
+
+
+const loadHome=async (req,res)=>{
+res.render("user/index")
+}
 
 module.exports = {
   loadLogin,
@@ -209,5 +228,7 @@ module.exports = {
   verifyOtp,
   loadVerifyOtp,
   login,
-  resendOtp
+  resendOtp,
+  loadHome,
+  demologin
 }

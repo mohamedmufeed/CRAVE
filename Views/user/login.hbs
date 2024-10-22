@@ -20,7 +20,7 @@
             </div>
             <div class="col-md-6 d-flex flex-column justify-content-center align-items-center right-panel p-5">
                 <h2>Login</h2>
-                <form class="w-100" action="/login" method="post">
+                <form class="w-100" action="/login" method="post" id="loginForm">
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" class="form-control" id="email" name="email" >
@@ -31,11 +31,16 @@
                     </div>
                     <div class="link"> <a href="/register" class="forgot-password">Sign Up?</a>
                         <a href="#" class="forgot-password">Forgot Password?</a></div>
-            <button type="submit" class="btn btn-dark mt-3">Sign in</button>
+                        
+            <button   onclick="loginAction('/login')" type="submit" class="btn btn-dark mt-3">Sign in</button>
+            <button   class="btn btn-dark mt-3" onclick="loginAction('/demo-login')">Demo Login</button>
           <hr>
-                            <div class="icon-container">
-    <i class="fa-brands fa-google" style="font-size: 20px;   margin-left: 160px;   margin-top: 10px; "></i>
-</div>
+            
+ <a href="/auth/google">
+ <i class="fa-brands fa-google" style="font-size: 20px;   margin-left: 160px;   margin-top: 10px; "></i>
+
+ </a>  
+
           
                 </form>
             </div>
@@ -58,5 +63,18 @@
       toast.show();
     }
   });
+
+function loginAction(action) {
+    const form = document.getElementById("loginForm");
+    form.action = action;
+
+    if (action === '/demo-login') {
+        document.querySelector('input[name="email"]').value = "demo@gmail.com"; // Ensure email is correct
+        document.querySelector('input[name="password"]').value = "demo12345"; // Correct demo password
+    }
+
+    form.submit(); // Submit the form
+}
+
 
 </script>

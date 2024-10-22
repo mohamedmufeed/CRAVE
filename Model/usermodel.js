@@ -12,11 +12,15 @@ const userSchema= new mongoose.Schema({
     },
     password:{
         type:String,
-        required: true,
+        required: false,
     },
     isBlocked:{
         type:Boolean,
         default:false
+    },
+    googleId:{
+        type:String,
+        unique:true
     }
 })
 

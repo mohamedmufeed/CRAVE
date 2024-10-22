@@ -3,6 +3,7 @@ const app = express();
 const adminrouter = require("./Routes/adminrouter");
 const userRouter= require("./Routes/userrouter")
 const path = require("path");
+const passport=require("./config/passport")
 const session = require("express-session");
 const connectdb = require('./db/connectdb');
 const nocache = require("nocache")
@@ -37,6 +38,8 @@ app.use(session({
   cookie: { secure: false }
 }));
 
+app.use(passport.initialize());
+app.use(passport.session())
 app.use(nocache());
 
 
