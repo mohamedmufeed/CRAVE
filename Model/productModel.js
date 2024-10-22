@@ -28,6 +28,9 @@ const ProductSchema= new mongoose.Schema({
         images: {
             type: [String], 
             required: false
+        },isListed:{
+            type:Boolean,
+            default:true
         }
     });
     

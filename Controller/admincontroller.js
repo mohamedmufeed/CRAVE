@@ -9,6 +9,7 @@ const loadlogin = async (req, res) => {
     res.render("admin/login", {
        message: req.session.message
     }); 
+    req.session.message = null;
 };
 
 const login = async (req, res) => {
@@ -172,8 +173,8 @@ const editProducts = async (req, res) => {
     const images = req.files;
 
 console.log(id);
-
-    console.log("Form data: ", { name, description, price, category, material, stock });
+console.log(req.files);
+  
     console.log("Uploaded files: ", images);
 
   
@@ -205,19 +206,28 @@ console.log(id);
 };
 
 
-const deleteProducts = async(req,res)=>{
-
-try {
-  const {id}=req.params
-    await  Products.findByIdAndDelete(id)
-res.redirect("/admin/productManagement");
-} catch (error) {
-  console.log(error);
+const listProduct= async (req,res)=>{
+  try {
+    const  productId=req.params.id;
+   
+    
+    await Products.findByIdAndUpdate(productId,{isListed:true});
+    res.redirect("/admin/productManagement")
+  } catch (error) {
+    console.log(error)
+  }
+  }
   
-}
-
-
-}
+  const unlistProduct= async (req,res)=>{
+    try {
+      const productId=req.params.id;
+ 
+      await Products.findByIdAndUpdate(productId,{isListed:false});
+      res.redirect("/admin/productManagement")
+    } catch (error) {
+      console.log(error)
+    }
+    }
 
 module.exports = {
     loadlogin,
@@ -234,6 +244,7 @@ module.exports = {
     addCategory,
     addProducts,
     editProducts,
-    deleteProducts
+ listProduct,
+ unlistProduct
   
 };

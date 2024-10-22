@@ -1,5 +1,15 @@
 
     <link rel="stylesheet" href="/user/css,js/css/login.css">
+    
+<div class="toast align-items-center text-bg-danger border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+  <div class="d-flex">
+    <div class="toast-body">
+      {{message}}
+    </div>
+    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+</div>
+
 
     <div class=" main-conainer container-fluid vh-100">
         <div class=" row">
@@ -10,14 +20,17 @@
             </div>
             <div class="col-md-6 d-flex flex-column justify-content-center align-items-center right-panel p-5">
                 <h2>Verify OTP</h2>
-                <form class="w-100">
+                <div><span id="timer"></span></div>
+                <form class="w-100"  action="/verify-otp" method="post" onsubmit=" return  validateOtpForm()">
                     <div class="form-group">
                         <label for="otp">One-Time Password</label>
-                        <input class="form-control" type="text" id="otp" name="otp" required>
+                        <input class="form-control" type="text" id="otp" name="otp"  maxlength="6" pattern="\d*">
                     </div>
-                   
-            
-                        <a href="#" class="forgot-password">Resend OTP?</a>
+<form action="/verify-otp" id="resendOtpForm" method="post">
+  <a href="#" onclick="resendOtp(event)" id="resendButton" class="forgot-password">Resend OTP?</a>
+</form>
+
+                          
                    
                     <button type="submit" class="btn btn-dark mt-3">Verify OTP</button>
                 </form>
@@ -31,3 +44,70 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+<script>
+  console.log("{{message}}")
+ document.addEventListener("DOMContentLoaded", function () {
+    const toastEl = document.querySelector('.toast');
+    const toast = new bootstrap.Toast(toastEl);
+    if ("{{message}}") {
+      toast.show();
+    }
+  });
+let timerOn = true;
+let inteval;
+  function timer(remaining) {
+    document.getElementById("timer").innerHTML = "00"+":"+remaining;
+
+inteval =setInterval(()=>{
+  remaining--;
+    document.getElementById("timer").innerHTML = "00:" + (remaining < 10 ? "0" + remaining : remaining);
+
+       if (remaining <= 0) {
+      clearInterval(inteval)
+      document.getElementById("timer").innerHTML = "Time's up!";
+   timerOn = false; 
+    }
+},1000)
+    
+    
+  
+  }
+
+function resendOtp(event) {
+  event.preventDefault(); 
+
+  if (!timerOn) {
+    timerOn = true; 
+    timer(60); 
+  }
+
+  
+  fetch('/resend-otp', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  .then(response => response.json())
+  .then(result => {
+    if (result.success) {
+      alert(result.message); 
+    } else {
+      alert(result.message); 
+    }
+    window.location.reload()
+  })
+  .catch(error => {
+    alert('Failed to resend OTP. Please try again later.');
+    console.error('Error:', error);
+  });
+}
+
+function enableResendButton() {
+  document.getElementById('resendButton').style.pointerEvents = 'auto';
+  document.getElementById('resendButton').style.opacity = '1';
+}
+
+
+timer(60);
+</script>

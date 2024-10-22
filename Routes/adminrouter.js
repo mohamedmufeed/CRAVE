@@ -16,9 +16,9 @@ router.post("/category/list/:id", adminAuth.checkSession,adminController.listCat
 router.post("/category/unlist/:id", adminAuth.checkSession,adminController.unlistCategory)
 router.post("/category/add",adminAuth.checkSession,adminController.addCategory)
 router.get("/productManagement", adminAuth.checkSession,adminController.productManagement)
-router.post("/product/add",  adminAuth.checkSession,imagesController.upload,adminController.addProducts )
-router.post('/product/edit/:id', imagesController.upload, adminController.editProducts);
-router.post("/product/delete/:id",adminController.deleteProducts)
-
+router.post("/product/add",imagesController.upload,adminController.addProducts )
+router.post('/product/edit/:id', adminAuth.checkSession,imagesController.upload, adminController.editProducts);
+router.post("/productManagement/list/:id",adminController.listProduct)
+router.post("/productManagement/unlist/:id",adminController.unlistProduct)
 
 module.exports = router;

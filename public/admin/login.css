@@ -70,3 +70,17 @@
             color: #333; /* Dark gray for footer links */
             text-decoration: none;
         }
+        .icon-container {
+            display: flex;                /* Enable Flexbox */
+            justify-content: center;      /* Center horizontally */
+            align-items: center;          /* Center vertically */
+            height: 100px;                /* Set a height for the container */
+            width: 100px;                 /* Set a width for the container */
+            border: 1px solid #ccc;       /* Optional: for visual reference */
+            margin: 20px;  
+                        /* Optional: margin for spacing */
+        }
+
+        .icon-container i {
+            font-size: 20px;              /* Icon size */
+        }
