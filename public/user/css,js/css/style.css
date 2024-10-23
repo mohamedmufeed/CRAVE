@@ -38,7 +38,7 @@ a {
     font-size: 32px;
     font-weight: 600; }
     .custom-navbar .navbar-brand > span {
-      opacity: .4; }
+      opacity: 100; }
   .custom-navbar .navbar-toggler {
     border-color: transparent; }
     .custom-navbar .navbar-toggler:active, .custom-navbar .navbar-toggler:focus {

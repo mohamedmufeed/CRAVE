@@ -32,10 +32,10 @@ hbs.registerHelper('ifCond', function (v1, v2, options) {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(session({
-  secret: 'your-secret-key',
+  secret: 'your-secret-key', // Change to a strong secret
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false }
+  cookie: { secure: false } // Set to true if using HTTPS
 }));
 
 app.use(passport.initialize());
@@ -56,6 +56,18 @@ app.use("/",userRouter)
 
 
 connectdb();
+
+hbs.registerHelper('starRating', function (rating) {
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+      if (i <= Math.floor(rating)) {
+          stars.push('★'); // Full star
+      } else {
+          stars.push('☆'); // Empty star
+      }
+  }
+  return stars.join(''); // Join stars into a string
+});
 
 app.listen(3000, () => {
   console.log("server is working on 3000");
