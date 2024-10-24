@@ -72,9 +72,13 @@ try {
 const loadCategory= async(req,res)=>{
   try {
     const category=await Category.find({})
+    if (!category || category.length === 0) {
+      return res.status(404).send("No categories found");
+    }
     res.render("admin/Category",{category})
   } catch (error) {
-    console.log(error)
+    console.error("Error loading categories:", error);
+    res.status(500).send("An error occurred while loading categories");
   }
 }
 
@@ -98,7 +102,8 @@ try {
   await Category.findByIdAndUpdate(categoryId,{isListed:true});
   res.redirect("/admin/category")
 } catch (error) {
-  console.log(error)
+  console.error("Error listing category:", error);
+  res.status(500).send("An error occurred while listing the category");
 }
 }
 
@@ -108,18 +113,21 @@ const unlistCategory= async (req,res)=>{
     await Category.findByIdAndUpdate(categoryId,{isListed:false});
     res.redirect("/admin/category")
   } catch (error) {
-    console.log(error)
+    console.error("Error unlisting category:", error);
+  res.status(500).send("An error occurred while  unlisting the category");
   }
   }
   
    const addCategory= async(req,res)=>{
 try {
    const{name,material}=req.body
+  
    const newCategory= new Category({name,material})
    await newCategory.save()
     res.redirect("/admin/category")
 } catch (error) {
-  console.log(error);
+  console.error("Error adding category:", error);
+  res.status(500).send("An error occurred while adding the category.");
   
 }
    }
@@ -129,9 +137,19 @@ const productManagement=async (req,res)=>{
   try {
     const categories = await Category.find({});
     const products=await  Products.find({})
+
+    if (!categories || categories.length === 0) {
+      console.log("No categories found");
+    }
+
+    if (!products || products.length === 0) {
+      console.log("No products found");
+    }
+
     res.render("admin/productManagement",{categories,products})
   } catch (error) {
-    console.log(error)
+    console.error("Error in product management:", error);
+    res.status(500).send("An error occurred while fetching products and categories.");
   }
 }
 
@@ -165,29 +183,32 @@ name, description,  price, category,  material, stock, images:imagePaths
     
   }
 }
-
 const editProducts = async (req, res) => {
   try {
     const { id } = req.params;
-    const {name, description,  price, category,  material, stock, }=req.body;
+    const { name, description, price, category, material, stock } = req.body;
     const images = req.files;
 
-console.log(id);
-console.log(req.files);
-  
+    console.log("Product ID:", id);
     console.log("Uploaded files: ", images);
 
-  
+    // Check if all required fields are present
+    if (!name || !description || !price || !category || !material || !stock) {
+      return res.status(400).send("All fields are required");
+    }
+
     const product = await Products.findById(id);
     
     if (!product) {
       return res.status(404).send("Product not found");
     }
-    let updatedImages = product.images; 
+
+    let updatedImages = product.images || []; // Ensure it's an array
     if (images && images.length > 0) {
       const newImagePaths = images.map(file => file.path);
-      updatedImages = newImagePaths; 
+      updatedImages = [...updatedImages, ...newImagePaths]; // Append new images
     }
+
     await Products.findByIdAndUpdate(id, {
       name,
       description,
@@ -197,13 +218,14 @@ console.log(req.files);
       stock,
       images: updatedImages
     });
+
     res.redirect("/admin/productManagement");
   } catch (error) {
- 
-    console.error("Error updating product: ", error);
-    res.status(500).send("Server error");
+    console.error("Error updating product: ", error.message); // Log specific error message
+    res.status(500).send("Error updating product: " + error.message);
   }
 };
+
 
 
 const listProduct= async (req,res)=>{
@@ -212,9 +234,11 @@ const listProduct= async (req,res)=>{
    
     
     await Products.findByIdAndUpdate(productId,{isListed:true});
+    
     res.redirect("/admin/productManagement")
   } catch (error) {
-    console.log(error)
+    console.error("Error listing product:", error);
+    res.status(500).send("An error occurred while updating the product.");
   }
   }
   
@@ -225,7 +249,8 @@ const listProduct= async (req,res)=>{
       await Products.findByIdAndUpdate(productId,{isListed:false});
       res.redirect("/admin/productManagement")
     } catch (error) {
-      console.log(error)
+      console.error("Error unlisting product:", error);
+      res.status(500).send("An error occurred while unlist the product.");
     }
     }
 

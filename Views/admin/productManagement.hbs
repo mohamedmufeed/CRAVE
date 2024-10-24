@@ -49,6 +49,7 @@
               <th>ID</th>
               <th>Name</th>
               <th>Category</th>
+              
               <th>Stock</th>
               <th>Price</th>
               <th>Actions</th>
@@ -157,44 +158,41 @@
   {{!-- edit moadl --}}
 
 
-  <div class="modal" id="editProductModal" style="display:none;">
+<div class="modal" id="editProductModal" style="display:none;">
     <div class="modal-content">
-      <span class="close" onclick="closeEditProductModal()">&times;</span>
-      <h2>Edit Product</h2>
-      <form id="editProductForm" method="POST" enctype="multipart/form-data">
-        <label for="productName">Product Name:</label>
-        <input type="text" id="editProductName" name="name" required />
+        <span class="close" onclick="closeEditProductModal()">&times;</span>
+        <h2>Edit Product</h2>
+        <form id="editProductForm" action="/admin/product/edit/{{this._id}}" method="POST" enctype="multipart/form-data">
+            <label for="productName">Product Name:</label>
+            <input type="text" id="editProductName" name="name" value="{{this.name}}" required />
 
-        <label for="productDescription">Description:</label>
-        <textarea id="editProductDescription" name="description" rows="4" required></textarea>
+            <label for="productDescription">Description:</label>
+            <textarea id="editProductDescription" name="description" rows="4" required>{{this.description}}</textarea>
 
-        <label for="productPrice">Price:</label>
-        <input type="number" id="editProductPrice" name="price" required />
+            <label for="productPrice">Price:</label>
+            <input type="number" id="editProductPrice" name="price" value="{{this.price}}" required />
 
-        <label for="productCategory">Category:</label>
-        <select id="editProductCategory" name="category" required>
-          {{#each categories}}
+            <label for="productCategory">Category:</label>
+            <select id="editProductCategory" name="category" required>
+                  {{#each categories}}
           <option value="{{this._id}}">{{this.name}}</option>
           {{/each}}
-        </select>
+            </select>
 
-        <label for="productMaterial">Material:</label>
-        <input type="text" id="editProductMaterial" name="material" required />
+            <label for="productMaterial">Material:</label>
+            <input type="text" id="editProductMaterial" name="material" value="" required />
 
-        <label for="productStock">Stock:</label>
-        <input type="number" id="editProductStock" name="stock" required />
+            <label for="productStock">Stock:</label>
+            <input type="number" id="editProductStock" name="stock" value="{{this.stock}}" required />
 
-        <label for="productImage" class="file-upload-label">Update Images:</label>
-        <input type="file" id="editProductImage" name="images" accept="image/*" multiple />
-        <div id="image-preview-container"></div>
+            <label for="productImage" class="file-upload-label">Update Images:</label>
+            <input type="file" id="editProductImage" name="images" accept="image/*" multiple />
+            <div id="image-preview-container"></div>
 
-        <button type="submit" class="btn">Update Product</button>
-      </form>
+            <button type="submit" class="btn">Update Product</button>
+        </form>
     </div>
-  </div>
-
-
-
+</div>
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
@@ -272,94 +270,23 @@
 
 
 
+function openEditProductModal ( id,name, description, price, material, stock, category) {
+    // Populate form fields with the provided product data
+    document.getElementById('editProductName').value = name;
+    document.getElementById('editProductDescription').value = description;
+    document.getElementById('editProductPrice').value = price;
+    document.getElementById('editProductMaterial').value = material;
+    document.getElementById('editProductStock').value = stock;
+    document.getElementById('editProductCategory').value = category; // Ensure this is the ID of the category
 
-    function openEditProductModal(id, name, description, price, category, material, stock, images) {
-      // Show the modal
-      document.getElementById("editProductModal").style.display = "block";
+    // Display the modal
+    document.getElementById('editProductModal').style.display = 'block';
+}
 
-      // Set the form inputs with the passed data
-      document.getElementById("editProductName").value = name;
-      document.getElementById("editProductDescription").value = description;
-      document.getElementById("editProductPrice").value = price;
-      document.getElementById("editProductCategory").value = category;
-      document.getElementById("editProductMaterial").value = material;
-      document.getElementById("editProductStock").value = stock;
 
       // Populate the images
-      const imagePreviewContainer = document.getElementById("image-preview-container");
-      console.log(images)
-      imagePreviewContainer.innerHTML = "";  // Clear previous images
+      
 
-
-
-      images.forEach((image, index) => {
-        const imageContainer = document.createElement("div");
-        imageContainer.classList.add("image-wrapper");
-
-        // Display the current image
-        const imgElement = document.createElement("img");
-       imgElement.src = `/uploads/${image}`;
-
-        imgElement.width = 100;
-        imgElement.height = 100;
-        imgElement.className = "m-2";
-        imageContainer.appendChild(imgElement);
-
-        // Add file input for replacing the image
-        const replaceInput = document.createElement("input");
-        replaceInput.type = "file";
-        replaceInput.className = "replace-image-input";
-        replaceInput.name = `images[${index}]`
-
-
-        imageContainer.appendChild(replaceInput);
-        imagePreviewContainer.appendChild(imageContainer);
-      });
-
-
-
-      document.getElementById('editProductImageInput').addEventListener('change', function (event) {
-        const files = event.target.files;
-        const previewContainer = document.getElementById('editProductImagePreviewContainer'); // Use the correct ID
-        previewContainer.innerHTML = ''; // Clear previous previews before adding new ones
-
-        for (let i = 0; i < files.length; i++) {
-          const file = files[i];
-          const reader = new FileReader();
-
-          reader.onload = function (e) {
-            const image = new Image();
-            image.src = e.target.result;
-            image.style.maxWidth = '200px';
-            image.style.margin = '10px';
-            previewContainer.appendChild(image);
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-
-    }
-/*document.getElementById("editProductForm").addEventListener("submit", function (event) {
-  event.preventDefault();  
-
-  const formData = new FormData(this);
-console.log(formData)
-
-  fetch('/your-submit-endpoint', {
-    method: 'POST',
-    body: formData,
-  })  
-  .then(response => response.json())
-  .then(data => {
-    console.log('Product updated:', data);
-
-    closeEditProductModal();
-  })
-  .catch(error => {
-    console.error('Error updating product:', error);
-  });
-});
-*/
     function closeEditProductModal() {
       document.getElementById("editProductModal").style.display = "none"
     }
@@ -369,3 +296,28 @@ console.log(formData)
 </body>
 
 </html>
+
+ <script>
+function submitEditProductForm(productId) {
+    const formData = new FormData(document.getElementById('editProductForm'));
+
+    fetch(`/admin/product/edit/${productId}`, {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => {
+        if (response.ok) {
+            // Handle success, e.g., redirect or show a success message
+            window.location.href = '/admin/productManagement';
+        } else {
+            // Handle error
+            console.error('Failed to update product');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+ </script>
+
+

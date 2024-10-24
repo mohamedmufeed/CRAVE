@@ -21,19 +21,17 @@
             <div class="col-md-6 d-flex flex-column justify-content-center align-items-center right-panel p-5">
                 <h2>Verify OTP</h2>
                 <div><span id="timer"></span></div>
-                <form class="w-100"  action="/verify-otp" method="post" onsubmit=" return  validateOtpForm()">
-                    <div class="form-group">
-                        <label for="otp">One-Time Password</label>
-                        <input class="form-control" type="text" id="otp" name="otp"  maxlength="6" pattern="\d*">
-                    </div>
-<form action="/verify-otp" id="resendOtpForm" method="post">
-  <a href="#" onclick="resendOtp(event)" id="resendButton" class="forgot-password">Resend OTP?</a>
+           <form class="w-100" action="/verify-otp" method="post" onsubmit="return validateOtpForm()">
+    <div class="form-group">
+        <label for="otp">One-Time Password</label>
+        <input class="form-control" type="text" id="otp" name="otp" maxlength="6" pattern="\d*" required>
+    </div>
+
+    <button type="submit" class="btn btn-dark mt-3">Verify OTP</button>
+
+    <a href="#" onclick="resendOtp(event)" id="resendButton" class="forgot-password">Resend OTP?</a>
 </form>
 
-                          
-                   
-                    <button type="submit" class="btn btn-dark mt-3">Verify OTP</button>
-                </form>
             </div>
         </div>
         </div>
@@ -53,6 +51,23 @@
       toast.show();
     }
   });
+
+
+ function validateOtpForm() {
+            const otpInput = document.getElementById("otp").value;
+
+            // Optional: Add client-side validation for the OTP format
+            if (!/^\d{6}$/.test(otpInput)) {
+                alert("Please enter a valid 6-digit OTP.");
+                return false; // Prevent form submission
+            }
+
+            return true; // Allow form submission
+        }
+
+
+
+
 let timerOn = true;
 let inteval;
   function timer(remaining) {

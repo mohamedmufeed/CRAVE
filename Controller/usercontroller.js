@@ -66,8 +66,11 @@ const register = async (req, res) => {
       req.session.message = "All fields are required";
       return res.redirect('/register');
     }
-
-
+    const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+    if (!emailPattern.test(email)) {
+      req.session.message = "Please enter a valid email";
+      return res.redirect("/register");
+    }
 
     const otp = generateOtp();
     const emailSent = await sendVerificationfEmail(email, otp);
@@ -98,7 +101,9 @@ const loadVerifyOtp = async (req, res) => {
 
 const verifyOtp = async (req, res) => {
   try {
+
     const { otp } = req.body;
+    
 
     if (otp == req.session.userOTP) {
       const user = req.session.userData
@@ -163,6 +168,8 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
 
+
+
   if (!email || !password) {
     req.session.message = "All fields are required";
     return res.redirect("/login");
@@ -177,7 +184,7 @@ const login = async (req, res) => {
 
   try {
 
-    const existUser = await User.findOne({ email: email });
+    const existUser = await User.findOne({ email: email, isBlocked:false });
 
     if (!existUser) {
       req.session.message = "User does not exist";
@@ -190,9 +197,9 @@ const login = async (req, res) => {
       return res.redirect("/login");
     }
 
-console.log("sugamano kutta")
+
     req.session.userId = existUser._id;
-    console.log("sugam ",req.session)
+   
 
     
  
@@ -228,10 +235,12 @@ const loadHome = async (req, res) => {
 
 const loadProducts = async (req, res) => {
   try {
-    const product = await Products.find({})
+    const product = await Products.find({isListed:true})
+  
     res.render("user/shop", { product })
   } catch (error) {
-    console.error("Erorr in product handling", error)
+    console.error("Error in product handling:", error);
+    res.status(500).render("404"); 
   }
 
 }
@@ -242,7 +251,7 @@ const productDetails = async (req, res) => {
     const product = await Products.findOne({ _id: productId });
     res.render("user/single", { product })
   } catch (error) {
-    res.status(404).send('Product not found')
+    res.status(404).render("404")
     console.error("Product not found", error)
   }
 }

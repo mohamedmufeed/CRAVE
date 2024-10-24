@@ -171,29 +171,131 @@ margin-top: -390px;
 
 }
 
+.review-section {
+   
 
-
-
-.rating {
-    display: inline-flex;
-    font-size: 2rem;
+    padding: 10px;
+  
+    margin-bottom: 30px;
+    
 }
-
-.rating input {
-    display: none;
+.review-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
 }
-
-.rating label {
-    color: gray;
+.review {
+    border-bottom: 1px solid #eee;
+    
+background-color: #fff;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border:  1px  solid rgb(255, 255, 255);
+    border-radius: 12px;
+}
+.review:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+.review-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.review-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+.review-name {
+    font-weight: bold;
+    padding: 10px;
+}
+.review-date {
+    color: #999;
+    font-size: 14px;
+margin-left: 10px;
+position: relative;
+bottom: 30px;
+}
+.review-content {
+    line-height: 1.6;
+    padding: 9px;
+}
+.add-review-section {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.add-review-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.review-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.review-form input,
+.review-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.review-form textarea {
+    height: 100px;
+}
+.review-form button {
+    background-color: #4a86e8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
     cursor: pointer;
+    font-size: 16px;
+}
+.review-form button:hover {
+    background-color: #3a76d8;
 }
 
-.rating input:checked ~ label {
-    color: gold;
+
+#imageZoom {
+    width: 80%; /* Adjust as needed */
+    max-width: 550px; /* Set a max width */
+    height: auto; /* Allow height to adjust automatically */
+    position: relative;
+    overflow: hidden;
+    margin: 0 auto; /* Center the container */
+    bottom: 470px;
+    left: 60px;
 }
 
-.rating label:hover,
-.rating label:hover ~ label {
-    color: gold;
+#main-image {
+    width: 100%;
+    height: auto; /* Maintain aspect ratio */
+    object-fit: contain; /* Contain the image within the container */
+    display: block; /* Remove any extra space below the image */
+    margin: 0 auto; /* Center the image */
 }
 
+
+#imageZoom::after {
+    display: var(--display);
+    content: "";
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+    background-image: var(--url);
+    background-size: 200%; /* Double the size for zoom effect */
+    background-position: var(--zoom-x) var(--zoom-y);
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none; /* Ignore mouse events */
+    transition: opacity 0.3s; /* Smooth transition */
+}
