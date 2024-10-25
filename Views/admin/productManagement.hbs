@@ -1,323 +1,374 @@
-<!DOCTYPE html>
-<html lang="en">
+<link rel="stylesheet" href="/admin/productManagement.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Product Management</title>
-  <link rel="stylesheet" href="/admin/productManagement.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
-</head>
 
-<body>
+<aside class="sidebar">
+  <div class="logo">
+    <a class="navbar-brand" href="index.html">CRAV<span style="font-weight:lighter;">E</span></a>
+  </div>
+  <nav class="menu">
+    <ul>
+      <li><a href="/admin/dashboard">Dashboard</a></li>
+      <li><a>Products</a></li>
+      <li><a href="/admin/orders">Orders</a></li>
+      <li><a href="/admin/customers">Customers</a></li>
+      <li><a href="/admin/reports">Reports</a></li>
+      <li><a href="/admin/settings">Settings</a></li>
+      <li><a href="/admin/userManagement">User Management</a></li>
+      <li><a href="/admin/Category">Category</a></li>
+    </ul>
+  </nav>
+</aside>
 
-  <aside class="sidebar">
-    <div class="logo">
-      <img src="/images/logo.png" alt="Crave Logo">
-    </div>
-    <nav class="menu">
-      <ul>
-        <li><a href="/admin/dashboard">Dashboard</a></li>
-        <li><a>Products</a></li>
-        <li><a href="/admin/orders">Orders</a></li>
-        <li><a href="/admin/customers">Customers</a></li>
-        <li><a href="/admin/reports">Reports</a></li>
-        <li><a href="/admin/settings">Settings</a></li>
-        <li><a href="/admin/userManagement">User Management</a></li>
-        <li><a href="/admin/Category">Category</a></li>
-      </ul>
-    </nav>
-  </aside>
+<div class="main-content">
+  <header class="dashboard-header">
+    <h1>Products Management</h1>
 
-  <div class="main-content">
-    <header class="dashboard-header">
-      <h1>Products Management</h1>
-      <div class="user-profile">
-        <img src="/images/user-icon.png" alt="User Icon" width="40" height="40">
-        <span>{{adminName}}</span>
-      </div>
-    </header>
-    <button class="add-btn" onclick="openProductModal()">Add Product</button>
+  </header>
+  <button class="add-btn" onclick="openProductModal()">Add Product</button>
 
-    <section class="product-table">
-      <p>All Products</p>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Category</th>
-              
-              <th>Stock</th>
-              <th>Price</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#each products}}
+  <section class="product-table">
+    <p>All Products</p>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Category</th>
 
-            <tr>
-              <td>
+            <th>Stock</th>
+            <th>Price</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each products}}
 
-                <img src="/uploads/{{images.[0]}}" alt="Product Image" width="50" height="50">
+          <tr>
+            <td>
 
-              </td>
-              <td>{{this._id}}</td>
-              <td>{{this.name}}</td>
-              <td></td>
-              <td>{{this.stock}}</td>
-              <td>{{this.price}}</td>
+              <img src="/uploads/{{images.[0]}}" alt="Product Image" width="50" height="50">
 
-              <td class="action-buttons">
-                <div class="buttons">
+            </td>
+            <td>{{this._id}}</td>
+            <td>{{this.name}}</td>
+            <td></td>
+            <td>{{this.stock}}</td>
+            <td>{{this.price}}</td>
 
-                  <button class="btn" onclick="openEditProductModal(
+            <td class="action-buttons">
+              <div class="buttons">
+
+                <button class="btn" onclick="openEditProductModal(
   '{{this._id}}', 
   '{{this.name}}', 
   '{{this.description}}', 
   '{{this.price}}', 
-  '{{this.category}}', 
   '{{this.material}}', 
   '{{this.stock}}', 
+  '{{this.category}}', 
   [{{#each this.images}}'{{this}}'{{#unless @last}},{{/unless}}{{/each}}]
 )">Edit</button>
 
-                 {{#if this.isListed}}
-        <form action="/admin/productManagement/unlist/{{this._id}}" method="POST">
-          <button type="submit" class="btn unblock-btn">Unlist</button>
-        </form>
-      {{else}}
-        <form action="/admin/productManagement/list/{{this._id}}" method="POST">
-          <button type="submit" class="btn block-btn">List</button>
-        </form>
-      {{/if}}
 
-                </div>
-              </td>
+                {{#if this.isListed}}
+                <form action="/admin/productManagement/unlist/{{this._id}}" method="POST">
+                  <button type="submit" class="btn unblock-btn">Unlist</button>
+                </form>
+                {{else}}
+                <form action="/admin/productManagement/list/{{this._id}}" method="POST">
+                  <button type="submit" class="btn block-btn">List</button>
+                </form>
+                {{/if}}
 
-            </tr>
-            {{/each}}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </div>
+              </div>
+            </td>
 
-  {{!-- app product modal --}}
-
-
-  <div class="modal" id="addProductModal" style="display: none;">
-    <div class="modal-content">
-      <span class="close" onclick="closeProductModal()">&times;</span>
-      <h2>Add Product</h2>
-      <form id="addProductForm" method="POST" action="/admin/product/add" enctype="multipart/form-data">
-        <label for="productName">Product Name:</label>
-        <input type="text" id="productName" name="name" required />
-
-        <label for="productDescription">Description:</label>
-        <textarea id="productDescription" name="description" rows="4" required></textarea>
-
-        <label for="productPrice">Price:</label>
-        <input type="number" id="productPrice" name="price" required />
-
-        <label for="productCategory">Category:</label>
-        <select id="productCategory" name="category" required>
-          <option value="">Select a category</option>
-          {{#each categories}}
-          <option value="{{this._id}}">{{this.name}}</option>
+          </tr>
           {{/each}}
-        </select>
-
-        <label for="productMaterial">Material:</label>
-        <input type="text" id="productMaterial" name="material" required />
-
-        <label for="productStock">Stock:</label>
-        <input type="number" id="productStock" name="stock" required />
-
-        <label for="productImage" class="file-upload-label">Choose Images:</label>
-        <input type="file" id="productImage" name="images" accept="image/*" multiple />
-        <div id="image-preview-container"></div>
-
-        <div class="modal" id="imageCropperModal" style="display:none;">
-          <div class="modal-content">
-            <span class="close" onclick="closeCropperModal()">&times;</span>
-            <img id="cropperImage" style="max-width:100%;" />
-            <button id="cropButton" type="button">Crop</button>
-          </div>
-        </div>
-
-        <input type="hidden" id="croppedImagesInput" name="croppedImages">
-        <button type="submit" class="btn">Add Product</button>
-      </form>
+        </tbody>
+      </table>
     </div>
-  </div>
-
-
-  {{!-- edit moadl --}}
-
-
-<div class="modal" id="editProductModal" style="display:none;">
-    <div class="modal-content">
-        <span class="close" onclick="closeEditProductModal()">&times;</span>
-        <h2>Edit Product</h2>
-        <form id="editProductForm" action="/admin/product/edit/{{this._id}}" method="POST" enctype="multipart/form-data">
-            <label for="productName">Product Name:</label>
-            <input type="text" id="editProductName" name="name" value="{{this.name}}" required />
-
-            <label for="productDescription">Description:</label>
-            <textarea id="editProductDescription" name="description" rows="4" required>{{this.description}}</textarea>
-
-            <label for="productPrice">Price:</label>
-            <input type="number" id="editProductPrice" name="price" value="{{this.price}}" required />
-
-            <label for="productCategory">Category:</label>
-            <select id="editProductCategory" name="category" required>
-                  {{#each categories}}
-          <option value="{{this._id}}">{{this.name}}</option>
-          {{/each}}
-            </select>
-
-            <label for="productMaterial">Material:</label>
-            <input type="text" id="editProductMaterial" name="material" value="" required />
-
-            <label for="productStock">Stock:</label>
-            <input type="number" id="editProductStock" name="stock" value="{{this.stock}}" required />
-
-            <label for="productImage" class="file-upload-label">Update Images:</label>
-            <input type="file" id="editProductImage" name="images" accept="image/*" multiple />
-            <div id="image-preview-container"></div>
-
-            <button type="submit" class="btn">Update Product</button>
-        </form>
-    </div>
+  </section>
 </div>
 
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-  <script>
+{{!-- aDD product modal --}}
 
 
-    function openProductModal() {
-      document.getElementById("addProductModal").style.display = "block";
-    }
+<div class="modal" id="addProductModal" style="display: none;">
+  <div class="modal-content">
+    <span class="close" onclick="closeProductModal()">&times;</span>
+    <h2>Add Product</h2>
+    <form id="addProductForm" action="/admin/product/add" method="POST" enctype="multipart/form-data">
 
-    function closeProductModal() {
-      document.getElementById("addProductModal").style.display = "none";
-    }
+      <label for="productName">Product Name:</label>
+      <input type="text" id="productName" name="name" required />
 
-    function closeCropperModal() {
-      document.getElementById('imageCropperModal').style.display = 'none';
-    }
+      <label for="productDescription">Description:</label>
+      <textarea id="productDescription" name="description" rows="4" required></textarea>
+
+      <label for="productPrice">Price:</label>
+      <input type="number" id="productPrice" name="price" required />
+
+      <label for="productCategory">Category:</label>
+      <select id="productCategory" name="category" required>
+        <option value="">Select a category</option>
+        {{#each categories}}
+        <option value="{{this._id}}">{{this.name}}</option>
+        {{/each}}
+      </select>
+
+      <label for="productMaterial">Material:</label>
+      <input type="text" id="productMaterial" name="material" required />
+
+      <label for="productStock">Stock:</label>
+      <input type="number" id="productStock" name="stock" required />
+
+      <label for="productImage" class="file-upload-label">Choose Images:</label>
+      <input type="file" id="productImage" name="images" accept="image/*" multiple />
+      <div id="image-preview-container"></div>
+
+      <div class="modal" id="imageCropperModal" style="display:none;">
+        <div class="modal-content">
+          <span class="close" onclick="closeCropperModal()">&times;</span>
+          <img id="cropperImage" style="max-width:100%;" />
+          <button id="cropButton" type="button">Crop</button>
+        </div>
+      </div>
+
+      <input type="hidden" id="croppedImagesInput" name="croppedImages">
+      <button type="submit" class="btn">Add Product</button>
+    </form>
+  </div>
+</div>
+
+{{!-- add prodcut modal ends --}}
+{{!-- Edit Modal --}}
+
+<div class="modal" id="editProductModal" style="display:none;">
+  <div class="modal-content">
+    <span class="close" onclick="closeEditProductModal()">&times;</span>
+    <h2>Edit Product</h2>
+    <form id="editProductForm" method="POST" enctype="multipart/form-data" onsubmit="submitEditProductForm(event)">
+      <label for="productName">Product Name:</label>
+      <input type="text" id="editProductName" name="name" value="{{this.name}}" required />
+
+      <label for="productDescription">Description:</label>
+      <textarea id="editProductDescription" name="description" rows="4" required>{{this.description}}</textarea>
+
+      <label for="productPrice">Price:</label>
+      <input type="number" id="editProductPrice" name="price" value="{{this.price}}" required />
+
+      <label for="productCategory">Category:</label>
+      <select id="editProductCategory" name="category" required>
+        {{#each categories}}
+        <option value="{{this._id}}">{{this.name}}</option>
+        {{/each}}
+      </select>
+
+      <label for="productMaterial">Material:</label>
+      <input type="text" id="editProductMaterial" name="material" value="{{this.material}}" required />
+
+      <label for="productStock">Stock:</label>
+      <input type="number" id="editProductStock" name="stock" value="{{this.stock}}" required />
+      <input type="text" id="productId" value="{{this._id}}" hidden>
+      <label for="productImage" class="file-upload-label">Update Images:</label>
+      <input type="file" id="editProductImage" name="images" accept="image/*" multiple />
+
+      {{!-- <div id="image-preview-container">
+      </div>
+      {{#each products}}
+      <div style="height: 40px ; width: 40px;">
+        {{#each images}}
+        <img src="/uploads/{{this}}" alt="">
+        {{/each}}
+      </div>
+      {{/each}} --}}
 
 
-    let cropper;
-    let croppedImages = [];
-    let currentImageIndex = 0;
 
-    document.getElementById('productImage').addEventListener('change', function (event) {
-      const files = event.target.files;
-      const previewContainer = document.getElementById('image-preview-container');
-      previewContainer.innerHTML = ''; // Clear previous previews
 
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const reader = new FileReader();
 
-        reader.onload = function (e) {
-          const image = new Image();
-          image.src = e.target.result;
-          image.style.maxWidth = '200px';
-          image.style.margin = '10px';
-          previewContainer.appendChild(image);
+      <div id="image-preview-container">
+        <p>Existing Images:</p>
+        <div style="display: flex; flex-wrap: wrap;">
+          <div style="margin-right: 10px; height: 150px; width: 150px;">
+            {{#each products }}
+            <img src="/uploads/{{this.images}}" alt="Product Image"
+              style="width: 100%; height: 100%; object-fit: cover;" />
+            {{/each}}
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn" id="submit-btn">Update Product</button>
+    </form>
+  </div>
+</div>
+{{!-- Edit Modal Ends --}}
 
-          // Initialize cropping when the user clicks on the image
-          image.addEventListener('click', function () {
-            const cropperModal = document.getElementById('imageCropperModal');
-            const cropperImage = document.getElementById('cropperImage');
-            cropperImage.src = e.target.result;
-            cropperModal.style.display = 'block';
-            currentImageIndex = i;
 
-            cropper = new Cropper(cropperImage, {
-              aspectRatio: 1 / 1,  // Change aspect ratio as needed
-              viewMode: 1
-            });
 
-            document.getElementById('cropButton').addEventListener('click', function () {
-              const croppedCanvas = cropper.getCroppedCanvas();
-              const croppedImageURL = croppedCanvas.toDataURL('image/jpeg');
 
-              // Push the cropped image for uploading later
-              croppedImages[currentImageIndex] = croppedImageURL;
 
-              // Display cropped image in preview and replace the original one
-              const croppedImage = new Image();
-              croppedImage.src = croppedImageURL;
-              croppedImage.style.maxWidth = '200px';
-              croppedImage.style.margin = '10px';
-              previewContainer.replaceChild(croppedImage, image);
+{{!-- cropper js --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
-              cropperModal.style.display = 'none';
-              cropper.destroy();
-            });
+
+<script>
+  function openProductModal() {
+    document.getElementById("addProductModal").style.display = "block";
+  }
+
+  function closeProductModal() {
+    document.getElementById("addProductModal").style.display = "none";
+  }
+
+  function closeCropperModal() {
+    document.getElementById('imageCropperModal').style.display = 'none';
+  }
+
+
+  let cropper;
+  let croppedImages = [];
+  let currentImageIndex = 0;
+
+  document.getElementById('productImage').addEventListener('change', function (event) {
+    const files = event.target.files;
+    const previewContainer = document.getElementById('image-preview-container');
+    previewContainer.innerHTML = ''; // Clear previous previews
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        const image = new Image();
+        image.src = e.target.result;
+        image.style.maxWidth = '200px';
+        image.style.margin = '10px';
+        previewContainer.appendChild(image);
+
+        // Initialize cropping when the user clicks on the image
+        image.addEventListener('click', function () {
+          const cropperModal = document.getElementById('imageCropperModal');
+          const cropperImage = document.getElementById('cropperImage');
+          cropperImage.src = e.target.result;
+          cropperModal.style.display = 'block';
+          currentImageIndex = i;
+
+          cropper = new Cropper(cropperImage, {
+            aspectRatio: 1 / 1,  // Change aspect ratio as needed
+            viewMode: 1
           });
-        };
-        reader.readAsDataURL(file);
-      }
-    });
 
+          document.getElementById('cropButton').addEventListener('click', function () {
+            const croppedCanvas = cropper.getCroppedCanvas();
+            const croppedImageURL = croppedCanvas.toDataURL('image/jpeg');
 
+            // Push the cropped image for uploading later
+            croppedImages[currentImageIndex] = croppedImageURL;
 
-function openEditProductModal ( id,name, description, price, material, stock, category) {
+            // Display cropped image in preview and replace the original one
+            const croppedImage = new Image();
+            croppedImage.src = croppedImageURL;
+            croppedImage.style.maxWidth = '200px';
+            croppedImage.style.margin = '10px';
+            previewContainer.replaceChild(croppedImage, image);
+
+            cropperModal.style.display = 'none';
+            cropper.destroy();
+          });
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // edit modal function  
+
+  function openEditProductModal(id, name, description, price, material, stock, category, images) {
     // Populate form fields with the provided product data
     document.getElementById('editProductName').value = name;
     document.getElementById('editProductDescription').value = description;
     document.getElementById('editProductPrice').value = price;
     document.getElementById('editProductMaterial').value = material;
     document.getElementById('editProductStock').value = stock;
-    document.getElementById('editProductCategory').value = category; // Ensure this is the ID of the category
+    document.getElementById('editProductCategory').value = category;
+    document.getElementById("productId").value = id
+
+
+
+    // Populate existing images for preview (if needed)
+    const imagePreviewContainer = document.getElementById('image-preview-container');
+    imagePreviewContainer.innerHTML = ''; // Clear previous previews
+    images.forEach((image) => {
+      const imgElement = document.createElement('img');
+      imgElement.src = image; // Use the existing image URL
+      imgElement.alt = 'Product Image';
+      imgElement.style.width = '100px'; // Adjust size as needed
+      imgElement.style.margin = '5px'; // Adjust margin as needed
+      imagePreviewContainer.appendChild(imgElement);
+    });
+
+    // Set the form action dynamically with the correct product ID
+    document.getElementById('editProductForm').action = `/admin/product/edit/${id}`;
 
     // Display the modal
     document.getElementById('editProductModal').style.display = 'block';
-}
+  }
 
 
-      // Populate the images
-      
 
-    function closeEditProductModal() {
-      document.getElementById("editProductModal").style.display = "none"
-    }
+  //closee modal function 
 
-  </script>
+  function closeEditProductModal() {
+    document.getElementById("editProductModal").style.display = "none"
+  }
 
-</body>
 
-</html>
 
- <script>
-function submitEditProductForm(productId) {
-    const formData = new FormData(document.getElementById('editProductForm'));
 
-    fetch(`/admin/product/edit/${productId}`, {
-        method: 'POST',
-        body: formData,
+
+
+
+  document.getElementById('editProductForm').addEventListener('submit', submitEditProductForm);
+
+  function submitEditProductForm(e) {
+    e.preventDefault(); // Prevent the default form submission
+
+    let name = document.getElementById('editProductName').value;
+    let description = document.getElementById('editProductDescription').value
+    let price = document.getElementById('editProductPrice').value
+    let material = document.getElementById('editProductMaterial').value
+    let stock = document.getElementById('editProductStock').value
+    let category = document.getElementById('editProductCategory').value
+    let id = document.getElementById("productId").value
+
+    const formData = { name, description, price, material, stock, category }
+
+
+
+    const response = fetch(`/admin/product/edit/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json" 
+      },
+      body: JSON.stringify(formData) 
     })
-    .then(response => {
+      .then(response => {
         if (response.ok) {
-            // Handle success, e.g., redirect or show a success message
-            window.location.href = '/admin/productManagement';
+          closeEditProductModal(); 
+          window.location.href = '/admin/productManagement'; 
         } else {
-            // Handle error
-            console.error('Failed to update product');
+          console.error('Failed to update product');
         }
-    })
-    .catch(error => {
+      })
+      .catch(error => {
         console.error('Error:', error);
-    });
-}
- </script>
+      });
+  }
 
 
+</script>

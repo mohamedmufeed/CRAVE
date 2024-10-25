@@ -7,6 +7,8 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const { response } = require("express");
 const saltround = 10
+require('dotenv').config();
+
 
 const loadRegister = async (req, res) => {
   res.render("user/register", {
@@ -27,12 +29,12 @@ async function sendVerificationfEmail(email, otp) {
       secure: false,
       requireTLS: true,
       auth: {
-        user: "mohamedmufeed44@gmail.com",
-        pass: "yesq alaq htch ruga"
+        user: process.env.NODEMAILER_EMAIL,
+        pass: process.env.NODEMAILER_PASSWORD
       }
     })
     const info = await transporter.sendMail({
-      from: "mohamedmufeed44@gmail.com",
+      from:process.env.NODEMAILER_EMAIL ,
       to: email,
       subject: "Verfiy your account",
       text: ` your OTP is${otp}`,
@@ -200,9 +202,7 @@ const login = async (req, res) => {
 
     req.session.userId = existUser._id;
    
-
-    
- 
+ req.session.isAuthenticated=true
     return res.render('user/index');
 
   } catch (error) {

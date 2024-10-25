@@ -153,46 +153,55 @@ const productManagement=async (req,res)=>{
   }
 }
 
-const addProducts =async(req,res)=>{
+const addProducts = async (req, res) => {
   try {
-    const {name, description,  price, category,  material, stock, }=req.body;
-     const images=req.files
+    const { name, description, price, category, material, stock } = req.body;
+    const images = req.files;
 
-     
-     const imagePaths = images.map(file => file.filename);
+    // Validate input
+    if (!name || !price || !category || !description || !stock || !material) {
+      return res.status(400).send({ message: 'Please fill all required fields' });
+    }
 
+    if (price <= 0 || stock < 0) {
+      return res.status(400).send({ message: 'Invalid price or stock value' });
+    }
 
-        if (!name || !price || !category || !description || !stock || !material) {
-            return res.status(400).send({ message: 'Please fill all required fields' });
-        }
+    // Ensure images are uploaded
+    if (!images || images.length < 1) {
+      return res.status(400).send({ message: 'Please upload at least one image' });
+    }
 
-        if (price <= 0 || stock < 0) {
-            return res.status(400).send({ message: 'Invalid price or stock value' });
-        }
+    // Process image file names
+    const imagePaths = images.map(file => file.filename);
 
-    const newProduct= new Products({
-name, description,  price, category,  material, stock, images:imagePaths
-    })
+    // Create new product
+    const newProduct = new Products({
+      name,
+      description,
+      price,
+      category,
+      material,
+      stock,
+      images: imagePaths
+    });
+
+    // Save product to DB
     await newProduct.save();
-    res.redirect("/admin/productManagement")
-
-   
-    
+    res.redirect("/admin/productManagement");
   } catch (error) {
-    console.log(error);
-    
+    console.error("Error while adding product:", error);
+    res.status(500).send({ message: "Internal Server Error" });
   }
-}
+};
+
 const editProducts = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, description, price, category, material, stock } = req.body;
-    const images = req.files;
+    const images = req.files; 
 
-    console.log("Product ID:", id);
-    console.log("Uploaded files: ", images);
-
-    // Check if all required fields are present
+   
     if (!name || !description || !price || !category || !material || !stock) {
       return res.status(400).send("All fields are required");
     }
@@ -203,11 +212,12 @@ const editProducts = async (req, res) => {
       return res.status(404).send("Product not found");
     }
 
-    let updatedImages = product.images || []; // Ensure it's an array
+    let updatedImages = product.images || []; 
     if (images && images.length > 0) {
       const newImagePaths = images.map(file => file.path);
-      updatedImages = [...updatedImages, ...newImagePaths]; // Append new images
+      updatedImages = [...updatedImages, ...newImagePaths]; 
     }
+
 
     await Products.findByIdAndUpdate(id, {
       name,
@@ -221,10 +231,11 @@ const editProducts = async (req, res) => {
 
     res.redirect("/admin/productManagement");
   } catch (error) {
-    console.error("Error updating product: ", error.message); // Log specific error message
+    console.error("Error updating product: ", error.message);
     res.status(500).send("Error updating product: " + error.message);
   }
 };
+
 
 
 

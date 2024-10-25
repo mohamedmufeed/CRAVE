@@ -157,3 +157,11 @@ table, th, td {
 .main-content {
   margin-left: 250px; 
 }
+.navbar-brand{
+
+  padding-top: 20px;
+  padding-bottom: 20px; 
+  font-size: xx-large;
+  font-weight: 600;
+
+}

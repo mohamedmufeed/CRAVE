@@ -25,6 +25,6 @@ const storage = multer.diskStorage({
         cb(new Error('Images Only!'));
       }
     }
-  }).array('images', 5); 
+  }).array('images', 3); 
 
   module.exports={upload}

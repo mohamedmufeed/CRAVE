@@ -38,6 +38,12 @@ app.use(session({
   cookie: { secure: false } // Set to true if using HTTPS
 }));
 
+app.use((req,res,next)=>{
+  res.locals.isAuthenticated =req.session.isAuthenticated || false;
+  res.locals.user= req.session.user|| {}
+  next()
+})
+
 app.use(passport.initialize());
 app.use(passport.session())
 app.use(nocache());

@@ -3,6 +3,7 @@
 <link href="/user/css,js/css/tiny-slider.css" rel="stylesheet">
 <link href="/user/css,js/css/style.css" rel="stylesheet">
 <link rel="stylesheet" href="/user/css,js/css/single.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 
 
@@ -30,7 +31,9 @@
 			</ul>
 
 			<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+			
 				<li><a class="nav-link" href="#"><img src="/user/css,js/images/user.svg"></a></li>
+
 				<li><a class="nav-link" href="cart.html"><img src="/user/css,js/images/cart.svg"></a></li>
 			</ul>
 		</div>
@@ -46,39 +49,58 @@
 	<div class="product-details">
 		<div class="product-images">
 			<div class="side-images">
-				<img class="more-images" src="/uploads/{{product.images.[1]}}" alt="Chair side view" />
-				<img class="more-images" src="/uploads/{{product.images.[2]}}" alt="Chair front view" />
-				<img class="more-images" src="#" alt="Chair back view" />
+				<img class="more-images" src="/uploads/{{product.images.[0]}}" alt="Chair side view" />
+				<img class="more-images" src="/uploads/{{product.images.[1]}}" alt="Chair front view" />
+			<img class="more-images" src="/uploads/{{product.images.[2]}}" alt="Chair front view" />
 			</div>
 
 
 
-<div id="imageZoom" style="
+			<div id="imageZoom" style="
     --url: url(/uploads/{{product.images.[0]}});
     --zoom-x: 0%;
     --zoom-y: 0%;
     --display: none;">
-    <img id="main-image" src="/uploads/{{product.images.[0]}}" alt="Product Image" />
-</div>
-
-
-
-
-
-
-
-
-
-		</div>
-		<div class="product-info">
-			<h1 class="product-title">{{product.name}}</h1>
-			<div class="product-price">₹{{product.price}}</div>
-			<div class="color-options">
-				<span>choose color:</span>
-				<span class="color-option" style="background-color: #fff; border: 1px solid #ccc;"></span>
-				<span class="color-option" style="background-color: #777;"></span>
-				<span class="color-option" style="background-color: #000;"></span>
+				<img id="main-image" src="/uploads/{{product.images.[0]}}" alt="Product Image" />
 			</div>
+		</div>
+
+
+		<div class="product-info">
+
+
+			<h1 class="product-title">{{product.name}} <span style="opacity: -10px;">(73%off)</span></h1>
+
+			<div class="star">
+				<span class="fa fa-star checked"></span>
+				<span class="fa fa-star checked"></span>
+				<span class="fa fa-star checked"></span>
+				<span class="fa fa-star"></span>
+				<span class="fa fa-star"></span>
+			</div>
+
+
+
+			<div class="product-price">₹{{product.price}} <span class="orginal-price">₹59000</span></div>
+			<span class="stock"> Availble Stock 10</span>
+			<div class="wood-options">
+				<span>Choose Wood Type:</span>
+				<div class="wood-option" style="border: 1px solid #ccc; padding: 10px; margin: 5px; cursor: pointer;"
+					data-wood-type="Teak">
+					<strong>Teak</strong>
+				</div>
+				<div class="wood-option" style="border: 1px solid #ccc; padding: 10px; margin: 5px; cursor: pointer;"
+					data-wood-type="Oak">
+					<strong>Oak</strong>
+				</div>
+
+				<div class="wood-option" style="border: 1px solid #ccc; padding: 10px; margin: 5px; cursor: pointer;"
+					data-wood-type="Mahogany">
+					<strong>Mahogany</strong>
+				</div>
+
+			</div>
+
 			<div class="tabs">
 				<div class="tab active">Materials</div>
 				<div class="tab">Shipping</div>
@@ -97,11 +119,8 @@
 
 	<h2 class="section-title">Related Products</h2>
 	<div class="untree_co-section product-section before-footer-section">
-
 		<div class="container">
-
 			<div class="row">
-
 				<!-- Start Column 2 -->
 				<div class="col-12 col-md-4 col-lg-3 mb-5">
 					<a class="product-item" href="#">
@@ -282,22 +301,22 @@
 <script src="/user/css,js/js/custom.js"></script>
 
 <script>
-	document.addEventListener("DOMContentLoaded", function() {
-    let imageZoom = document.getElementById("imageZoom");
+	document.addEventListener("DOMContentLoaded", function () {
+		let imageZoom = document.getElementById("imageZoom");
 
-    imageZoom.addEventListener("mousemove", (event) => {
-        imageZoom.style.setProperty("--display", "block");
-        let pointer = {
-            x: (event.offsetX * 100) / imageZoom.offsetWidth,
-            y: (event.offsetY * 100) / imageZoom.offsetHeight
-        };
-        imageZoom.style.setProperty("--zoom-x", pointer.x + "%");
-        imageZoom.style.setProperty("--zoom-y", pointer.y + "%");
-    });
+		imageZoom.addEventListener("mousemove", (event) => {
+			imageZoom.style.setProperty("--display", "block");
+			let pointer = {
+				x: (event.offsetX * 100) / imageZoom.offsetWidth,
+				y: (event.offsetY * 100) / imageZoom.offsetHeight
+			};
+			imageZoom.style.setProperty("--zoom-x", pointer.x + "%");
+			imageZoom.style.setProperty("--zoom-y", pointer.y + "%");
+		});
 
-    imageZoom.addEventListener("mouseout", () => {
-        imageZoom.style.setProperty("--display", "none");
-    });
-});
+		imageZoom.addEventListener("mouseout", () => {
+			imageZoom.style.setProperty("--display", "none");
+		});
+	});
 
 </script>

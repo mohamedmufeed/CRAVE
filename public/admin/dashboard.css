@@ -123,3 +123,11 @@ tbody tr:nth-child(even) {
   border-radius: 50%; /* Circular user icon */
   margin-right: 10px;
 }
+.navbar-brand{
+
+  padding-top: 20px;
+  padding-bottom: 20px; 
+  font-size: xx-large;
+  font-weight: 600;
+
+}

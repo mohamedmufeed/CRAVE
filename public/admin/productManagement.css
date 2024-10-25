@@ -380,3 +380,12 @@ input[type="file"] {
 .file-upload-label:hover {
   background-color: #45a049;
 }
+
+.navbar-brand{
+
+  padding-top: 20px;
+  padding-bottom: 20px; 
+  font-size: xx-large;
+  font-weight: 600;
+
+}

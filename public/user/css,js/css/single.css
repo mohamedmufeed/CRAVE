@@ -299,3 +299,18 @@ bottom: 30px;
     pointer-events: none; /* Ignore mouse events */
     transition: opacity 0.3s; /* Smooth transition */
 }
+.stock{
+    background-color: #91e98c;
+    width: 130px;
+padding: 7px;
+border-radius: 15px;
+font-weight: 600;
+
+}
+.orginal-price{
+    color: #b5b5b5;
+    font-size: 15px;
+}
+.checked {
+    color: orange;
+  }

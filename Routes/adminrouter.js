@@ -16,7 +16,7 @@ router.post("/category/list/:id",adminController.listCategory)
 router.post("/category/unlist/:id",adminController.unlistCategory)
 router.post("/category/add",adminController.addCategory)
 router.get("/productManagement", adminAuth.checkSession,adminController.productManagement)
-router.post("/product/add",imagesController.upload,adminController.addProducts )
+router.post("/product/add",imagesController.upload,adminController.addProducts)
 
 
 router.post('/product/edit/:id', imagesController.upload, adminController.editProducts);

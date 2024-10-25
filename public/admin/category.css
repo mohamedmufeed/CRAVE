@@ -295,4 +295,11 @@
   display: flex;                 /* Ensure the buttons are in a row */
   gap: 10px;                     /* Add space between the buttons */
 }
+.navbar-brand{
 
+  padding-top: 20px;
+  padding-bottom: 20px; 
+  font-size: xx-large;
+  font-weight: 600;
+
+}
