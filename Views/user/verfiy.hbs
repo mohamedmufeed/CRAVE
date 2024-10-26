@@ -3,7 +3,8 @@
     
 <div class="toast align-items-center text-bg-danger border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
   <div class="d-flex">
-    <div class="toast-body">
+    <div class="toast-body" id="toast-container" >
+  
       {{message}}
     </div>
     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
@@ -43,6 +44,16 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
+
+function showToast(message) {
+  $('#toast-body').text(message);
+  $('#toast-container').toast('show');
+}
+
+
+
+
+
   console.log("{{message}}")
  document.addEventListener("DOMContentLoaded", function () {
     const toastEl = document.querySelector('.toast');
@@ -106,14 +117,14 @@ function resendOtp(event) {
   .then(response => response.json())
   .then(result => {
     if (result.success) {
-      alert(result.message); 
+     showToast(result.message); 
     } else {
-      alert(result.message); 
+     showToast(result.message); 
     }
-    window.location.reload()
+   
   })
   .catch(error => {
-    alert('Failed to resend OTP. Please try again later.');
+     showToast("Failed to resend OTP. Please try again later.") 
     console.error('Error:', error);
   });
 }
@@ -126,3 +137,4 @@ function enableResendButton() {
 
 timer(60);
 </script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>

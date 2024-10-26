@@ -163,6 +163,10 @@ const addProducts = async (req, res) => {
       return res.status(400).send({ message: 'Please fill all required fields' });
     }
 
+     if(price <= 0){
+      return res.status(500).send("Invalid Price")
+     }
+
     if (price <= 0 || stock < 0) {
       return res.status(400).send({ message: 'Invalid price or stock value' });
     }
