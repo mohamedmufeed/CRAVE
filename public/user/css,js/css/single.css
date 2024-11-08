@@ -31,11 +31,7 @@ nav {
     color: #333;
     text-decoration: none;
 }
-.breadcrumb {
-    margin: 20px 0;
-    font-size: 14px;
-    color: #777;
-}
+
 .product-details {
     display: flex;
     gap: 40px;
@@ -301,7 +297,7 @@ bottom: 30px;
 }
 .stock{
     background-color: #91e98c;
-    width: 130px;
+    width: 150px;
 padding: 7px;
 border-radius: 15px;
 font-weight: 600;
@@ -314,3 +310,11 @@ font-weight: 600;
 .checked {
     color: orange;
   }
+.filter{
+    width: 20%;
+}
+
+
+
+
+

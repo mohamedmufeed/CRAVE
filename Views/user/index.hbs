@@ -30,22 +30,34 @@
 			</ul>
 
 			<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-		
-		{{#if isAuthenticated}}
-  <li>
-    <a class="nav-link" href="/profile">
-      <img src="/user/css,js/images/user.svg" alt="User Profile">
-    </a>
-  </li>
-{{else}}
-  <li>
-    <a class="nav-link" href="/login">
-      <img src="/user/css,js/images/user.svg" alt="Login">
-    </a>
-  </li>
-{{/if}}
 
-				<li><a class="nav-link" href="cart.html"><img src="/user/css,js/images/cart.svg"></a></li>
+				{{#if isAuthenticated}}
+				<li>
+					<a class="nav-link" href="/profile">
+						<img src="/user/css,js/images/user.svg" alt="User Profile">
+					</a>
+				</li>
+				{{else}}
+				<li>
+					<a class="nav-link" href="/login">
+						<img src="/user/css,js/images/user.svg" alt="Login">
+					</a>
+				</li>
+				{{/if}}
+
+
+
+				<li>
+					<div class="image-container">
+						<a class="nav-link product-image" href="/cart"><img src="/user/css,js/images/cart.svg"></a>
+						{{#if cartCount}}
+    <span class="badge">{{cartCount}}</span> <!-- Display the cart count dynamically -->
+  {{else}}
+   
+  {{/if}}
+					</div>
+
+				</li>
 			</ul>
 		</div>
 	</div>

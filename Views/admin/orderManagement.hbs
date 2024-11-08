@@ -1,0 +1,133 @@
+<link rel="stylesheet" href="/admin/userMangement.css">
+<aside class="sidebar">
+  <div class="logo">
+    <a class="navbar-brand" href="index.html">CRAV<span style="font-weight:lighter;">E</span></a>
+  </div>
+  <nav class="menu">
+    <ul>
+           <li><a href="/admin/dashboard">Dashboard</a></li>
+ <li><a href="/admin/productManagement">Products</a></li>
+        <li><a href="/admin/orderManagement">Orders</a></li>
+        <li><a href="/admin/couponManagement">Coupon</a></li>
+        <li><a href="/admin/inventory">Inventory</a></li>
+        <li><a href="/admin/offerManagement">Offers</a></li>
+    <li><a href="/admin/userManagement"> User Management</a></li>
+      <li><a href="/admin/category"> Category</a></li>
+  
+    </ul>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<div class="main-content">
+  <header class="dashboard-header">
+    <h1>Order Management</h1>
+      <div>
+  <form class="form-inline my-2 my-lg-0" action="/admin/orderManagement/search" method="GET">
+    <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
+ 
+  </form>
+</div>
+  </header>
+
+  <!-- User Table Section -->
+  <section class="user-table">
+    <h2>All Orders</h2>
+  
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+          
+            <th>Username</th>
+            <th>Total Price</th>
+            <th>Delivery address</th>
+            <th>Order Date</th>
+            <th>Products</th>
+            <th>Quantity</th>
+            <th>Status</th>
+            <th>Actions</th>
+
+          </tr>
+        </thead>
+        <tbody>
+
+          {{#each orders}}
+          <tr>
+         
+            <td>{{this.userId.username}}</td>
+            <td>{{this.total}}</td>
+     
+          <td>  {{this.address.city}}, {{this.address.state}}, </td>
+         <td>{{formatDate this.createdAt}}</td>
+             <td>
+            {{#each this.products}}
+              <div>{{this.name}}</div>
+            {{/each}}
+          </td>
+          <td>
+            {{#each this.products}}
+              <div>{{this.quantity}}</div>
+            {{/each}}
+          </td>
+      <td>
+        <form action="/admin/orderManagement/status/{{this._id}}" method="POST" class="status-form">
+          <select name="status" class="" required onchange="this.form.submit()">
+            <option value="Pending" {{#if (eq this.status "Pending")}}selected{{/if}}>Pending</option>
+            <option value="Confirmed" {{#if (eq this.status "Confirmed")}}selected{{/if}}>Confirmed</option>
+            <option value="Shipped" {{#if (eq this.status "Shipped")}}selected{{/if}}>Shipped</option>
+            <option value="Delivered" {{#if (eq this.status "Delivered")}}selected{{/if}}>Delivered</option>
+            <option value="Cancelled" {{#if (eq this.status "Cancelled")}}selected{{/if}}>Cancelled</option>
+          </select>
+        </form>
+      </td>
+      <td>  <form action="/admin/orderManagement/cancel/{{this._id}}" method="POST" style="display:inline;">
+          <button type="submit" class="btn btn-dark" >Cancel Order</button>
+        </form></td>
+
+
+      
+
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+    </div>
+
+  </section>
+
+  {{!-- pagination --}}
+
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center pages custom-pagination">
+      {{#if previousPage}}
+      <li class="page-item">
+        <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      {{/if}}
+
+      {{#each (range 1 totalPages)}}
+      <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
+        <a class="page-link" href="?page={{this}}">{{this}}</a>
+      </li>
+      {{/each}}
+
+      {{#if nextPage}}
+      <li class="page-item">
+        <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+      {{/if}}
+    </ul>
+  </nav>
+
+  {{!-- end pagination --}}
+
+
+</div>
+
+<script src="/js/script.js"></script> <!-- Link to your JavaScript file -->

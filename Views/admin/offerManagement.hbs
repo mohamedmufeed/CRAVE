@@ -1,0 +1,314 @@
+<link rel="stylesheet" href="/admin/userMangement.css">
+<link rel="stylesheet" href="/admin/productManagement.css">
+<link rel="stylesheet" href="/admin/offer.css">
+<aside class="sidebar">
+  <div class="logo">
+    <a class="navbar-brand" href="index.html">CRAV<span style="font-weight:lighter;">E</span></a>
+  </div>
+  <nav class="menu">
+    <ul>
+      <li><a href="/admin/dashboard">Dashboard</a></li>
+       <li><a href="/admin/productManagement">Products</a></li>
+        <li><a href="/admin/orderManagement">Orders</a></li>
+        <li><a href="/admin/couponManagement">Coupon</a></li>
+        <li><a href="/admin/inventory">Inventory</a></li>
+        <li><a href="/admin/offerManagement">Offers</a></li>
+    <li><a href="/admin/userManagement"> User Management</a></li>
+      <li><a href="/admin/category"> Category</a></li>
+
+    </ul>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<div class="main-content">
+  <header class="dashboard-header">
+
+    <h1>Offer Management</h1>
+    <div>
+
+      <form class="form-inline my-2 my-lg-0" action="/admin/orderManagement/search" method="GET">
+        <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
+
+      </form>
+    </div>
+  </header>
+  <button class="add-btn" onclick="openCreateOfferModal()">Create Offer</button>
+  <!-- User Table Section -->
+  <section class="user-table">
+    <h2>All Offers</h2>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+
+            <th>Discount Type</th>
+            <th>Discount Value</th>
+            <th>Description</th>
+            <th>Applicable Products</th>
+            <th>Applicable Categories</th>
+            <th>Expire Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+
+          </tr>
+        </thead>
+        <tbody>
+
+          {{#each offer}}
+          <tr>
+
+            <td>{{this.discountType}}</td>
+            <td>{{this.discountValue}}</td>
+
+            <td> {{this.description}} </td>
+
+            <td>
+              {{#if (isAllProductsApplicable ../product this.applicableProducts)}}
+              <div>All Products</div>
+              {{else}}
+              {{#each this.applicableProducts}}
+              <div>{{this.name}}</div>
+              {{/each}}
+              {{/if}}
+            </td>
+
+            <td>
+              {{#if (isAllCategoryApplicable ../category this.applicableCategories)}}
+              <div>All Categories </div>
+              {{else}}
+              {{#each this.applicableCategories}}
+              <div>{{this.name}}</div>
+              {{/each}}
+              {{/if}}
+            </td>
+
+            <td>{{formatDate this.expirationDate}}</td>
+            <td>
+
+              {{#if this.isActive}}Active{{else}}Non Active{{/if}}
+            </td>
+            <td>
+              <div style="display: flex; gap: 20px;">
+            <button class="btn btn-dark" onclick="openEditOfferModal('{{this.id}}', '{{this.discountType}}', '{{this.discountValue}}', '{{this.description}}', '{{this.expirationDate}}', '{{this.isActive}}', {{json this.applicableProducts}}, {{json this.applicableCategories}})">Edit</button>
+
+
+<form action="/admin/offerManagement/delete/{{this.id}}" method="post">
+                <button  type="submit" class="btn btn-dark">Delete</button>
+</form>
+
+              </div>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+    </div>
+
+  </section>
+
+  {{!-- pagination --}}
+
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center pages custom-pagination">
+      {{#if previousPage}}
+      <li class="page-item">
+        <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      {{/if}}
+
+      {{#each (range 1 totalPages)}}
+      <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
+        <a class="page-link" href="?page={{this}}">{{this}}</a>
+      </li>
+      {{/each}}
+
+      {{#if nextPage}}
+      <li class="page-item">
+        <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+      {{/if}}
+    </ul>
+  </nav>
+
+  {{!-- end pagination --}}
+
+</div>
+
+{{!-- Create Offer Modal --}}
+<div class="modal" id="createOfferModal" style="display:none;">
+  <div class="modal-content">
+    <span class="close" onclick="closeCreateOfferModal()">&times;</span>
+    <h2>Create Offer</h2>
+    <form id="CreateOfferForm" method="POST" action="/admin/offerManagement/create">
+
+      <label for="discountType">Discount Type:</label>
+      <select id="discountType" name="discountType" required>
+        <option value="fixed">Fixed</option>
+        <option value="percentage">Percentage</option>
+      </select>
+
+      <label for="discountValue">Discount Value:</label>
+      <input type="number" id="discountValue" name="discountValue" required min="0" />
+
+      <label for="applicableProducts">Applicable Products:</label>
+      <select id="applicableProducts" name="applicableProducts" class="select-group" multiple required>
+        <option value="all">All Products</option>
+        {{#each product}}
+        <option value="{{this._id}}">{{this.name}}</option>
+        {{/each}}
+      </select>
+
+      <label for="applicableCategories">Applicable Categories:</label>
+      <select id="applicableCategories" name="applicableCategories" class="select-group" multiple required>
+        <option value="all">All Categories</option>
+        {{#each category}}
+        <option value="{{this._id}}">{{this.name}}</option>
+        {{/each}}
+      </select>
+      <label for="expirationDate">Expiration Date:</label>
+      <input type="date" id="expirationDate" name="expirationDate" required style="padding: 8px; font-size: 16px;" />
+
+      <div style="display: flex;margin-top: 10px;">
+        <label for="isActive">Active:</label>
+        <label class="switch">
+          <input type="checkbox" id="isActive" name="isActive" checked />
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+
+      <label for="description">Description:</label>
+      <textarea id="description" name="description" required placeholder="Describe the offer..."
+        style="padding: 8px; font-size: 16px;"></textarea>
+
+      <button type="submit" class="btn">Create Offer</button>
+    </form>
+  </div>
+</div>
+
+{{!-- end craete Offer modal --}}
+
+{{!-- strat edit  offer modal --}}
+
+<div class="modal" id="editOfferModal" style="display:none;">
+  <div class="modal-content">
+    <span class="close" onclick="closeEditOfferModal()">&times;</span>
+    <h2>Edit Offer</h2>
+    <form id="EditOfferForm" method="POST" action="/admin/offerManagement/edit">
+      <input type="hidden" id="offerId" name="offerId" />
+
+      <label for="editDiscountType">Discount Type:</label>
+      <select id="editDiscountType" name="discountType" required>
+        <option value="fixed">Fixed</option>
+        <option value="percentage">Percentage</option>
+      </select>
+
+      <label for="editDiscountValue">Discount Value:</label>
+      <input type="number" id="editDiscountValue" name="discountValue" required min="0" />
+
+      <label for="editApplicableProducts">Applicable Products:</label>
+      <select id="editApplicableProducts" name="applicableProducts" class="select-group" multiple required>
+        <option value="all">All Products</option>
+        <!-- Product options will be dynamically inserted here -->
+      </select>
+
+      <label for="editApplicableCategories">Applicable Categories:</label>
+      <select id="editApplicableCategories" name="applicableCategories" class="select-group" multiple required>
+        <option value="all">All Categories</option>
+        <!-- Category options will be dynamically inserted here -->
+      </select>
+
+      <label for="editExpirationDate">Expiration Date:</label>
+      <input type="date" id="editExpirationDate" name="expirationDate" required style="padding: 8px; font-size: 16px;" />
+
+      <div style="display: flex;margin-top: 10px;">
+        <label for="editIsActive">Active:</label>
+        <label class="switch">
+          <input type="checkbox" id="editIsActive" name="isActive" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+      <label for="editDescription">Description:</label>
+      <textarea id="editDescription" name="description" required placeholder="Describe the offer..."
+        style="padding: 8px; font-size: 16px;"></textarea>
+
+      <button type="submit" class="btn">Update Offer</button>
+    </form>
+  </div>
+</div>
+
+{{!-- end edit editOfferModal --}}
+
+
+<script src="/js/script.js"></script> <!-- Link to your JavaScript file -->
+<script>
+
+//------------add offer modal starts-------------
+
+
+  function openCreateOfferModal() {
+    document.getElementById("createOfferModal").style.display = "block"
+  }
+
+  function closeCreateOfferModal() {
+    document.getElementById("createOfferModal").style.display = "none"
+  }
+
+
+// ---------------add modal ends---------------
+
+
+
+//---------------edit modal-------------\
+
+ 
+ function openEditOfferModal(id, discountType, discountValue, description, expirationDate, isActive, applicableProducts, applicableCategories) {
+  document.getElementById("offerId").value = id;
+  document.getElementById("editDiscountType").value = discountType;
+  document.getElementById("editDiscountValue").value = discountValue;
+  document.getElementById("editDescription").value = description;
+  document.getElementById("editExpirationDate").value = expirationDate;
+
+  document.getElementById("editIsActive").checked = isActive;
+
+  const productsSelect = document.getElementById("editApplicableProducts");
+  productsSelect.innerHTML = '<option value="all">All Products</option>';
+  applicableProducts.forEach(product => {
+    const option = document.createElement("option");
+    option.value = product._id;
+    option.text = product.name;
+    option.selected = true;
+    productsSelect.appendChild(option);
+  });
+
+  const categoriesSelect = document.getElementById("editApplicableCategories");
+  categoriesSelect.innerHTML = '<option value="all">All Categories</option>';
+  applicableCategories.forEach(category => {
+    const option = document.createElement("option");
+    option.value = category._id;
+    option.text = category.name;
+    option.selected = true;
+    categoriesSelect.appendChild(option);
+  });
+
+  document.getElementById("editOfferModal").style.display = "block";
+}
+
+function closeEditOfferModal() {
+  document.getElementById("editOfferModal").style.display = "none";
+}
+ 
+
+ 
+
+ 
+  
+</script>

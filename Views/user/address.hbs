@@ -1,0 +1,369 @@
+<link href="/user/css,js/css/bootstrap.min.css" rel="stylesheet">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+		<link href="/user/css,js/css/tiny-slider.css" rel="stylesheet">
+		<link href="/user/css,js/css/style.css" rel="stylesheet">
+
+
+
+
+
+
+
+
+		<!-- Start Header/Navigation -->
+		<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
+
+			<div class="container">
+				<a class="navbar-brand" href="index.html">CRAV<span style="font-weight:lighter;">E</span></a>
+
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div class="collapse navbar-collapse" id="navbarsFurni">
+					<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+						<li class="nav-item ">
+							<a class="nav-link" href="/">Home</a>
+						</li>
+						<li class="active"><a class="nav-link" href="shop.html">Shop</a></li>
+						<li><a class="nav-link" href="about.html">About us</a></li>
+						<li><a class="nav-link" href="services.html">Services</a></li>
+						<li><a class="nav-link" href="blog.html">Blog</a></li>
+						<li><a class="nav-link" href="contact.html">Contact us</a></li>
+					</ul>
+
+					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+						<li><a class="nav-link" href="/profile"><img src="/user/css,js/images/user.svg"></a></li>
+							<li>
+					<div class="image-container">
+						<a class="nav-link product-image" href="/cart"><img src="/user/css,js/images/cart.svg"></a>
+						{{#if cartCount}}
+    <span class="badge">{{cartCount}}</span> <!-- Display the cart count dynamically -->
+  {{else}}
+   
+  {{/if}}
+					</div>
+
+				</li>
+					</ul>
+				</div>
+			</div>
+				
+		</nav>
+		<!-- End Header/Navigation -->
+
+
+
+		<!-- Start Hero Section -->
+			<div class="hero">
+				<div class="container">
+					<div class="row justify-content-between">
+						<div class="col-lg-5">
+							<div class="intro-excerpt">
+								<h1>Address</h1>
+							</div>
+						</div>
+						<div class="col-lg-7">
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		<!-- End Hero Section -->
+
+
+	<span class="breadcrumb"> <a href="/profile"> Profile /</a> <a href="/profile/address"> Address  </a> </span>
+
+
+    <div class="toast align-items-center text-bg-secondary.bg-gradientborder-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+  <div class="d-flex">
+    <div class="toast-body">
+      {{message}}
+    </div>
+    <button type="button" class="btn-close btn-close-dark me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+</div>
+
+
+
+
+
+<div class="container mt-5">
+  <div class="row">
+    {{#each addresses}}
+      <div class="col-md-4 mb-4" style="border-radius: 15px;  cursor: pointer;" onclick="selectAddress(this, '{{this._id}}')">
+        <div class="card ms-auto me-auto" style="border-radius: 15px;">
+          <div class="card-body text-center">
+            <h5 class="card-title" style="color: black;">Saved Address</h5>
+            <p class="card-text">
+              <strong>First Name:</strong> {{this.firstName}}<br>
+              <strong>Last Name:</strong> {{this.lastName}}<br>
+              <strong>Email:</strong> {{this.email}}<br>
+              <strong>Phone Number:</strong> {{this.mobile}}<br>
+              <strong>Address:</strong> {{this.addressLine}}<br>
+              <strong>City:</strong> {{this.city}}<br>
+              <strong>State:</strong> {{this.state}}<br>
+              <strong>Pincode:</strong> {{this.pinCode}}<br>
+              <strong>Country:</strong> {{this.country}}
+            </p>
+            <button type="button" class="btn btn-primary-hover-outline" style="padding: 5px 10px;" data-bs-toggle="modal" data-bs-target="#editModal-{{this._id}}">
+              Edit Address
+            </button>
+
+            <form action="/profile/address/delete/{{this._id}}" method="POST" style="display:inline;">
+              <button type="submit" class="btn btn-danger" style="padding: 5px 10px;">Delete Address</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal for Editing Address -->
+      <div class="modal fade" id="editModal-{{this._id}}" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editModalLabel">Edit Address</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form action="/profile/address/edit/{{this._id}}" method="POST">
+                <div class="mb-3">
+                  <label for="firstName" class="form-label">First Name</label>
+                  <input type="text" class="form-control" id="firstName" name="firstName" value="{{this.firstName}}" required>
+                </div>
+                <div class="mb-3">
+                  <label for="lastName" class="form-label">Last Name</label>
+                  <input type="text" class="form-control" id="lastName" name="lastName" value="{{this.lastName}}" required>
+                </div>
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="email" name="email" value="{{this.email}}" required>
+                </div>
+                <div class="mb-3">
+                  <label for="mobile" class="form-label">Phone Number</label>
+                  <input type="text" class="form-control" id="mobile" name="mobile" value="{{this.mobile}}" required>
+                </div>
+                <div class="mb-3">
+                  <label for="addressLine" class="form-label">Address</label>
+                  <input type="text" class="form-control" id="addressLine" name="addressLine" value="{{this.addressLine}}" required>
+                </div>
+                <div class="mb-3">
+                  <label for="city" class="form-label">City</label>
+                  <input type="text" class="form-control" id="city" name="city" value="{{this.city}}" required>
+                </div>
+                <div class="mb-3">
+                  <label for="state" class="form-label">State</label>
+                  <input type="text" class="form-control" id="state" name="state" value="{{this.state}}" required>
+                </div>
+                <div class="mb-3">
+                  <label for="pinCode" class="form-label">Pincode</label>
+                  <input type="text" class="form-control" id="pinCode" name="pinCode" value="{{this.pinCode}}" required>
+                </div>
+                <div class="mb-3">
+                  <label for="country" class="form-label">Country</label>
+                  <input type="text" class="form-control" id="country" name="country" value="{{this.country}}" required>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+</div>
+
+
+
+
+<div class="col-md-8 col-lg-8 pb-4 ms-auto me-auto mt-5 mb-3"> 
+              <form action="/profile/addAddress" method="post">
+                <div class="row">
+                  <div class="col-6">
+                    <div class="form-group">
+                      <label class="text-black" for="fname">First name</label>
+                      <input type="text" class="form-control" id="fname" name="firstName">
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="form-group">
+                      <label class="text-black" for="lname">Last name</label>
+                      <input type="text" class="form-control" id="lname" name="lastName">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6">
+                      <div class="form-group">
+                        <label class="text-black" for="email">Email</label>
+                        <input type="email" class="form-control" id="fname" name="email">
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="form-group">
+                        <label class="text-black" for="lname">Phone Number</label>
+                        <input type="text" class="form-control" id="lname" name="mobile">
+                      </div>
+                    </div>
+                  </div>
+
+              <div class="form-group">
+                  <label class="text-black" for="email">Address</label>
+                  <input type="text" class="form-control" id="email" name="addressLine">
+                </div>
+
+                <div class="row">
+                    <div class="col-6">
+                      <div class="form-group">
+                        <label class="text-black" for="fname">City</label>
+                        <input type="text" class="form-control" id="fname" name="city">
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="form-group">
+                        <label class="text-black" for="lname">State</label>
+                        <input type="text" class="form-control" id="lname" name="state">
+                      </div>
+                    </div>
+                  </div>
+                   
+                <div class="row">
+                    <div class="col-6">
+                      <div class="form-group">
+                        <label class="text-black" for="fname">Pincode</label>
+                        <input type="text" class="form-control" id="fname" name="pinCode">
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="form-group">
+                        <label class="text-black" for="lname">Country</label>
+                        <select class="form-control" id="editProductCategory" name="country" required>
+                            <option class="form-control" value="usa">USA</option>
+                               <option class="form-control" value="usa">India</option>
+                          </select>
+                      </div>
+                    </div>
+                  </div>
+
+                <button type="submit" class="btn btn-primary-hover-outline mt-3">Add Address</button>
+              </form>
+            </div>
+
+
+
+
+<!-- Start Footer Section -->
+		<footer class="footer-section">
+			<div class="container relative">
+
+				<div class="sofa-img">
+					<img src="/user/css,js/images/sofa.png" alt="Image" class="img-fluid">
+				</div>
+
+				<div class="row">
+					<div class="col-lg-8">
+						<div class="subscription-form">
+							<h3 class="d-flex align-items-center"><span class="me-1"><img src="/user/css,js/images/envelope-outline.svg" alt="Image" class="img-fluid"></span><span>Subscribe to Newsletter</span></h3>
+
+							<form action="#" class="row g-3">
+								<div class="col-auto">
+									<input type="text" class="form-control" placeholder="Enter your name">
+								</div>
+								<div class="col-auto">
+									<input type="email" class="form-control" placeholder="Enter your email">
+								</div>
+								<div class="col-auto">
+									<button class="btn btn-primary">
+										<span class="fa fa-paper-plane"></span>
+									</button>
+								</div>
+							</form>
+
+						</div>
+					</div>
+				</div>
+
+				<div class="row g-5 mb-5">
+					<div class="col-lg-4">
+						<div class="mb-4 footer-logo-wrap"><a class="footer-logo" href="index.html">CRAV<span style="font-weight:lighter;">E</span></a></div>
+						<p class="mb-4">Crave offers stylish and comfortable sofas and chairs for your home. Our furniture is designed to fit any space, combining quality, durability, and a modern touch. Whether you're looking for something classic or contemporary, Crave has the perfect piece to make your home cozy and inviting.</p>
+
+						<ul class="list-unstyled custom-social">
+							<li><a href="#"><span class="fa fa-brands fa-facebook-f"></span></a></li>
+							<li><a href="#"><span class="fa fa-brands fa-twitter"></span></a></li>
+							<li><a href="#"><span class="fa fa-brands fa-instagram"></span></a></li>
+							<li><a href="#"><span class="fa fa-brands fa-linkedin"></span></a></li>
+						</ul>
+					</div>
+
+					<div class="col-lg-8">
+						<div class="row links-wrap">
+							<div class="col-6 col-sm-6 col-md-3">
+								<ul class="list-unstyled">
+									<li><a href="#">About us</a></li>
+									<li><a href="#">Services</a></li>
+									<li><a href="#">Blog</a></li>
+									<li><a href="#">Contact us</a></li>
+								</ul>
+							</div>
+
+							<div class="col-6 col-sm-6 col-md-3">
+								<ul class="list-unstyled">
+									<li><a href="#">Support</a></li>
+									<li><a href="#">Knowledge base</a></li>
+									<li><a href="#">Live chat</a></li>
+								</ul>
+							</div>
+
+							<div class="col-6 col-sm-6 col-md-3">
+								<ul class="list-unstyled">
+									<li><a href="#">Jobs</a></li>
+									<li><a href="#">Our team</a></li>
+									<li><a href="#">Leadership</a></li>
+									<li><a href="#">Privacy Policy</a></li>
+								</ul>
+							</div>
+
+							<div class="col-6 col-sm-6 col-md-3">
+								<ul class="list-unstyled">
+									<li><a href="#">Nordic Chair</a></li>
+									<li><a href="#">Kruzo Aero</a></li>
+									<li><a href="#">Ergonomic Chair</a></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+				<div class="border-top copyright">
+					<div class="row pt-4">
+			
+					
+					</div>
+				</div>
+
+			</div>
+		</footer>
+		<!-- End Footer Section -->	
+
+
+		<script src="/user/css,js/js/bootstrap.bundle.min.js"></script>
+		<script src="/user/css,js/js/tiny-slider.js"></script>
+		<script src="/user/css,js/js/custom.js"></script>
+
+    <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const toastEl = document.querySelector('.toast');
+    const toast = new bootstrap.Toast(toastEl);
+    if ("{{message}}") {
+      toast.show();
+    }
+  });
+
+    </script>
+   

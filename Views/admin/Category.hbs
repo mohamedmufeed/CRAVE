@@ -6,34 +6,42 @@
     </div>
     <nav class="menu">
       <ul>
-        <li><a href="/admin/dashboard">Dashboard</a></li>
-        <li><a  href="/admin/productManagement">Products</a></li>
-        <li><a href="/admin/orders">Orders</a></li>
-        <li><a href="/admin/customers">Customers</a></li>
-        <li><a href="/admin/reports">Reports</a></li>
-        <li><a href="/admin/settings">Settings</a></li>
-        <li><a href="/admin/userManagement">User Management</a></li>
-         <li><a href="/admin/Category"> Category</a></li>
+          <li><a href="/admin/dashboard">Dashboard</a></li>
+     <li><a href="/admin/productManagement">Products</a></li>
+        <li><a href="/admin/orderManagement">Orders</a></li>
+        <li><a href="/admin/couponManagement">Coupon</a></li>
+        <li><a href="/admin/inventory">Inventory</a></li>
+        <li><a href="/admin/offerManagement">Offers</a></li>
+    <li><a href="/admin/userManagement"> User Management</a></li>
+      <li><a > Category</a></li>
+  
       </ul>
     </nav>
   </aside>
+
+
 
   <!-- Main Content -->
   <div class="main-content">
     <header class="dashboard-header">
       <h1>Category</h1>
-     
+      <div>
+  <form class="form-inline my-2 my-lg-0" action="/admin/category/search" method="GET">
+    <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
+ 
+  </form>
+</div>
     </header>
 <button class="add-btn" onclick="addCategoryModal()">Add Category</button>
     <!-- User Table Section -->
     <section class="user-table">
-      <h2>All Products</h2>
+      <h2>All Category</h2>
       <div class="table-container">
         <table>
           <thead>
             <tr>
            
-              <th>ID</th>
+            
               <th> Category Name</th>
               <th>Material</th>
               <th>Actions</th>
@@ -43,14 +51,14 @@
           
      {{#each category}}
 <tr>
-  <td>{{this._id}}</td>
+  
   <td>{{this.name}}</td>
    <td>{{this.material}}</td>
 
   <td class="action-buttons">
     <div class="buttons">
  
-    <button class="btn" onclick="openEditCtegoryModal('{{this.name}}','{{this._id}}')">Edit</button>  
+    <button class="btn" onclick="openEditCtegoryModal('{{this.name}}','{{this._id}}','{{this.material}}')">Edit</button>  
 
      
       {{#if this.isListed}}
@@ -69,13 +77,38 @@
 
 
 
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center pages custom-pagination" >
+        {{#if previousPage}}
+        <li class="page-item">
+            <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {{/if}}
+
+        {{#each (range 1 totalPages)}}
+        <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
+            <a class="page-link" href="?page={{this}}">{{this}}</a>
+        </li>
+        {{/each}}
+
+        {{#if nextPage}}
+        <li class="page-item">
+            <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        {{/if}}
+    </ul>
+</nav>
+
+</section>
+{{!-- pagination --}}
 
 
 
-
-
-
-
+ {{!-- end pagination --}}
 
 {{!-- edit category modal --}}
 
@@ -88,7 +121,7 @@
       <label for="categoryName">Category Name:</label>
       <input type="text" id="categoryName" name="name" value="{{this.name}}" />
       <label for="categoryMaterial">Material:</label>
-      <input type="text" id="categoryMaterial" name="material" value="{{this.material}}" required />
+      <input type="text" id="categoryMaterial" name="material" value="{{this.material}}"  />
       <button type="submit" class="btn">Update Category</button>
     </form>
   </div>
@@ -117,11 +150,11 @@
 </div>
 
 
-
  <script>
-  function openEditCtegoryModal(categoryName, categoryId) {
+  function openEditCtegoryModal(categoryName, categoryId,categoryMaterial) {
     document.getElementById("editCategoryModal").style.display = "block";
     document.getElementById("categoryName").value = categoryName;
+          document.getElementById("categoryMaterial").value = categoryMaterial;
    document.getElementById("editCategoryForm").action = "/admin/category/edit/" + categoryId;
   }
 
@@ -139,28 +172,8 @@
 
   
 
-<div style="display: flex; justify-content: flex-end;">
-<nav aria-label="Page navigation example">
-  <ul class="pagination">
-    <li class="page-item">
-      <a class="page-link" href="#" aria-label="Previous">
-        <span aria-hidden="true">&laquo;</span>
-        <span class="sr-only">Previous</span>
-      </a>
-    </li>
-    <li class="page-item"><a class="page-link" href="#">1</a></li>
-    <li class="page-item"><a class="page-link" href="#">2</a></li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li>
-    <li class="page-item">
-      <a class="page-link" href="#" aria-label="Next">
-        <span aria-hidden="true">&raquo;</span>
-        <span class="sr-only">Next</span>
-      </a>
-    </li>
-  </ul>
-</nav>
-     {{!--   end pagination   --}}
+
 
   
-</div>
+
 

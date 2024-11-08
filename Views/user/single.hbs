@@ -32,9 +32,18 @@
 
 			<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
 			
-				<li><a class="nav-link" href="#"><img src="/user/css,js/images/user.svg"></a></li>
+				<li><a class="nav-link" href="/profile"><img src="/user/css,js/images/user.svg"></a></li>
+		<li>
+					<div class="image-container">
+						<a class="nav-link product-image" href="/cart"><img src="/user/css,js/images/cart.svg"></a>
+						{{#if cartCount}}
+    <span class="badge">{{cartCount}}</span> <!-- Display the cart count dynamically -->
+  {{else}}
+   
+  {{/if}}
+					</div>
 
-				<li><a class="nav-link" href="cart.html"><img src="/user/css,js/images/cart.svg"></a></li>
+				</li>
 			</ul>
 		</div>
 	</div>
@@ -67,9 +76,24 @@
 
 
 		<div class="product-info">
+<span style="display: flex; justify-content: flex-end;" onclick="addToWishlist(this, '{{product._id}}')">
+  <i class="{{#if flag}}fa-solid{{else}}fa-regular{{/if}} fa-heart" id="wishlistIcon-{{product._id}}" style="font-size: 25px; cursor: pointer;"></i>
+</span>
 
 
-			<h1 class="product-title">{{product.name}} <span style="opacity: -10px;">(73%off)</span></h1>
+
+
+<h1 class="product-title">
+  {{product.name}}
+  {{#if discountLabel}}  <!-- Check if discountLabel is defined -->
+    <span style="opacity: 0.8;">
+      ({{discountLabel}})  <!-- Display the discount label -->
+    </span>
+  {{/if}}
+</h1>
+
+
+
 
 			<div class="star">
 				<span class="fa fa-star checked"></span>
@@ -81,8 +105,23 @@
 
 
 
-			<div class="product-price">₹{{product.price}} <span class="orginal-price">₹59000</span></div>
-			<span class="stock"> Availble Stock 10</span>
+<div class="product-price">
+  {{#if product.discountPrice}}
+    <span>₹{{product.discountPrice}} </span>
+ <del> <span style="color: rgba(73, 73, 73, 0.804); font-size: 17px;"> ₹{{product.price}}</span> </del>
+  {{else}}
+    <span>₹{{product.price}}</span>
+  {{/if}}
+</div>
+
+		<span class="stock">
+  {{#if product.stock}}
+    <span>Available Stock: {{product.stock}}</span>
+  {{else}}
+   <span class="outOfstock">  Out of Stock   !</span>
+  {{/if}}
+</span>
+
 			<div class="wood-options">
 				<span>Choose Wood Type:</span>
 				<div class="wood-option" style="border: 1px solid #ccc; padding: 10px; margin: 5px; cursor: pointer;"
@@ -112,7 +151,13 @@
 					<input type="number" value="1" min="1" />
 					<buttonclass="btn btn-black btn-sm btn-block">+</button>
 			</div>
-			<button class="btn btn-black btn-sm btn-block">Add to cart</button>
+
+			<form action="/cart/add" method="post">
+			<input type="hidden" name="productId" value="{{product._id}}">
+				<button class="btn btn-black btn-sm btn-block">Add to cart</button>
+				<button class="btn btn-black btn-sm btn-block"><a style="color: #fff; text-decoration: none;" href="/cart">Go to cart</a></button>
+			</form>
+					
 		</div>
 	</div>
 
@@ -121,20 +166,22 @@
 	<div class="untree_co-section product-section before-footer-section">
 		<div class="container">
 			<div class="row">
+
+				{{#each relatedProducts}}
 				<!-- Start Column 2 -->
 				<div class="col-12 col-md-4 col-lg-3 mb-5">
-					<a class="product-item" href="#">
-						<img src="/user/css,js/images/product-1.png" class="img-fluid product-thumbnail">
-						<h3 class="product-title">Nordic Chair</h3>
-						<strong class="product-price">$50.00</strong>
+						<a class="product-item" href="/productdetails/{{this.id}}">
+							<img src="/uploads/{{this.images.[0]}}" class="img-fluid product-thumbnail">
+							<h3 class="product-title">{{this.name}}</h3>
+							<strong class="product-price">₹{{this.price}}</strong>
 
-						<span class="icon-cross">
-							<img src="/user/css,js/images/cross.svg" class="img-fluid">
-						</span>
-					</a>
-				</div>
+							<span class="icon-cross">
+								<img src="/user/css,js/images/cross.svg" class="img-fluid">
+							</span>
+						</a>
+					</div> 
 				<!-- End Column 2 -->
-
+{{/each}}
 			</div>
 		</div>
 	</div>
@@ -318,5 +365,32 @@
 			imageZoom.style.setProperty("--display", "none");
 		});
 	});
+
+
+
+function addToWishlist(element,productId) {
+	const icon = element.querySelector('i');
+    icon.classList.toggle('fa-regular');
+    icon.classList.toggle('fa-solid');
+	console.log("this is ",productId)
+  fetch('/profile/wishlist/add', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ productId })
+  })
+  .then(response => response.json())
+  .then(data => {
+	console.log(data)
+    if(!data.success&&data.message==="User Doesnot exist"){
+		console.log('hjdhfdshf')
+window.location.href = "/login"
+	}
+  })
+  .catch(error => console.error('Error:', error));
+}
+
+
 
 </script>

@@ -1,3 +1,5 @@
+
+<link rel="stylesheet" href="/user/css,js/css/orderDetails.css">
 <link href="/user/css,js/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 <link href="/user/css,js/css/tiny-slider.css" rel="stylesheet">
@@ -49,114 +51,74 @@
 
 <!-- Start Hero Section -->
 <div class="hero">
-	<div class="search">
-
-		<div class="search-container">
-			<form action="/products/search" method="GET">
-				<input type="text" name="search" class="search-input" placeholder="Search...">
-				<button class="search-button" type="submit">Search</button>
-			</form>
-		</div>
-
-
-	</div>
-
-
-
-	< <div class="container">
+	<div class="container">
 		<div class="row justify-content-between">
 			<div class="col-lg-5">
 				<div class="intro-excerpt">
-					<h1>Shop</h1>
+					<h1>Cart</h1>
 				</div>
 			</div>
 			<div class="col-lg-7">
 
 			</div>
 		</div>
-</div>
+	</div>
 </div>
 <!-- End Hero Section -->
 
 
 
-<div class="untree_co-section product-section before-footer-section">
-	<div class="container">
-
-		<div class="row">
-			{{!-- filter bar starts --}}
-			<div class="filter-bar  col-md-2">
-				<h3>Advanced Search</h3>
-				<form action="/products/filter" method="GET" class="filter-form">
-					<label for="category">Category</label>
-					<select class="form-control" name="category[]" id="category">
-						<option>All Categories</option>
-						<option value="sofa">Sofa</option>
-						<option value="chair">Chair</option>
-					</select>
 
 
-					<div class="form-group">
-						<label for="price-range">Price Range</label>
-						<input type="range" min="0" max="10000" value="0" id="min-price" name="min-price"
-							class="slider form-control mb-2" oninput="updateMinValue(this.value)">
-						<input type="range" min="0" max="10000" value="10000" id="max-price" name="max-price"
-							class="slider form-control" oninput="updateMaxValue(this.value)">
-
-						<div class="range-values">
-							<span>Min Price: ₹<span id="min-price-value">0</span></span>
-							<span>Max Price: ₹<span id="max-price-value">10000</span></span>
-						</div>
-					</div>
-					<div class="form-group filter">
-						<label for="sort">Sort By</label>
-						<select class="form-control" name="sort" id="sort">
-							<option value="">Default</option>
-							<option value="popularity">Popularity</option>
-							<option value="priceLow">Price: Low to High</option>
-							<option value="priceHigh">Price: High to Low</option>
-							<option value="averageRating">Average Ratings</option>
-							<option value="featured">Featured</option>
-							<option value="newArrivals">New Arrivals</option>
-							<option value="aToZ">A - Z</option>
-							<option value="zToA">Z - A</option>
-						</select>
-					</div>
-					<div class="form-group">
-						<button type="submit" class="btn btn-primary">Apply Filters</button>
-					</div>
-				</form>
-			</div>
-
-			{{!-- filter bar ends --}}
-			<div class="col-md-9">
-				<div class="row ">
-					{{#each product}}
-					<!-- Start Column 1 -->
-					<div class="col-md-4 mb-5">
-						<a class="product-item" href="/productdetails/{{this.id}}">
-							<img src="/uploads/{{this.images.[0]}}" class="img-fluid product-thumbnail">
-							<h3 class="product-title">{{this.name}}</h3>
-							<strong class="product-price">₹{{this.price}} {{discountLabel}}</strong>
-
-                         	<form action="/cart/add" method="post">
-								<input type="hidden" name="productId" value="{{product._id}}">
-							<span class="icon-cross">
-								<img src="/user/css,js/images/cross.svg" class="img-fluid">
-							</span>
-							</form>
-						</a>
-					</div>
-					{{/each}}
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="order-container ms-auto me-auto mt-5 mb-5">
+    <h1>Order Details</h1>
+    <div class="order-summary">
+        <div>
+            <h2>Order #{{this.orderId}}</h2>
+            <p>Placed on: {{formatDate order.createdAt}}</p> 
+        </div>
+        <div>
+            <h3>Total: ₹{{order.total}}</h3>
+            <p>{{order.products.length}} items</p>
+        </div>
+    </div>
+    <div class="order-items">
+        <h2 class="product-thumbnail">Items in Your Order</h2>
+        {{#each order.products}}
+        <div class="item">
+            <img src="/uploads/{{this.productId.images.[0]}}" alt="Product Image" class="img-fluid">
+            <div class="item-details">
+                <h3>{{this.name}}</h3>
+                <p>Quantity: {{this.quantity}}</p>
+            </div>
+            <div class="item-price">₹{{this.price}}</div>
+        </div>
+        {{/each}}
+    </div>
+   <div class="shipping-info">
+    <h2>Shipping Information</h2>
+    <p><strong>First Name:</strong> {{order.address.firstName}}</p>
+    <p><strong>Last Name:</strong> {{order.address.lastName}}</p>
+    <p><strong>Email:</strong> {{order.address.email}}</p>
+    <p><strong>Mobile:</strong> {{order.address.mobile}}</p>
+    <p><strong>Address:</strong> {{order.address.addressLine}}</p>
+    <p><strong>City:</strong> {{order.address.city}}</p>
+    <p><strong>State:</strong> {{order.address.state}}</p>
+    <p><strong>Pin Code:</strong> {{order.address.pinCode}}</p>
+    <p><strong>Country:</strong> {{order.address.country}}</p>
 </div>
+
+    <div class="order-status">
+        <h2>Order Status</h2>
+        <p>{{order.status}}</p>
+        
+        <p>Estimated delivery: {{order.deliveryDate}}</p> <!-- Use formatDate helper -->
+    </div>
 </div>
 
 
-<!-- Start Footer Section -->
+
+    <!-- Start Footer Section -->
 <footer class="footer-section">
 	<div class="container relative">
 
@@ -261,14 +223,3 @@
 <script src="/user/css,js/js/bootstrap.bundle.min.js"></script>
 <script src="/user/css,js/js/tiny-slider.js"></script>
 <script src="/user/css,js/js/custom.js"></script>
-<script>
-	// Function to update min price value display
-	function updateMinValue(value) {
-		document.getElementById('min-price-value').textContent = value;
-	}
-
-	// Function to update max price value display
-	function updateMaxValue(value) {
-		document.getElementById('max-price-value').textContent = value;
-	}
-</script>

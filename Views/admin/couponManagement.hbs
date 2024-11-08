@@ -1,0 +1,211 @@
+<link rel="stylesheet" href="/admin/userMangement.css">
+<link rel="stylesheet" href="/admin/productManagement.css">
+<link rel="stylesheet" href="/admin/offer.css">
+<aside class="sidebar">
+  <div class="logo">
+    <a class="navbar-brand" href="index.html">CRAV<span style="font-weight:lighter;">E</span></a>
+  </div>
+  <nav class="menu">
+    <ul>
+      <li><a href="/admin/dashboard">Dashboard</a></li>
+       <li><a href="/admin/productManagement">Products</a></li>
+        <li><a href="/admin/orderManagement">Orders</a></li>
+        <li><a href="/admin/couponManagement">Coupon</a></li>
+        <li><a href="/admin/inventory">Inventory</a></li>
+        <li><a href="/admin/offerManagement">Offers</a></li>
+    <li><a href="/admin/userManagement"> User Management</a></li>
+      <li><a href="/admin/category"> Category</a></li>
+
+    </ul>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<div class="main-content">
+  <header class="dashboard-header">
+
+    <h1>Coupon Management</h1>
+    <div>
+
+      <form class="form-inline my-2 my-lg-0" action="/admin/orderManagement/search" method="GET">
+        <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
+
+      </form>
+    </div>
+  </header>
+  <button class="add-btn" onclick="openCreateCouponModal()">Create Coupon</button>
+  <!-- User Table Section -->
+  <section class="user-table">
+    <h2>All Coupon</h2>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+
+            <th>Coupon Code</th>
+            <th>Discount Type</th>
+            <th>Discount Value</th>
+            <th>Minimum Cart value</th>
+            <th>Usage limit</th>
+            <th>Expire Date</th>
+            <th>Description</th>
+            <th>Applicable Products</th>
+            <th>Applicable Categories</th>
+            <th>Actions</th>
+
+          </tr>
+        </thead>
+        <tbody>
+
+          {{#each coupon}}
+          <tr>
+            <td>{{this.code}}</td>
+            <td>{{this.discountType}}</td>
+            <td>{{this.discountValue}}</td>
+            <td> {{this.minimumCartValue}} </td>
+            <td>{{this.usageLimit}}</td>
+            <td>{{formatDate this.expiryDate}}</td>
+            <td> {{this.description}} </td>
+            <td>
+              {{#if (isAllProductsApplicable ../product this.applicableProducts)}}
+              <div>All Products</div>
+              {{else}}
+              {{#each this.applicableProducts}}
+              <div>{{this.name}}</div>
+              {{/each}}
+              {{/if}}
+            </td>
+            <td>
+              {{#if (isAllCategoryApplicable ../category this.applicableCategories)}}
+              <div>All Categories </div>
+              {{else}}
+              {{#each this.applicableCategories}}
+              <div>{{this.name}}</div>
+              {{/each}}
+              {{/if}}
+            </td>
+            <td>
+              <div style="display: flex; gap: 20px;">
+                <form action="/admin/couponManagement/delete/{{this.id}}" method="post">
+                  <button type="submit" class="btn btn-dark">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+    </div>
+
+  </section>
+
+  {{!-- pagination --}}
+
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center pages custom-pagination">
+      {{#if previousPage}}
+      <li class="page-item">
+        <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      {{/if}}
+
+      {{#each (range 1 totalPages)}}
+      <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
+        <a class="page-link" href="?page={{this}}">{{this}}</a>
+      </li>
+      {{/each}}
+
+      {{#if nextPage}}
+      <li class="page-item">
+        <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+      {{/if}}
+    </ul>
+  </nav>
+
+  {{!-- end pagination --}}
+
+</div>
+
+{{!-- Create Coupon Modal --}}
+<div class="modal" id="createCouponModal" style="display:none;">
+  <div class="modal-content">
+    <span class="close" onclick="closeCreateCouponModal()">&times;</span>
+    <h2>Create Coupon</h2>
+    <form id="CreateCouponForm" method="POST" action="/admin/couponManagement/create">
+
+      <label for="code">Coupon Code:</label>
+      <input type="text" id="code" name="code" required placeholder="Enter coupon code" />
+
+      <label for="discountType">Discount Type:</label>
+      <select id="discountType" name="discountType" required>
+        <option value="fixed">Fixed</option>
+        <option value="percentage">Percentage</option>
+      </select>
+
+      <label for="discountValue">Discount Value:</label>
+      <input type="number" id="discountValue" name="discountValue" required min="0"
+        placeholder="Enter discount value" />
+
+      <label for="minimumCartValue">Minimum Cart Value:</label>
+      <input type="number" id="minimumCartValue" name="minimumCartValue" min="0"
+        placeholder="Enter minimum cart value" />
+
+      <label for="usageLimit">Usage Limit:</label>
+      <input type="number" id="usageLimit" name="usageLimit" min="1" placeholder="Enter usage limit" />
+
+      <label for="applicableProducts">Applicable Products:</label>
+      <select id="applicableProducts" name="applicableProducts" class="select-group" multiple>
+        <option value="all">All Products</option>
+        {{#each product}}
+        <option value="{{this._id}}">{{this.name}}</option>
+        {{/each}}
+      </select>
+
+      <label for="applicableCategories">Applicable Categories:</label>
+      <select id="applicableCategories" name="applicableCategories" class="select-group" multiple>
+        <option value="all">All Categories</option>
+        {{#each category}}
+        <option value="{{this._id}}">{{this.name}}</option>
+        {{/each}}
+      </select>
+
+      <label for="expiryDate">Expiration Date:</label>
+      <input type="date" id="expiryDate" name="expiryDate" required />
+
+      <label for="description">Description:</label>
+      <textarea id="description" name="description" required placeholder="Describe the coupon offer..."></textarea>
+
+      <button type="submit" class="btn">Create Coupon</button>
+    </form>
+  </div>
+</div>
+{{!-- End Create Coupon Modal --}}
+
+
+
+
+<script src="/js/script.js"></script> <!-- Link to your JavaScript file -->
+<script>
+
+  //------------add offer modal starts-------------
+
+
+  function openCreateCouponModal() {
+    document.getElementById("createCouponModal").style.display = "block"
+  }
+
+  function closeCreateCouponModal() {
+    document.getElementById("createCouponModal").style.display = "none"
+  }
+
+
+  // ---------------add modal ends---------------
+
+</script>

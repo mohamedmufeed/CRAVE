@@ -1,13 +1,13 @@
 
-  <link rel="stylesheet" href="/admin/userMangement.css">
+  <link rel="stylesheet" href="/admin/productManagement.css">
   <aside class="sidebar">
     <div class="logo">
      <a class="navbar-brand" href="index.html">CRAV<span style="font-weight:lighter;">E</span></a>
     </div>
     <nav class="menu">
       <ul>
-              <li><a href="/admin/dashboard">Dashboard</a></li>
-       <li><a href="/admin/productManagement">Products</a></li>
+             <li><a href="/admin/dashboard">Dashboard</a></li>
+      <li><a href="/admin/productManagement">Products</a></li>
         <li><a href="/admin/orderManagement">Orders</a></li>
         <li><a href="/admin/couponManagement">Coupon</a></li>
         <li><a href="/admin/inventory">Inventory</a></li>
@@ -22,55 +22,38 @@
   <!-- Main Content -->
   <div class="main-content">
     <header class="dashboard-header">
-      <h1>User Management</h1>
-      {{!-- search  starts --}}
-   <div>
-  <form class="form-inline my-2 my-lg-0" action="/admin/userManagement/search" method="GET">
-    <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
- 
-  </form>
-</div>
-
-     {{!-- serch ends --}}
+      <h1>Inventory Management</h1>
+     
     </header>
 
     <!-- User Table Section -->
     <section class="user-table">
-      <h2>All Users</h2>
+  
       <div class="table-container">
         <table>
           <thead >
             <tr>
-       
-              <th>Username</th>
-              <th >Email</th>
+         
+              <th>Product name</th>
+              <th >Stock</th>
+                         <th >Price</th>
               <th>Status</th>
               <th >Actions</th>
             </tr>
           </thead>
           <tbody>
           
-            {{#each users}}
+            {{#each product}}
               <tr>
-           
-                <td>{{this.username}}</td>
-                <td>{{this.email}}</td>
-                <td>{{#if this.isBlocked}}Blocked{{else}}Active{{/if}}</td>
+              
+                <td>{{this.name}}</td>
+                <td>{{this.stock}}</td>
+                         <td>₹{{this.price}}</td>
+                <td>{{#if this.isListed}}Active{{else}}Non active{{/if}}</td>
                <td class="action-buttons">
-  {{#if this.isBlocked}}
-    <form action="/admin/userManagement/unblock/{{this._id}}" method="POST">
-      <button type="submit" class="btn unblock-btn">Unblock</button>
-    </form>
-  {{else}}
-    <form action="/admin/userManagement/block/{{this._id}}" method="POST">
-      <button type="submit" class="btn block-btn">Block</button>
-    </form>
-  {{/if}}
-  
-  
- 
-</td>
+                 <button class="btn" onclick="openEditInventoryModal('{{this._id}}', '{{this.name}}', '{{this.stock}}', '{{this.price}}')">Edit</button>
 
+                </td>
               </tr>
             {{/each}}
           </tbody>
@@ -79,6 +62,30 @@
       </div>
       
     </section>
+
+
+
+    {{!-- edit category modal --}}
+
+<div class="modal" id="editInventoryModal" style="display:none">
+  <div class="modal-content">
+    <span class="close" onclick="clodeEditModal()">&times;</span>
+    <h2>Edit Inventory</h2>
+    <form id="editInventoryForm" method="POST" action="/admin/inventory/edit/{{this._id}}">
+      <input type="hidden" name="_method" value="PUT" />
+      <label for="productName">Product Name:</label>
+      <input type="text" id="productName" name="name" />
+      <label for="productStock">Product Stock:</label>
+      <input type="number" id="productStock" name="stock" />
+      <label for="productPrice">Product Price:</label>
+      <input type="number" id="productPrice" name="price" />
+      <button type="submit" class="btn">Update Inventory</button>
+    </form>
+  </div>
+</div>
+
+
+
 
  {{!-- pagination --}}
 
@@ -114,5 +121,17 @@
   </div>
 
   <script src="/js/script.js"></script> <!-- Link to your JavaScript file -->
+<script>
+  function openEditInventoryModal(id, name, stock, price) {
+  document.getElementById('editInventoryForm').action = `/admin/inventory/edit/${id}`;
+  document.getElementById('productName').value = name;
+  document.getElementById('productStock').value = stock;
+  document.getElementById('productPrice').value = price;
+  document.getElementById('editInventoryModal').style.display = 'block';
+}
 
+      function clodeEditModal(){
+      document.getElementById("editInventoryModal").style.display="none"
+    }
+</script>
 

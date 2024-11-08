@@ -389,3 +389,6 @@ input[type="file"] {
   font-weight: 600;
 
 }
+.modal #pagination {
+  display: none;
+}

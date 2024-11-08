@@ -49,109 +49,79 @@
 
 <!-- Start Hero Section -->
 <div class="hero">
-	<div class="search">
-
-		<div class="search-container">
-			<form action="/products/search" method="GET">
-				<input type="text" name="search" class="search-input" placeholder="Search...">
-				<button class="search-button" type="submit">Search</button>
-			</form>
-		</div>
-
-
-	</div>
-
-
-
-	< <div class="container">
+	<div class="container">
 		<div class="row justify-content-between">
 			<div class="col-lg-5">
 				<div class="intro-excerpt">
-					<h1>Shop</h1>
+					<h1>Wishlist</h1>
 				</div>
 			</div>
 			<div class="col-lg-7">
 
 			</div>
 		</div>
-</div>
+	</div>
 </div>
 <!-- End Hero Section -->
 
 
 
-<div class="untree_co-section product-section before-footer-section">
+<div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;">
+  <div id="toastContainer" style="position: absolute; top: 10px; right: 10px; z-index: 9999;">
+  
+  </div>
+</div>
+
+
+
+<div class="untree_co-section before-footer-section">
 	<div class="container">
+		<div class="row mb-5">
+			<form class="col-md-12" method="post">
 
-		<div class="row">
-			{{!-- filter bar starts --}}
-			<div class="filter-bar  col-md-2">
-				<h3>Advanced Search</h3>
-				<form action="/products/filter" method="GET" class="filter-form">
-					<label for="category">Category</label>
-					<select class="form-control" name="category[]" id="category">
-						<option>All Categories</option>
-						<option value="sofa">Sofa</option>
-						<option value="chair">Chair</option>
-					</select>
+				<div class="site-blocks-table">
+					<table class="table">
+						<thead>
+							<tr>
+								<th class="product-thumbnail">Image</th>
+								<th class="product-name">Product</th>
+								<th class="product-price">Price</th>
+								
+						
+								<th class="product-remove">Remove</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								{{#each wishlist}}
+								<td class="product-thumbnail">
+									<img src="/uploads/{{this.images.[0]}}" alt="Image" class="img-fluid">
+								</td>
+								<td class="product-name">
+									<h2 class="h5 text-black">{{this.name}}</h2>
+								</td>
+								<td>₹{{this.price}}</td>
+								
+			</form>
+
+			<td>
+  
+<button type="button" class="btn btn-black " onclick="addToCart('{{this._id}}')">Add to Cart</button>
+
+        <button type="button" onclick="removeWishlist('{{this._id}}')" class="btn btn-black btn-sm">X</button>
+
+</td>
 
 
-					<div class="form-group">
-						<label for="price-range">Price Range</label>
-						<input type="range" min="0" max="10000" value="0" id="min-price" name="min-price"
-							class="slider form-control mb-2" oninput="updateMinValue(this.value)">
-						<input type="range" min="0" max="10000" value="10000" id="max-price" name="max-price"
-							class="slider form-control" oninput="updateMaxValue(this.value)">
-
-						<div class="range-values">
-							<span>Min Price: ₹<span id="min-price-value">0</span></span>
-							<span>Max Price: ₹<span id="max-price-value">10000</span></span>
-						</div>
-					</div>
-					<div class="form-group filter">
-						<label for="sort">Sort By</label>
-						<select class="form-control" name="sort" id="sort">
-							<option value="">Default</option>
-							<option value="popularity">Popularity</option>
-							<option value="priceLow">Price: Low to High</option>
-							<option value="priceHigh">Price: High to Low</option>
-							<option value="averageRating">Average Ratings</option>
-							<option value="featured">Featured</option>
-							<option value="newArrivals">New Arrivals</option>
-							<option value="aToZ">A - Z</option>
-							<option value="zToA">Z - A</option>
-						</select>
-					</div>
-					<div class="form-group">
-						<button type="submit" class="btn btn-primary">Apply Filters</button>
-					</div>
-				</form>
-			</div>
-
-			{{!-- filter bar ends --}}
-			<div class="col-md-9">
-				<div class="row ">
-					{{#each product}}
-					<!-- Start Column 1 -->
-					<div class="col-md-4 mb-5">
-						<a class="product-item" href="/productdetails/{{this.id}}">
-							<img src="/uploads/{{this.images.[0]}}" class="img-fluid product-thumbnail">
-							<h3 class="product-title">{{this.name}}</h3>
-							<strong class="product-price">₹{{this.price}} {{discountLabel}}</strong>
-
-                         	<form action="/cart/add" method="post">
-								<input type="hidden" name="productId" value="{{product._id}}">
-							<span class="icon-cross">
-								<img src="/user/css,js/images/cross.svg" class="img-fluid">
-							</span>
-							</form>
-						</a>
-					</div>
-					{{/each}}
-				</div>
-			</div>
+			</tr>
+			{{/each}}
+			</tbody>
+			</table>
 		</div>
+
 	</div>
+
+	
 </div>
 </div>
 
@@ -170,21 +140,21 @@
 					<h3 class="d-flex align-items-center"><span class="me-1"><img
 								src="/user/css,js/images/envelope-outline.svg" alt="Image"
 								class="img-fluid"></span><span>Subscribe to Newsletter</span></h3>
-
-					<form action="#" class="row g-3">
-						<div class="col-auto">
+<div style="display: flex;" >
+					<form action="#" class="row g-3 ">
+						<div class="col-4" >
 							<input type="text" class="form-control" placeholder="Enter your name">
 						</div>
-						<div class="col-auto">
+						<div class="col-4">
 							<input type="email" class="form-control" placeholder="Enter your email">
 						</div>
-						<div class="col-auto">
+						<div class="col-4">
 							<button class="btn btn-primary">
 								<span class="fa fa-paper-plane"></span>
 							</button>
 						</div>
 					</form>
-
+</div>
 				</div>
 			</div>
 		</div>
@@ -261,14 +231,77 @@
 <script src="/user/css,js/js/bootstrap.bundle.min.js"></script>
 <script src="/user/css,js/js/tiny-slider.js"></script>
 <script src="/user/css,js/js/custom.js"></script>
-<script>
-	// Function to update min price value display
-	function updateMinValue(value) {
-		document.getElementById('min-price-value').textContent = value;
-	}
 
-	// Function to update max price value display
-	function updateMaxValue(value) {
-		document.getElementById('max-price-value').textContent = value;
+
+<script>
+
+function removeWishlist(productId){
+fetch(`/profile/wishlist/remove/${productId}`,{
+	method:"POST",
+	headers:{
+		'Content-Type': 'application/json'
 	}
+})
+.then(response=>response.json())
+.then(data=>{
+	if(data.success&& data.message=="Product Removed from wishList"){
+window.location.href="/profile/wishlist"
+	}
+})
+  .catch(error => console.error('Error:', error));
+}
+
+
+async function addToCart(productId) {
+	console.log("vanuu", productId)
+  try {
+    const response = await fetch("/addtocart", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ productId, quantity: 1 })
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log("Product added successfully:", result);
+       showToast("Product added to cart successfully!", "success");
+    } else {
+      const error = await response.json();
+      console.error("Failed to add product:", error);
+    showToast(error.error || "Failed to add product to cart.", "danger");
+    }
+  } catch (error) {
+    console.error("Error adding product to cart:", error);
+   showToast("An error occurred. Please try again.", "danger");
+  }
+}
+
+
+
+function showToast(message, type = "success") {
+  const toastId = `toast-${Date.now()}`;
+  const toastHTML = `
+    <div class="toast align-items-center text-bg-${type} border-0" role="alert" id="${toastId}" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          ${message}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('toastContainer').insertAdjacentHTML('beforeend', toastHTML);
+  const toastElement = new bootstrap.Toast(document.getElementById(toastId), { delay: 3000 });
+  toastElement.show();
+
+  document.getElementById(toastId).addEventListener('hidden.bs.toast', () => {
+    document.getElementById(toastId).remove();
+  });
+}
+
+
+ 
 </script>

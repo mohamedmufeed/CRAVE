@@ -1,0 +1,99 @@
+
+.formSetting{
+    display: flex;
+    justify-content: center;
+    
+    position: relative;
+    bottom: 150px;
+    
+    }
+    .form-div{
+        display: block;
+      margin-right: 250px;
+      margin-left: 250px;
+      width: 80%;
+      
+    
+    }
+    .sidebar {
+        position: relative; /* Ensure it's positioned properly */
+        z-index: 10; /* Make sure it's on top of other content */
+        padding: 20px;
+   
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 17px;
+       
+      
+    }
+    
+    .card {
+        position: relative; /* Same for the card */
+        z-index: 10;
+        width: 20%;
+        border-radius: 12px;
+    left: 40px;
+    top: 100px;
+    padding: 10px;
+ 
+    }
+    
+    .name {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .contact-info {
+    padding: 10px;
+    margin-left: 30px;
+    
+    }
+    .phone, .email {
+      
+        align-items: center;
+        color: #666;
+        font-size: 14px;
+    }
+    .icon {
+        margin-right: 5px;
+    }
+    .divider {
+        border-top: 1px solid #e0e0e0;
+        margin: 20px 0;
+    }
+    .address-title {
+        font-size: 18px;
+        color: #333;
+        margin-bottom: 15px;
+    }
+    .address-field {
+        margin-bottom: 15px;
+    }
+    .address-field label {
+        display: block;
+        color: #999;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+    .address-field input {
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid #e0e0e0;
+        padding: 5px 0;
+        font-size: 16px;
+        color: #333;
+    }
+    .address-field input:focus {
+        outline: none;
+        border-bottom-color: #666;
+    } 
+    
+    
+    .nav-list{
+        padding: 10px;
+        margin-left: 30px;
+       
+  
+    }

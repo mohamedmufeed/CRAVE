@@ -29,14 +29,14 @@
 
 			<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
 				<li><a class="nav-link" href="/profile"><img src="/user/css,js/images/user.svg"></a></li>
-					<li>
+				<li>
 					<div class="image-container">
 						<a class="nav-link product-image" href="/cart"><img src="/user/css,js/images/cart.svg"></a>
 						{{#if cartCount}}
-    <span class="badge">{{cartCount}}</span> <!-- Display the cart count dynamically -->
-  {{else}}
-   
-  {{/if}}
+						<span class="badge">{{cartCount}}</span> <!-- Display the cart count dynamically -->
+						{{else}}
+
+						{{/if}}
 					</div>
 
 				</li>
@@ -49,111 +49,191 @@
 
 <!-- Start Hero Section -->
 <div class="hero">
-	<div class="search">
-
-		<div class="search-container">
-			<form action="/products/search" method="GET">
-				<input type="text" name="search" class="search-input" placeholder="Search...">
-				<button class="search-button" type="submit">Search</button>
-			</form>
-		</div>
-
-
-	</div>
-
-
-
-	< <div class="container">
+	<div class="container">
 		<div class="row justify-content-between">
 			<div class="col-lg-5">
 				<div class="intro-excerpt">
-					<h1>Shop</h1>
+					<h1>Cart</h1>
 				</div>
 			</div>
 			<div class="col-lg-7">
 
 			</div>
 		</div>
-</div>
+	</div>
 </div>
 <!-- End Hero Section -->
 
 
 
-<div class="untree_co-section product-section before-footer-section">
+<div class="untree_co-section before-footer-section">
 	<div class="container">
+		<div class="row mb-5">
+			<form class="col-md-12" method="post">
+				<div class="site-blocks-table">
+					<table class="table">
+						<thead>
+							<tr>
+								<th class="product-thumbnail">Image</th>
+								<th class="product-name">Product</th>
+								<th class="product-price">Price</th>
+								<th class="product-quantity">Quantity</th>
+								<th class="product-total">Total</th>
+								<th class="product-remove">Remove</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								{{#each products}}
+								<td class="product-thumbnail">
+									<img src="/uploads/{{this.productId.images.[0]}}" alt="Image" class="img-fluid">
+								</td>
+								<td class="product-name">
+									<h2 class="h5 text-black">{{this.name}}</h2>
+								</td>
+								<td>₹{{this.price}}</td>
+								<td>
+									<div class="input-group mb-3 d-flex align-items-center quantity-container"
+										style="max-width: 120px;">
+										<div class="input-group-prepend">
+											<button class="btn btn-outline-black decrease" type="button"
+												onclick="updateCartQuantity('decrease', '{{this.productId._id}}')">&minus;</button>
+										</div>
+										<input type="text" id="quantity-{{this.productId._id}}"
+											class="form-control text-center quantity-amount" value="{{this.quantity}}"
+											placeholder="" aria-label="Example text with button addon"
+											aria-describedby="button-addon1">
+										<div class="input-group-append">
+											<button class="btn btn-outline-black increase" type="button"
+												onclick="updateCartQuantity('increase', '{{this.productId._id}}')">&plus;</button>
+										</div>
+									</div>
 
-		<div class="row">
-			{{!-- filter bar starts --}}
-			<div class="filter-bar  col-md-2">
-				<h3>Advanced Search</h3>
-				<form action="/products/filter" method="GET" class="filter-form">
-					<label for="category">Category</label>
-					<select class="form-control" name="category[]" id="category">
-						<option>All Categories</option>
-						<option value="sofa">Sofa</option>
-						<option value="chair">Chair</option>
-					</select>
+								</td>
+								<td id="product-total-{{this.productId}}">₹{{multiply this.quantity this.price}}</td>
+			</form>
+
+			<td>
+				<form action="/cart/remove/{{this.productId._id}}" method="post">
+
+					<button type="submit" class="btn btn-black btn-sm">X</button>
+				</form>
+			</td>
 
 
-					<div class="form-group">
-						<label for="price-range">Price Range</label>
-						<input type="range" min="0" max="10000" value="0" id="min-price" name="min-price"
-							class="slider form-control mb-2" oninput="updateMinValue(this.value)">
-						<input type="range" min="0" max="10000" value="10000" id="max-price" name="max-price"
-							class="slider form-control" oninput="updateMaxValue(this.value)">
+			</tr>
+			{{/each}}
+			</tbody>
+			</table>
+		</div>
 
-						<div class="range-values">
-							<span>Min Price: ₹<span id="min-price-value">0</span></span>
-							<span>Max Price: ₹<span id="max-price-value">10000</span></span>
+	</div>
+
+	<div class="row">
+		<div class="col-md-6">
+			
+			<div class="row">
+				<div class="col-md-12">
+					<label class="text-black h4" for="coupon">Coupon</label>
+					<p>Enter your coupon code if you have one.</p>
+				</div>
+				<div class="col-md-8 mb-3 mb-md-0">
+					<input type="text" class="form-control py-3" id="coupon" placeholder="Coupon Code">
+				</div>
+				<div class="col-md-4">
+					
+					<button id="apply-coupon-button" class="btn btn-black btn-lg py-3 btn-block" style=" font-size: small;">Apply Coupon</button>
+					<button id="remove-coupon-button" class="btn btn-black btn-lg py-3 btn-block me-auto " style=" font-size: small; ">Remove Coupon</button>
+		
+
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6 pl-5">
+			<div class="row justify-content-end">
+				<div class="col-md-7">
+					<div class="row">
+						<div class="col-md-12 text-right border-bottom mb-5">
+							<h3 class="text-black h4 text-uppercase">Cart Totals</h3>
+						</div>
+						<div id="coupon-success-message" hidden>
+
 						</div>
 					</div>
-					<div class="form-group filter">
-						<label for="sort">Sort By</label>
-						<select class="form-control" name="sort" id="sort">
-							<option value="">Default</option>
-							<option value="popularity">Popularity</option>
-							<option value="priceLow">Price: Low to High</option>
-							<option value="priceHigh">Price: High to Low</option>
-							<option value="averageRating">Average Ratings</option>
-							<option value="featured">Featured</option>
-							<option value="newArrivals">New Arrivals</option>
-							<option value="aToZ">A - Z</option>
-							<option value="zToA">Z - A</option>
-						</select>
-					</div>
-					<div class="form-group">
-						<button type="submit" class="btn btn-primary">Apply Filters</button>
-					</div>
-				</form>
-			</div>
 
-			{{!-- filter bar ends --}}
-			<div class="col-md-9">
-				<div class="row ">
-					{{#each product}}
-					<!-- Start Column 1 -->
-					<div class="col-md-4 mb-5">
-						<a class="product-item" href="/productdetails/{{this.id}}">
-							<img src="/uploads/{{this.images.[0]}}" class="img-fluid product-thumbnail">
-							<h3 class="product-title">{{this.name}}</h3>
-							<strong class="product-price">₹{{this.price}} {{discountLabel}}</strong>
-
-                         	<form action="/cart/add" method="post">
-								<input type="hidden" name="productId" value="{{product._id}}">
-							<span class="icon-cross">
-								<img src="/user/css,js/images/cross.svg" class="img-fluid">
-							</span>
-							</form>
-						</a>
+					<div class="row mb-5">
+						<div class="col-md-6">
+							<span class="text-black">Total</span>
+						</div>
+						<div class="col-md-6 text-right">
+							<strong class="text-black " id="cart-total">₹{{this.totalCartPrice}}</strong>
+						</div>
 					</div>
-					{{/each}}
+
+					<div class="row mb-5">
+						<div class="row mb-5" id="discount-row" hidden>
+							<div class="col-md-6">
+								<span class="text-black">Discount</span>
+							</div>
+							<div class="col-md-6 text-right">
+								<strong class="text-black" id="discount-value"></strong>
+							</div>
+						</div>
+
+						<div class="row mb-5" id="new-total-row" hidden>
+							<div class="col-md-6">
+								<span class="text-black">New Total</span>
+							</div>
+							<div class="col-md-6 text-right">
+								<strong class="text-black" id="new-total"></strong>
+							</div>
+						</div>
+
+
+
+						<div class="row">
+							<div class="col-md-12">
+								<button class="btn btn-black btn-lg py-3 btn-block"><a href="/checkOut"
+										style="color: #ffff; text-decoration: none;"> Proceed To Checkout</a></button>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
+<div class="row mb-5 ms-2 me-2">
+	<div class="col-md-12">
+		<h2 class="h3 mb-3 text-black">Coupons</h2>
+		<div class="p-3 p-lg-5 border bg-white">
+			{{#each coupon}}
+			<div class="col-md-4 mb-3">
+				<div class="coupon">
+					<div class="content">
+						<div class="header">
+							<div class="discount">
+								<span class="percent">
+									{{this.discountValue}}{{#if (eq this.discountType "percentage")}}%{{/if}}
+								</span>
+								<span class="off">Off</span>
+							</div>
+							<div class="brand">CRAVE</div>
+						</div>
+						<div class="code-strip">
+							<span>Code: {{this.code}}</span>
+						</div>
+						<div class="validity">Valid till {{formatDate this.expiryDate}}</div>
+					</div>
+				</div>
+			</div>
+			{{/each}}
+		</div>
+	</div>
 </div>
+</div>
+
 
 
 <!-- Start Footer Section -->
@@ -261,14 +341,5 @@
 <script src="/user/css,js/js/bootstrap.bundle.min.js"></script>
 <script src="/user/css,js/js/tiny-slider.js"></script>
 <script src="/user/css,js/js/custom.js"></script>
-<script>
-	// Function to update min price value display
-	function updateMinValue(value) {
-		document.getElementById('min-price-value').textContent = value;
-	}
-
-	// Function to update max price value display
-	function updateMaxValue(value) {
-		document.getElementById('max-price-value').textContent = value;
-	}
-</script>
+<script src="/javascript/user/cart.js"></script>
+<script src="/user/css,js/js/cart.js"></script>

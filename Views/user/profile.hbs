@@ -1,0 +1,302 @@
+<link href="/user/css,js/css/bootstrap.min.css" rel="stylesheet">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+		<link href="/user/css,js/css/tiny-slider.css" rel="stylesheet">
+		<link href="/user/css,js/css/style.css" rel="stylesheet">
+        <link rel="stylesheet" href="/user/css,js/css/profile.css">
+        
+
+		<!-- Start Header/Navigation -->
+		<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
+
+			<div class="container">
+				<a class="navbar-brand" href="index.html">CRAV<span style="font-weight:lighter;">E</span></a>
+
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div class="collapse navbar-collapse" id="navbarsFurni">
+					<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+						<li class="nav-item ">
+							<a class="nav-link" href="/">Home</a>
+						</li>
+						<li class="active"><a class="nav-link" href="shop.html">Shop</a></li>
+						<li><a class="nav-link" href="about.html">About us</a></li>
+						<li><a class="nav-link" href="services.html">Services</a></li>
+						<li><a class="nav-link" href="blog.html">Blog</a></li>
+						<li><a class="nav-link" href="contact.html">Contact us</a></li>
+					</ul>
+
+					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+						<li><a class="nav-link" href="/profile"><img src="/user/css,js/images/user.svg"></a></li>
+							<li>
+					<div class="image-container">
+						<a class="nav-link product-image" href="/cart"><img src="/user/css,js/images/cart.svg"></a>
+						{{#if cartCount}}
+    <span class="badge">{{cartCount}}</span> <!-- Display the cart count dynamically -->
+  {{else}}
+   
+  {{/if}}
+					</div>
+
+				</li>
+					</ul>
+				</div>
+			</div>
+				
+		</nav>
+		<!-- End Header/Navigation -->
+
+		<!-- Start Hero Section -->
+			<div class="hero">
+				<div class="container">
+					<div class="row justify-content-between">
+						<div class="col-lg-5">
+							<div class="intro-excerpt">
+								<h1>User Profile</h1>
+							</div>
+						</div>
+						<div class="col-lg-7">
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		<!-- End Hero Section -->
+
+
+<div class="toast align-items-center text-bg-secondary.bg-gradientborder-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+  <div class="d-flex">
+    <div class="toast-body">
+      {{message}}
+    </div>
+    <button type="button" class="btn-close btn-close-dark me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+</div>
+
+   
+<div class="card">
+    <div class="sidebar">
+        <h3>User Profile</h3>
+        <ul class="nav-list">
+            <li>
+                <a href="/profile/orders" style="text-decoration: none;">
+                    <i class="fas fa-box"></i> Orders
+                </a>
+            </li>
+          
+            <li>
+                <a href="/profile/address" style="text-decoration: none;">
+                    <i class="fas fa-map-marker-alt"></i> Address
+                </a>
+            </li>
+			 <li>
+                <a href="/profile/wishlist" style="text-decoration: none;">
+                   <i class="fas fa-heart"></i> Wishlist
+                </a>
+            </li>
+           
+        </ul>
+        <p class="sign-out">
+            <a href="/logout" style="text-decoration: none;">
+                <i class="fas fa-sign-out-alt"></i> Sign out
+            </a>
+        </p>
+    </div>
+</div>
+
+
+    
+<div class="formSetting m">
+        <form action="/profile/edit" method="POST">
+            <div class="form-div">
+            <h1>Genaral information</h1>
+            <div class="row">
+              <div class="col-6">
+                <div class="form-group">
+                  <label class="text-black" for="fname">First name</label>
+                  <input type="text" class="form-control" id="fname"  name="username" value="{{user.username}}">
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-group">
+                  <label class="text-black" for="lname">Last name</label>
+                  <input type="text" class="form-control" id="lname"   >
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="text-black" for="email">Email address</label>
+              <input type="email" class="form-control" id="email" name="email" value="{{user.email}}">
+            </div>
+
+
+            <div class="form-group mb-5">
+              <label class="text-black" for="country">Country</label>
+           <select class="form-control" id="editProductCategory" name="country" required>
+        <option class="form-control" value="usa">USA</option>
+		   <option class="form-control" value="usa">India</option>
+      </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary-hover-outline">Update Information</button>
+        </form> 
+            <h1 class="mt-5">Security</h1>
+            <div class="row mt-5">
+             <form action="/profile/editpassword" method="post">
+              <div class="col-6">
+                <div class="form-group">
+                  <label class="text-black" for="lname"> Old Password</label>
+                  <input type="text" class="form-control" name="oldpassword" id="oldpassword">
+                </div>
+              </div>
+
+<div class="col-6">
+                <div class="form-group">
+                  <label class="text-black" for="lname"> New Password</label>
+                  <input type="text" class="form-control" name="newpassword" id="new password">
+                </div>
+              </div>
+
+              <div class="col-6">
+                <div class="form-group">
+                  <label class="text-black" for="lname">Conform Password</label>
+                  <input type="text" class="form-control" name="cpassword" id="cpassword">
+                </div>
+              </div>
+            </div>
+
+
+            <button type="submit" class="btn btn-primary-hover-outline mt-5">Change Password</button>
+        </div>
+          </form>
+
+        </div>
+
+
+
+   <!-- Start Footer Section -->
+<footer class="footer-section">
+	<div class="container relative">
+
+		<div class="sofa-img">
+			<img src="/user/css,js/images/sofa.png" alt="Image" class="img-fluid">
+		</div>
+
+		<div class="row">
+			<div class="col-lg-8">
+				<div class="subscription-form">
+					<h3 class="d-flex align-items-center"><span class="me-1"><img
+								src="/user/css,js/images/envelope-outline.svg" alt="Image"
+								class="img-fluid"></span><span>Subscribe to Newsletter</span></h3>
+
+					<form action="#" class="row g-3">
+						<div class="col-auto">
+							<input type="text" class="form-control" placeholder="Enter your name">
+						</div>
+						<div class="col-auto">
+							<input type="email" class="form-control" placeholder="Enter your email">
+						</div>
+						<div class="col-auto">
+							<button class="btn btn-primary">
+								<span class="fa fa-paper-plane"></span>
+							</button>
+						</div>
+					</form>
+
+				</div>
+			</div>
+		</div>
+
+		<div class="row g-5 mb-5">
+			<div class="col-lg-4">
+				<div class="mb-4 footer-logo-wrap"><a class="footer-logo" href="index.html">CRAV<span
+							style="font-weight:lighter;">E</span></a></div>
+				<p class="mb-4">Crave offers stylish and comfortable sofas and chairs for your home. Our furniture is
+					designed to fit any space, combining quality, durability, and a modern touch. Whether you're looking
+					for something classic or contemporary, Crave has the perfect piece to make your home cozy and
+					inviting.</p>
+
+
+				<ul class="list-unstyled custom-social">
+					<li><a href="#"><span class="fa fa-brands fa-facebook-f"></span></a></li>
+					<li><a href="#"><span class="fa fa-brands fa-twitter"></span></a></li>
+					<li><a href="#"><span class="fa fa-brands fa-instagram"></span></a></li>
+					<li><a href="#"><span class="fa fa-brands fa-linkedin"></span></a></li>
+				</ul>
+			</div>
+
+			<div class="col-lg-8">
+				<div class="row links-wrap">
+					<div class="col-6 col-sm-6 col-md-3">
+						<ul class="list-unstyled">
+							<li><a href="#">About us</a></li>
+							<li><a href="#">Services</a></li>
+							<li><a href="#">Blog</a></li>
+							<li><a href="#">Contact us</a></li>
+						</ul>
+					</div>
+
+					<div class="col-6 col-sm-6 col-md-3">
+						<ul class="list-unstyled">
+							<li><a href="#">Support</a></li>
+							<li><a href="#">Knowledge base</a></li>
+							<li><a href="#">Live chat</a></li>
+						</ul>
+					</div>
+
+					<div class="col-6 col-sm-6 col-md-3">
+						<ul class="list-unstyled">
+							<li><a href="#">Jobs</a></li>
+							<li><a href="#">Our team</a></li>
+							<li><a href="#">Leadership</a></li>
+							<li><a href="#">Privacy Policy</a></li>
+						</ul>
+					</div>
+
+					<div class="col-6 col-sm-6 col-md-3">
+						<ul class="list-unstyled">
+							<li><a href="#">Nordic Chair</a></li>
+							<li><a href="#">Kruzo Aero</a></li>
+							<li><a href="#">Ergonomic Chair</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<div class="border-top copyright">
+			<div class="row pt-4">
+				<div class="col-lg-6">
+
+				</div>
+
+				<div class="col-lg-6 text-center text-lg-end">
+					<ul class="list-unstyled d-inline-flex ms-auto">
+						<li class="me-4"><a href="#">Terms &amp; Conditions</a></li>
+						<li><a href="#">Privacy Policy</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+</footer>
+<!-- End Footer Section -->
+
+
+<script>
+
+
+ document.addEventListener("DOMContentLoaded", function () {
+    const toastEl = document.querySelector('.toast');
+    const toast = new bootstrap.Toast(toastEl);
+    if ("{{message}}") {
+      toast.show();
+    }
+  });
+
+</script>
+   
