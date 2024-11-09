@@ -42,6 +42,17 @@ app.use(nocache());
 //Helper
 
 
+hbs.registerHelper('isEqual', (a, b) => {
+  return a === b;
+});
+hbs.registerHelper('range', (start, end) => {
+  let result = [];
+  for (let i = start; i <= end; i++) {
+    result.push(i);
+  }
+  return result;
+});
+
 hbs.registerHelper('ifCond', function (v1, v2, options) {
   if (v1 === v2) {
     return options.fn(this);
@@ -71,6 +82,25 @@ hbs.registerHelper('isAllCategoryApplicable', function (categories, applicableCa
 hbs.registerHelper("json", function(context) {
   return JSON.stringify(context);
 });
+
+hbs.registerHelper('netSales', function (totalSalesRevenue, totalDiscount) {
+  return totalSalesRevenue - totalDiscount;
+});
+hbs.registerHelper('formatCurrency', function (value) {
+  if (typeof value === 'number') {
+    return value.toFixed(2); 
+  }})
+
+
+  hbs.registerHelper('ifCond', function (v1, v2, options) {
+    if (v1 === v2) {
+      return options.fn(this); 
+    }
+    return options.inverse(this); 
+  });
+  
+
+
 //Helper ends
 
 
@@ -87,16 +117,7 @@ app.use("/", userRouter)
 
 connectdb();
 
-hbs.registerHelper('isEqual', (a, b) => {
-  return a === b;
-});
-hbs.registerHelper('range', (start, end) => {
-  let result = [];
-  for (let i = start; i <= end; i++) {
-    result.push(i);
-  }
-  return result;
-});
+
 
 
 app.listen(3000, () => {

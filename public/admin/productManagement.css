@@ -392,3 +392,33 @@ input[type="file"] {
 .modal #pagination {
   display: none;
 }
+.date-input {
+  width: 200px; 
+  padding: 8px 12px; 
+  border-radius: 5px; 
+  border: 2px solid #ccc; 
+  font-size: 16px; 
+  background-color: #f9f9f9; 
+  color: #333; 
+}
+
+.date-input:focus {
+  border-color: #4CAF50; 
+  outline: none; 
+  background-color: #e8f5e9; 
+}
+
+
+.date-input-label {
+  font-size: 16px; 
+  font-weight: bold; 
+  margin-bottom: 8px; 
+  color: #555; 
+  display: inline-block; 
+}
+
+
+.date-input-container {
+  margin-bottom: 16px; 
+}
+

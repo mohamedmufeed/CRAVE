@@ -1,0 +1,200 @@
+:root {
+    --primary-color: #16a34a;
+    --error-color: #dc2626;
+    --border-radius: 12px;
+    --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  }
+  
+
+  
+  .container1 {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+   
+  }
+  
+  .wallet-section {
+    flex: 1;
+    margin-left: -50px;
+  }
+  
+  .card {
+    background: #304e43;
+    color: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+  }
+  
+  .card-type {
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .card-number {
+    font-size: 1.25rem;
+    letter-spacing: 2px;
+    margin-bottom: 2rem;
+  }
+  
+  .card-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+  
+  .balance-info {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+  }
+  
+  .balance .amount {
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  
+  .stats {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .positive {
+    color: var(--primary-color);
+  }
+  
+  .negative {
+    color: var(--error-color);
+  }
+  
+  .currency {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+  }
+  
+  .add-card {
+    width: 100%;
+    padding: 0.75rem;
+    background: transparent;
+    border: 1px dashed rgba(255, 255, 255, 0.5);
+    color: white;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    margin-top: 1rem;
+  }
+  
+  .payments-section {
+    flex: 2;
+  }
+  
+  .payments-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+  
+  .payment-tabs {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .payment-tabs button {
+    padding: 0.5rem 1rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #666;
+  }
+  
+  .payment-tabs button.active {
+    color: #000;
+    border-bottom: 2px solid var(--primary-color);
+  }
+  
+  .search-input {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+  }
+  
+  .payment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .payment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #eee;
+    border-radius: var(--border-radius);
+  }
+  
+  .payment-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .payment-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    background-color: #16a34a;
+  }
+  
+  
+  .payment-details {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .payment-details .name {
+    font-weight: 500;
+  }
+  
+  .payment-details .date {
+    font-size: 0.875rem;
+    color: #666;
+  }
+  
+  h3 {
+    margin: 1.5rem 0 1rem;
+    color: #666;
+  }
+  
+  .amount {
+    font-weight: 500;
+  }
+  
+  @media (max-width: 768px) {
+    .container {
+      flex-direction: column;
+    }
+    
+    .payments-header {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .search-input {
+      width: 100%;
+    }
+  }

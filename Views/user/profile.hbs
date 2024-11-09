@@ -95,6 +95,13 @@
                    <i class="fas fa-heart"></i> Wishlist
                 </a>
             </li>
+			<li>
+                <a href="/profile/wallet" style="text-decoration: none;">
+                   <i class="fas fa-wallet"></i>
+ Wallet
+                </a>
+            </li>
+           
            
         </ul>
         <p class="sign-out">
@@ -111,6 +118,7 @@
         <form action="/profile/edit" method="POST">
             <div class="form-div">
             <h1>Genaral information</h1>
+			<span style="font-size: medium; color: black;" >Referral code:{{user.referralCode}}</span>
             <div class="row">
               <div class="col-6">
                 <div class="form-group">
