@@ -1,8 +1,8 @@
 const Admin = require("../Model/adminmodel");
 const User = require("../Model/usermodel")
-
+const PDFDocument = require('pdfkit');
 const Order = require("../Model/orderModel")
-
+const ExcelJS = require('exceljs');
 const bcrypt = require("bcrypt");
 const HttpStatusCodes = require("../config/httpStatusCode");
 
@@ -114,6 +114,8 @@ const unblockUser = async (req, res) => {
 
 
 
+//sales
+
 const getSalesReport = async (time, startDate, endDate) => {
   let pipeline = [
     { $match: { status: "Delivered" } },
@@ -181,7 +183,19 @@ const getSalesReport = async (time, startDate, endDate) => {
   try {
     const salesReport = await Order.aggregate(pipeline);
 
-    return salesReport;
+    const overallSummary = await Order.aggregate([
+      { $match: { status: "Delivered" } },
+      {
+        $group: {
+          _id: null,
+          overallSalesCount: { $sum: 1 },                
+          overallOrderAmount: { $sum: "$total" },         
+          overallDiscount: { $sum: "$discountAmount" }    
+        }
+      }
+    ]);
+
+    return {salesReport,overallSummary:overallSummary[0]};
   } catch (error) {
     throw new Error(`Error in aggregation: ${error.message}`);
   }
@@ -191,18 +205,19 @@ const salesReport = async (req, res) => {
   const { time = "monthly", startDate, endDate } = req.query;
 
   try {
-    const reportData = await getSalesReport(time, startDate, endDate);
+    const {salesReport,overallSummary} = await getSalesReport(time, startDate, endDate);
 
-    if (Array.isArray(reportData)) {
-      reportData.forEach(report => {
+    if (Array.isArray(salesReport)) {
+      salesReport.forEach(report => {
         report.netSales = report.totalSalesRevenue - report.totalDiscount;
       });
 
       res.render('admin/salesReport', {
-        salesReport: reportData,
+        salesReport,
         time,
         startDate,
-        endDate
+        endDate,
+        overallSummary
       });
     } else {
       throw new Error('Sales report data is not an array');
@@ -212,6 +227,99 @@ const salesReport = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
+
+ 
+
+const generatePDFReport = async (req, res) => {
+  const { time = "monthly", startDate, endDate } = req.query;
+
+  try {
+    const reportData = await getSalesReport(time, startDate, endDate);
+
+    if (!reportData || reportData.length === 0) {
+      return res.status(404).send('No sales data available for the selected period.');
+    }
+
+    const doc = new PDFDocument();
+
+    res.setHeader('Content-Disposition', 'attachment; filename=sales-report.pdf');
+    res.setHeader('Content-Type', 'application/pdf');
+
+    doc.pipe(res);
+
+    doc.fontSize(18).text('Sales Report', { align: 'center' });
+    doc.moveDown();
+
+    doc.fontSize(12).text('Date Range: ' + (startDate ? startDate : 'All Time') + ' - ' + (endDate ? endDate : 'Present'), { align: 'center' });
+    doc.moveDown();
+
+    doc.fontSize(14).text(`Sales Data - ${time.charAt(0).toUpperCase() + time.slice(1)}`, { align: 'center' });
+    doc.moveDown();
+
+    doc.fontSize(10).text("Year | Month | Total Sales Revenue | Total Discount | Total Orders | Total Items Sold", {
+      align: 'left'
+    });
+
+    reportData.forEach(report => {
+      doc.text(`${report._id.year} | ${report._id.month || 'N/A'} | ₹${report.totalSalesRevenue} | ₹${report.totalDiscount} | ${report.totalOrders} | ${report.totalItemsSold}`, {
+        align: 'left'
+      });
+    });
+
+    doc.end();
+  } catch (error) {
+    console.error("Error generating PDF report:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+
+
+const generateExcelReport = async (req, res) => {
+  const { time = "monthly", startDate, endDate } = req.query;
+
+  try {
+    const reportData = await getSalesReport(time, startDate, endDate);
+
+    if (!reportData || reportData.length === 0) {
+      return res.status(404).send('No sales data available for the selected period.');
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sales Report');
+
+    worksheet.columns = [
+      { header: 'Year', key: 'year' },
+      { header: 'Month', key: 'month' },
+      { header: 'Total Sales Revenue', key: 'totalSalesRevenue' },
+      { header: 'Total Discount', key: 'totalDiscount' },
+      { header: 'Total Orders', key: 'totalOrders' },
+      { header: 'Total Items Sold', key: 'totalItemsSold' },
+    ];
+
+    reportData.forEach(report => {
+      worksheet.addRow({
+        year: report._id.year,
+        month: report._id.month || 'N/A',
+        totalSalesRevenue: report.totalSalesRevenue,
+        totalDiscount: report.totalDiscount,
+        totalOrders: report.totalOrders,
+        totalItemsSold: report.totalItemsSold
+      });
+    });
+
+    res.setHeader('Content-Disposition', 'attachment; filename=sales-report.xlsx');
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (error) {
+    console.error("Error generating Excel report:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+
 
 
 
@@ -225,5 +333,7 @@ module.exports = {
   blockUser,
   unblockUser,
   searchUser,
-  salesReport
+  salesReport,
+  generatePDFReport,
+  generateExcelReport
 };

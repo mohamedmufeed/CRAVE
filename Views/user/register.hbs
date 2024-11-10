@@ -1,64 +1,74 @@
 <link rel="stylesheet" href="/user/css,js/css/login.css">
 
 
-<div class="toast align-items-center text-bg-danger border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+<div class="toast align-items-center text-bg-danger border-0 position-fixed top-0 end-0 m-3" role="alert"
+  aria-live="assertive" aria-atomic="true">
   <div class="d-flex">
     <div class="toast-body">
       {{message}}
     </div>
-    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+      aria-label="Close"></button>
   </div>
 </div>
 
 
-    <div class=" main-conainer container-fluid vh-100">
-        <div class=" row">
-<div class="big">
-            <div class="col-md-6 d-flex flex-column justify-content-center align-items-center left-panel text-center text-white">
-                <h1>CRAVE</h1>
-                <p>Log in to discover a world of comfort and style, where the perfect sofa awaits you!</p>
-            </div>
-            <div class="col-md-6 d-flex flex-column justify-content-center align-items-center right-panel p-5">
-                <h2>Sign Up</h2>
-               
-<form class="w-100" method="post" action="/register" enctype="application/x-www-form-urlencoded">
-    <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" class="form-control" id="username" name="username" >
-    </div>
-    <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" class="form-control" id="email" name="email" >
-    </div>
-    <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" class="form-control" id="password" name="password" >
-         <div class="link"> 
-                        <a href="/login" class="forgot-password">Login?</a></div>
-    </div>
-    <button type="submit" class="btn btn-dark mt-3">Sign Up</button>
-     <hr>
-</form>
+<div class=" main-conainer container-fluid vh-100 mb-5">
+  <div class=" row">
+    <div class="big">
+      <div
+        class="col-md-6 d-flex flex-column justify-content-center align-items-center left-panel text-center text-white">
+        <h1>CRAVE</h1>
+        <p>Log in to discover a world of comfort and style, where the perfect sofa awaits you!</p>
+      </div>
+      <div class="col-md-6 d-flex flex-column justify-content-center align-items-center right-panel p-5">
+        <h2>Sign Up</h2>
+
+        <form class="w-100" method="post" action="/register" enctype="application/x-www-form-urlencoded">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" id="username" name="username">
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email">
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" name="password">
+          </div>
+          <div class="form-group">
+            <label for="password">Referal Code</label>
+            <input type="text" class="form-control" id="referal" name="referalCode">
+          </div>
           
- <a href="/auth/google">
- <i class="fa-brands fa-google" style="font-size: 20px;   margin-left: 10px;   margin-top: 10px; color: black; "></i>
-
- </a>  
-
+           <div class="link">
+              <a href="/login" class="forgot-password">Login?</a>
             </div>
-        </div>
-        </div>
-      
-    </div>
+          <button type="submit" class="btn btn-dark mt-3">Sign Up</button>
+          <hr>
+        </form>
 
-  <script src="https://kit.fontawesome.com/ac7c11180d.js" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+        <a href="/auth/google">
+          <i class="fa-brands fa-google"
+            style="font-size: 20px;   margin-left: 10px;   margin-top: 10px; color: black; "></i>
+
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://kit.fontawesome.com/ac7c11180d.js" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 
 <script>
 
   console.log("{{message}}")
- document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", function () {
     const toastEl = document.querySelector('.toast');
     const toast = new bootstrap.Toast(toastEl);
     if ("{{message}}") {
@@ -68,4 +78,3 @@
 
 
 </script>
- 

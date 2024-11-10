@@ -112,6 +112,10 @@
             <td><strong>{{../status}}</strong></td>
             <td>
                 <button class="btn">  <a href='/profile/orders/orderdetails/{{../_id}}'> view details</a></button>
+                 <form action="/profile/orders/returnorder/{{../_id}}" method="post">
+
+                    <button type="submit" class="btn btn-black btn-sm">Return order</button>
+                </form>
                 <form action="/prodile/orders/cancelorder/{{../_id}}" method="post">
 
                     <button type="submit" class="btn btn-black btn-sm">X</button>

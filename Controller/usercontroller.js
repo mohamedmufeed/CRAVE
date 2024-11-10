@@ -1,15 +1,11 @@
-const Admin = require("../Model/adminmodel");
+const WalletTransaction = require('../Model/walletModel')
 const User = require("../Model/usermodel")
 const Address = require("../Model/addresModel")
 const Cart = require("../Model/cartModel")
 const Order = require("../Model/orderModel")
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
-const { response, application } = require("express");
-const mongoose = require("mongoose");
-const { name } = require("ejs");
 const saltround = 10
-const statusCode = require("../config/httpStatusCode");
 const HttpStatusCodes = require("../config/httpStatusCode");
 require('dotenv').config();
 const Razorpay = require('razorpay');
@@ -65,7 +61,8 @@ async function sendVerificationfEmail(email, otp) {
 
 
 const register = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, referalCode } = req.body;
+  req.session.referalCode = referalCode
 
   try {
 
@@ -116,20 +113,57 @@ const verifyOtp = async (req, res) => {
   try {
 
     const { otp } = req.body;
-
+    const referalCode = req.session.referalCode
 
     if (otp == req.session.userOTP) {
       const user = req.session.userData
       const hashedPassword = await bcrypt.hash(user.password, saltround)
-      const saveUserData = new User({
-        username: user.username,
-        email: user.email,
-        password: hashedPassword,
-        referralCode: generateReferralCode(),
-      })
+
+      let saveUserData
+
+      if (!referalCode) {
+        saveUserData = new User({
+          username: user.username,
+          email: user.email,
+          password: hashedPassword,
+          referralCode: generateReferralCode(),
+        })
+      } else {
+        saveUserData = new User({
+          username: user.username,
+          email: user.email,
+          password: hashedPassword,
+          referralCode: generateReferralCode(),
+          walletBalance: 50
+        })
+        const referingUser = await User.findOne({ referralCode: referalCode })
+        if (referingUser) {
+          referingUser.walletBalance += 50
+          await referingUser.save()
+
+          const referingTransaction = new WalletTransaction({
+            userId: referingUser._id,
+            amount: 50,
+            transactionType: 'Credit',
+            description: 'Referral bonus credited'
+          })
+          await referingTransaction.save()
+
+        }
+      }
+
 
       await saveUserData.save();
       req.session.user = saveUserData._id;
+      if (referalCode) {
+        const newTransaction = new WalletTransaction({
+          userId: saveUserData._id,
+          amount: 50,
+          transactionType: 'Credit',
+          description: 'Referral signup bonus credited'
+        })
+        await newTransaction.save()
+      }
       res.render("user/index")
 
     } else {

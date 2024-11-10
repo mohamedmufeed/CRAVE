@@ -74,7 +74,7 @@
       <div class="balance-info">
         <div class="balance">
 			<span>Your Balance</span>
-          <span class="amount">₹{{walletAmount}}</span>
+          <span class="amount">₹{{ formatCurrency walletAmount}}</span>
          
         </div>
         <div class="currency">
@@ -105,7 +105,7 @@
           </div>
         </div>
         <span class="amount {{#if (eq this.transactionType "Credit")}}positive{{else}}negative{{/if}}">
-          {{#if (eq this.transactionType "Credit")}}+{{else}}-{{/if}}₹{{this.amount}}
+          {{#if (eq this.transactionType "Credit")}}+{{else}}-{{/if}}₹{{ formatCurrency this.amount}}
         </span>
       </div>
       {{/each}}

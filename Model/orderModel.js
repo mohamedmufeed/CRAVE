@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const productModel = require('./productModel');
 
 const orderSchema = new mongoose.Schema({
 
@@ -15,7 +16,7 @@ const orderSchema = new mongoose.Schema({
     },
     quantity: {
       type: Number,
-      requried: true
+      required: true
     },
     name: {
       type: String,
@@ -24,9 +25,13 @@ const orderSchema = new mongoose.Schema({
     price: {
       type: Number,
       required: true
+    },
+    singleStatus: {
+      type: String,
+      enum: ['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled', 'Returned'],
+      default: 'Pending'
     }
-  }
-  ],
+  }],
   address: {
     type: mongoose.Schema.ObjectId,
     ref: 'Address',
@@ -38,7 +43,7 @@ const orderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled'],
+    enum: ['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled', 'Returned'],
     default: 'Pending'
   },
   paymentMethod: {

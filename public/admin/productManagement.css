@@ -421,4 +421,23 @@ input[type="file"] {
 .date-input-container {
   margin-bottom: 16px; 
 }
+.single-line-form {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Adjust spacing between elements */
+}
 
+.date-input-container, .time-input-container {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.single-line-form label {
+  margin-right: 5px;
+}
+
+.btn {
+  padding: 8px 12px;
+  margin-left: 5px;
+}

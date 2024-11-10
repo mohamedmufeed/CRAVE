@@ -57,6 +57,7 @@ router.post("/razorpay",userController.razorpayPayment)
 router.get("/thankyou",orderController.thankyou)
 router.get("/profile/wallet",walletController.loadWallet)
 router.get("/logout",userController.logout)
+router.post('/profile/orders/returnorder/:id',orderController.returnorder)
 
 
 

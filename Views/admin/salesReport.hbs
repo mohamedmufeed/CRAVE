@@ -1,132 +1,194 @@
-
-  <link rel="stylesheet" href="/admin/productManagement.css">
-  <aside class="sidebar">
-    <div class="logo">
-     <a class="navbar-brand" href="index.html">CRAV<span style="font-weight:lighter;">E</span></a>
-    </div>
-    <nav class="menu">
-      <ul>
-             <li><a href="/admin/dashboard">Dashboard</a></li>
-      <li><a href="/admin/productManagement">Products</a></li>
-        <li><a href="/admin/orderManagement">Orders</a></li>
-        <li><a href="/admin/couponManagement">Coupon</a></li>
-        <li><a href="/admin/inventory">Inventory</a></li>
-        <li><a href="/admin/offerManagement">Offers</a></li>
-    <li><a href="/admin/userManagement"> User Management</a></li>
-      <li><a href="/admin/category"> Category</a></li>
-  
-      </ul>
-    </nav>
-  </aside>
-
-  <!-- Main Content -->
-  <div class="main-content">
-    <header class="dashboard-header">
-
-      <h1>Sales Report</h1>
-<div style="display: block">  
-<form method="GET" action="/admin/salesReport">
-<div class="date-input-container">
-  <label for="startDate" class="date-input-label">Start Date:</label>
-  <input type="date" class="date-input" name="startDate" id="startDate" value="{{startDate}}">
-</div>
-
-  <div class="date-input-container">
-  <label for="endDate" class="date-input-label">End Date:</label>
-  <input type="date" class="date-input" name="endDate" id="endDate" value="{{endDate}}">
+<link rel="stylesheet" href="/admin/productManagement.css">
+<aside class="sidebar">
+  <div class="logo">
+    <a class="navbar-brand" href="index.html">CRAV<span style="font-weight:lighter;">E</span></a>
   </div>
+  <nav class="menu">
+    <ul>
+      <li><a href="/admin/dashboard">Dashboard</a></li>
+      <li><a href="/admin/productManagement">Products</a></li>
+      <li><a href="/admin/orderManagement">Orders</a></li>
+      <li><a href="/admin/couponManagement">Coupon</a></li>
+      <li><a href="/admin/inventory">Inventory</a></li>
+      <li><a href="/admin/offerManagement">Offers</a></li>
+      <li><a href="/admin/userManagement"> User Management</a></li>
+      <li><a href="/admin/category"> Category</a></li>
 
-  
-  <select name="time">
-    <option value="monthly" {{#ifCond time "monthly"}}selected{{/ifCond}}>Monthly</option>
-    <option value="weekly" {{#ifCond time "weekly"}}selected{{/ifCond}}>Weekly</option>
-    <option value="yearly" {{#ifCond time "yearly"}}selected{{/ifCond}}>Yearly</option>
-  </select>
-  
-  <button class="btn" type="submit">Filter</button>
-</form>
-</div>
+    </ul>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<div class="main-content">
+  <header class="dashboard-header">
+
+    <h1>Sales Report</h1>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <div class="container mt-3">
+      <form method="GET" action="/admin/salesReport" class="form-inline">
+
+        <div class="form-group mr-3">
+          <label for="startDate" class="mr-2">Start Date:</label>
+          <input type="date" class="form-control" id="startDate" name="startDate" placeholder="dd/mm/yyyy">
+        </div>
+
+        <div class="form-group mr-3">
+          <label for="endDate" class="mr-2">End Date:</label>
+          <input type="date" class="form-control" id="endDate" name="endDate" placeholder="dd/mm/yyyy">
+        </div>
+
+        <div class="form-group mr-3">
+          <label for="time" class="mr-2">Time Period:</label>
+          <select id="time" name="time" class="form-control">
+            <option value="monthly">Monthly</option>
+            <option value="weekly">Weekly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-dark mr-2">Filter</button>
+        <button id="downloadPDF" class="btn btn-dark mr-2 mt-3" type="button" onclick="downloadReport('pdf')">Download
+          PDF Report</button>
+        <button id="downloadExcel" class="btn  btn-dark mt-3" type="button" onclick="downloadReport('excel')">Download
+          Excel Report</button>
+
+      </form>
+    </div>
 
 
-    </header>
 
-    <!-- Sales Report Section -->
-<section class="user-table">
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Total Sales Revenue</th>
-          <th>Discount Applied</th>
-          <th>Net Sales</th>
-          <th>Number of Orders</th>
-          <th>Total Items Sold</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each salesReport}}
+
+
+  </header>
+
+  <!-- Sales Report Section -->
+  <section class="user-table">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Total Sales Revenue</th>
+            <th>Discount Applied</th>
+            <th>Net Sales</th>
+            <th>Number of Orders</th>
+            <th>Total Items Sold</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each salesReport}}
           <tr>
             <td>
               {{#if this._id.month}}
-                {{this._id.year}}-{{this._id.month}} {{#if this._id.day}}-{{this._id.day}}{{/if}}
+              {{this._id.year}}-{{this._id.month}} {{#if this._id.day}}-{{this._id.day}}{{/if}}
               {{else}}
-                {{this._id.year}} 
+              {{this._id.year}}
               {{/if}}
             </td>
             <td>₹{{ formatCurrency this.totalSalesRevenue}}</td>
-              <td>₹{{this.totalDiscount}}</td>
+            <td>₹{{this.totalDiscount}}</td>
             <td>₹{{ formatCurrency this.netSales}}</td>
             <td>{{this.totalOrders}}</td>
             <td>{{this.totalItemsSold}}</td>
           </tr>
-        {{/each}}
-      </tbody>
-    </table>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+
+  {{!-- overall side --}}
+
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card text-center">
+          <div class="card-body">
+            <h5 class="card-title">Total Sales Count</h5>
+            <p id="totalSalesCount" class="card-text">{{overallSummary.overallSalesCount}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card text-center">
+          <div class="card-body">
+            <h5 class="card-title">Total Order Amount</h5>
+            <p id="totalOrderAmount" class="card-text">₹{{overallSummary.overallOrderAmount}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card text-center">
+          <div class="card-body">
+            <h5 class="card-title">Total Discount Applied</h5>
+            <p id="totalDiscount" class="card-text">₹{{overallSummary.overallDiscount}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</section>
 
 
+  {{!-- overalll ends --}}
 
 
+  {{!-- pagination --}}
 
- 
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center pages custom-pagination">
+      {{#if previousPage}}
+      <li class="page-item">
+        <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      {{/if}}
 
+      {{#each (range 1 totalPages)}}
+      <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
+        <a class="page-link" href="?page={{this}}">{{this}}</a>
+      </li>
+      {{/each}}
 
-
- {{!-- pagination --}}
-
-<nav aria-label="Page navigation">
-    <ul class="pagination justify-content-center pages custom-pagination" >
-        {{#if previousPage}}
-        <li class="page-item">
-            <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-            </a>
-        </li>
-        {{/if}}
-
-        {{#each (range 1 totalPages)}}
-        <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
-            <a class="page-link" href="?page={{this}}">{{this}}</a>
-        </li>
-        {{/each}}
-
-        {{#if nextPage}}
-        <li class="page-item">
-            <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
-        </li>
-        {{/if}}
+      {{#if nextPage}}
+      <li class="page-item">
+        <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+      {{/if}}
     </ul>
-</nav>
+  </nav>
 
- {{!-- end pagination --}}
-
-    
-  </div>
-
-  
+  {{!-- end pagination --}}
 
 
+</div>
+
+
+
+
+
+<script>
+  function downloadReport(format) {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const time = document.getElementById('time').value;
+
+    if (!startDate || !endDate || !time) {
+      alert("Please ensure all fields are filled.");
+      return;
+    }
+
+    const url = `/admin/downloadSalesReport/${format}?time=${time}&startDate=${startDate}&endDate=${endDate}`;
+
+    window.location.href = url;
+  }
+
+
+
+</script>

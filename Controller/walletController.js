@@ -8,9 +8,7 @@ const Wallet = require("../Model/walletModel")
 
 const loadWallet = async (req, res) => {
     const userId = req.session.userId;
-    if (!userId) {
-      return res.redirect("/login");
-    }
+   
     
     try {
       const user = await User.findById(userId, 'walletBalance');
