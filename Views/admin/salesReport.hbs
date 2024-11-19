@@ -6,13 +6,14 @@
   <nav class="menu">
     <ul>
       <li><a href="/admin/dashboard">Dashboard</a></li>
-      <li><a href="/admin/productManagement">Products</a></li>
-      <li><a href="/admin/orderManagement">Orders</a></li>
-      <li><a href="/admin/couponManagement">Coupon</a></li>
-      <li><a href="/admin/inventory">Inventory</a></li>
-      <li><a href="/admin/offerManagement">Offers</a></li>
-      <li><a href="/admin/userManagement"> User Management</a></li>
+        <li><a href="/admin/productManagement">Products</a></li>
+        <li><a href="/admin/orderManagement">Orders</a></li>
+        <li><a href="/admin/couponManagement">Coupon</a></li>
+        <li><a href="/admin/inventory">Inventory</a></li>
+        <li><a href="/admin/offerManagement">Offers</a></li>
+    <li><a href="/admin/userManagement"> User Management</a></li>
       <li><a href="/admin/category"> Category</a></li>
+         <li><a href="/admin/salesReport"> Sales Report</a></li>
 
     </ul>
   </nav>
@@ -22,7 +23,7 @@
 <div class="main-content">
   <header class="dashboard-header">
 
-    <h1>Sales Report</h1>
+    <h1>Sales Summery</h1>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
     <div class="container mt-3">
@@ -65,36 +66,33 @@
   <!-- Sales Report Section -->
   <section class="user-table">
     <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Total Sales Revenue</th>
-            <th>Discount Applied</th>
-            <th>Net Sales</th>
-            <th>Number of Orders</th>
-            <th>Total Items Sold</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each salesReport}}
-          <tr>
-            <td>
-              {{#if this._id.month}}
-              {{this._id.year}}-{{this._id.month}} {{#if this._id.day}}-{{this._id.day}}{{/if}}
-              {{else}}
-              {{this._id.year}}
-              {{/if}}
-            </td>
-            <td>₹{{ formatCurrency this.totalSalesRevenue}}</td>
-            <td>₹{{this.totalDiscount}}</td>
-            <td>₹{{ formatCurrency this.netSales}}</td>
-            <td>{{this.totalOrders}}</td>
-            <td>{{this.totalItemsSold}}</td>
-          </tr>
-          {{/each}}
-        </tbody>
-      </table>
+     <table>
+  <thead>
+    <tr>
+      <th>Order ID</th>
+      <th>User Name</th>
+      <th>Total Amount</th>
+      <th>Order Date</th>
+      <th>Net Sales</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    {{#each salesReport}}
+      {{#each orders}}
+        <tr>
+          <td>{{this.orderId}}</td>
+          <td>{{this.userName}}</td>
+          <td>₹{{this.totalAmount}}</td>
+          <td>{{formatDate  this.orderDate}}</td>
+  <td>₹{{this.netSales}}</td>
+        </tr>
+      {{/each}}
+    {{/each}}
+  </tbody>
+</table>
+
+
     </div>
   </section>
 

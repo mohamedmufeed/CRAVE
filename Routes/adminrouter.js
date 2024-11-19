@@ -7,12 +7,13 @@ const offerController=require("../Controller/offerController")
 const inventoryController=require("../Controller/inventroryController")
 const couponController=require("../Controller/couponController")
 const categoryController=require("../Controller/categoryControlle")
+const dashboardController=require("../Controller/dashboardController")
 const  adminAuth=require("../middlware/adminauth")
 const imagesController=require("../Controller/ imageController")
 // Define the routes/
 router.get("/login", adminAuth.islogin, adminController.loadlogin);
 router.post("/login", adminController.login);
-router.get("/dashboard", adminAuth.checkSession,adminController.loadDashboard);
+router.get("/dashboard", adminAuth.checkSession,dashboardController.loadDashboard);
 router.get("/userManagement", adminAuth.checkSession,adminController.loadUserMangment)
 router.get("/userManagement/search",adminController.searchUser)
 router.post("/userManagement/block/:id", adminController.blockUser)
@@ -41,9 +42,11 @@ router.post("/offerManagement/edit",offerController.editOffer)
 router.post("/offerManagement/delete/:id",offerController.deleteOffer)
 router.get("/couponManagement",couponController.loadCoupon)
 router.post("/couponManagement/create",couponController.createCoupon)
+router.post("/couponManagement/edit",couponController.editCoupon)
 router.post("/couponManagement/delete/:id",couponController.deleteCoupon)
 router.get("/salesReport",adminController.salesReport)
 router.get("/downloadSalesReport/pdf", adminController.generatePDFReport);
 router.get("/downloadSalesReport/excel", adminController.generateExcelReport);
+
 
 module.exports = router;

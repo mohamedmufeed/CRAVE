@@ -32,9 +32,7 @@ const login = async (req, res) => {
 };
 
 
-const loadDashboard = async (req, res) => {
-  res.render('admin/dashboard')
-}
+
 
 const loadUserMangment = async (req, res) => {
   try {
@@ -124,20 +122,45 @@ const getSalesReport = async (time, startDate, endDate) => {
   if (startDate && endDate) {
     const start = new Date(startDate);
     const end = new Date(endDate);
-    end.setHours(23, 59, 59, 999); 
+    end.setHours(23, 59, 59, 999);
 
     pipeline[0].$match.createdAt = { $gte: start, $lte: end };
   }
+
+  pipeline.push({
+    $lookup: {
+      from: "users", 
+      localField: "userId", 
+      foreignField: "_id", 
+      as: "userDetails"
+    }
+  });
+
+  pipeline.push({
+    $unwind: "$userDetails"
+  });
+
+  pipeline.push({
+    $project: {
+      orderId: "$_id",
+      userName: "$userDetails.username",
+      totalAmount: "$total",
+      orderDate: "$createdAt",
+      totalSalesRevenue: "$total",
+      totalDiscount: "$discountAmount",
+      products: 1
+    }
+  });
 
   switch (time) {
     case "yearly":
       pipeline.push({
         $group: {
-          _id: { year: { $year: "$createdAt" } },
-          totalSalesRevenue: { $sum: "$total" },
-          totalDiscount: { $sum: "$discountAmount" },
-          totalOrders: { $sum: 1 },
-          totalItemsSold: { $sum: { $sum: "$products.quantity" } }
+          _id: { year: { $year: "$orderDate" } },
+          orders: { $push: "$$ROOT" },
+          totalSalesRevenue: { $sum: "$totalSalesRevenue" },
+          totalDiscount: { $sum: "$totalDiscount" },
+          totalOrders: { $sum: 1 }
         }
       });
       break;
@@ -146,13 +169,13 @@ const getSalesReport = async (time, startDate, endDate) => {
       pipeline.push({
         $group: {
           _id: {
-            year: { $year: "$createdAt" },
-            month: { $month: "$createdAt" }
+            year: { $year: "$orderDate" },
+            month: { $month: "$orderDate" }
           },
-          totalSalesRevenue: { $sum: "$total" },
-          totalDiscount: { $sum: "$discountAmount" },
-          totalOrders: { $sum: 1 },
-          totalItemsSold: { $sum: { $sum: "$products.quantity" } }
+          orders: { $push: "$$ROOT" },
+          totalSalesRevenue: { $sum: "$totalSalesRevenue" },
+          totalDiscount: { $sum: "$totalDiscount" },
+          totalOrders: { $sum: 1 }
         }
       });
       break;
@@ -161,13 +184,13 @@ const getSalesReport = async (time, startDate, endDate) => {
       pipeline.push({
         $group: {
           _id: {
-            year: { $year: "$createdAt" },
-            week: { $isoWeek: "$createdAt" }
+            year: { $year: "$orderDate" },
+            week: { $isoWeek: "$orderDate" }
           },
-          totalSalesRevenue: { $sum: "$total" },
-          totalDiscount: { $sum: "$discountAmount" },
-          totalOrders: { $sum: 1 },
-          totalItemsSold: { $sum: { $sum: "$products.quantity" } }
+          orders: { $push: "$$ROOT" },
+          totalSalesRevenue: { $sum: "$totalSalesRevenue" },
+          totalDiscount: { $sum: "$totalDiscount" },
+          totalOrders: { $sum: 1 }
         }
       });
       break;
@@ -188,14 +211,14 @@ const getSalesReport = async (time, startDate, endDate) => {
       {
         $group: {
           _id: null,
-          overallSalesCount: { $sum: 1 },                
-          overallOrderAmount: { $sum: "$total" },         
-          overallDiscount: { $sum: "$discountAmount" }    
+          overallSalesCount: { $sum: 1 },
+          overallOrderAmount: { $sum: "$total" },
+          overallDiscount: { $sum: "$discountAmount" }
         }
       }
     ]);
 
-    return {salesReport,overallSummary:overallSummary[0]};
+    return { salesReport, overallSummary: overallSummary[0] };
   } catch (error) {
     throw new Error(`Error in aggregation: ${error.message}`);
   }
@@ -205,23 +228,24 @@ const salesReport = async (req, res) => {
   const { time = "monthly", startDate, endDate } = req.query;
 
   try {
-    const {salesReport,overallSummary} = await getSalesReport(time, startDate, endDate);
+    const { salesReport, overallSummary } = await getSalesReport(time, startDate, endDate);
 
-    if (Array.isArray(salesReport)) {
-      salesReport.forEach(report => {
-        report.netSales = report.totalSalesRevenue - report.totalDiscount;
+    salesReport.forEach(group => {
+      group.orders.forEach(order => {
+        const totalAmount = order.totalAmount || 0; 
+        const totalDiscount = order.totalDiscount || 0; 
+    
+        order.netSales = Math.round(totalAmount - totalDiscount);
       });
-
-      res.render('admin/salesReport', {
-        salesReport,
-        time,
-        startDate,
-        endDate,
-        overallSummary
-      });
-    } else {
-      throw new Error('Sales report data is not an array');
-    }
+    });
+    
+    res.render('admin/salesReport', {
+      salesReport,
+      time,
+      startDate,
+      endDate,
+      overallSummary
+    });
   } catch (error) {
     console.error("Error fetching sales report:", error);
     res.status(500).send("Server Error");
@@ -234,37 +258,125 @@ const generatePDFReport = async (req, res) => {
   const { time = "monthly", startDate, endDate } = req.query;
 
   try {
-    const reportData = await getSalesReport(time, startDate, endDate);
+    const { salesReport, overallSummary } = await getSalesReport(
+      time,
+      startDate,
+      endDate
+    );
 
-    if (!reportData || reportData.length === 0) {
-      return res.status(404).send('No sales data available for the selected period.');
+    if (!salesReport || salesReport.length === 0) {
+      return res
+        .status(404)
+        .send("No sales data available for the selected period.");
     }
 
     const doc = new PDFDocument();
 
-    res.setHeader('Content-Disposition', 'attachment; filename=sales-report.pdf');
-    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader("Content-Disposition", "attachment; filename=sales-report.pdf");
+    res.setHeader("Content-Type", "application/pdf");
 
     doc.pipe(res);
 
-    doc.fontSize(18).text('Sales Report', { align: 'center' });
-    doc.moveDown();
+    doc.fontSize(22).font("Helvetica-Bold").text("CRAVE", 50, 20, { align: "left" });
+    doc.moveDown(1);
 
-    doc.fontSize(12).text('Date Range: ' + (startDate ? startDate : 'All Time') + ' - ' + (endDate ? endDate : 'Present'), { align: 'center' });
+    doc.fontSize(18).text("Sales Report", { align: "center" });
     doc.moveDown();
-
-    doc.fontSize(14).text(`Sales Data - ${time.charAt(0).toUpperCase() + time.slice(1)}`, { align: 'center' });
+    doc
+      .fontSize(12)
+      .text(
+        `Date Range: ${startDate || "All Time"} - ${endDate || "Present"}`,
+        { align: "center" }
+      );
     doc.moveDown();
+    doc
+      .fontSize(14)
+      .text(`Sales Data (${time.charAt(0).toUpperCase() + time.slice(1)})`, {
+        align: "center",
+      });
+    doc.moveDown(2);
 
-    doc.fontSize(10).text("Year | Month | Total Sales Revenue | Total Discount | Total Orders | Total Items Sold", {
-      align: 'left'
+    doc.fontSize(12).font("Helvetica-Bold").text("Overall Summary:", { align: "left" });
+    doc.moveDown(0.5);
+
+    doc
+      .fontSize(10)
+      .font("Helvetica")
+      .text(`Total Sales Revenue: MRP:${overallSummary.overallOrderAmount}`, {
+        align: "left",
+      });
+    doc.text(`Total Discount Given: MRP:${overallSummary.overallDiscount}`, {
+      align: "left",
+    });
+    doc.text(`Total Orders Delivered: ${overallSummary.overallSalesCount}`, {
+      align: "left",
+    });
+    doc.moveDown(2);
+
+    const tableHeaders = [
+      "Year",
+      "Month",
+      "User Name",
+      "Total Sales ",
+      "Total Discount",
+      "Total Orders",
+    ];
+    const tableWidth = 500;
+    const colWidth = tableWidth / tableHeaders.length;
+
+    let startY = doc.y + 20; 
+
+    doc.fontSize(10).font("Helvetica-Bold");
+    tableHeaders.forEach((header, i) => {
+      doc.text(header, 50 + i * colWidth, startY, { width: colWidth, align: "center" });
     });
 
-    reportData.forEach(report => {
-      doc.text(`${report._id.year} | ${report._id.month || 'N/A'} | ₹${report.totalSalesRevenue} | ₹${report.totalDiscount} | ${report.totalOrders} | ${report.totalItemsSold}`, {
-        align: 'left'
+    startY += 15; 
+    doc.moveTo(50, startY).lineTo(550, startY).stroke(); 
+    startY += 10;
+
+    doc.fontSize(10).font("Helvetica");
+    salesReport.forEach((report) => {
+      report.orders.forEach((order) => {
+        const row = [
+          report._id.year,
+          report._id.month || "N/A",
+          order.userName || "N/A",
+          `MRP : ${order.totalAmount}`,
+          `${order.totalDiscount || 0}`,
+          report.totalOrders || 0,
+        ];
+
+        row.forEach((cell, i) => {
+          const alignment = i > 2 ? "center" : "left";
+          doc.text(cell, 50 + i * colWidth, startY, {
+            width: colWidth,
+            align: alignment,
+          });
+        });
+
+        startY += 15; 
+        if (startY > doc.page.height - 50) {
+          doc.addPage(); 
+          startY = 50; 
+          doc.fontSize(10).font("Helvetica-Bold");
+          tableHeaders.forEach((header, i) => {
+            doc.text(header, 50 + i * colWidth, startY, {
+              width: colWidth,
+              align: "center",
+            });
+          });
+          startY += 15;
+          doc.moveTo(50, startY).lineTo(550, startY).stroke();
+          startY += 10;
+        }
       });
     });
+
+    doc.moveTo(50, startY).lineTo(550, startY).stroke();
+
+    doc.moveDown(2);
+    doc.fontSize(8).text("Generated by Crave Report System", { align: "center" });
 
     doc.end();
   } catch (error) {
@@ -272,7 +384,6 @@ const generatePDFReport = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
 
 
 const generateExcelReport = async (req, res) => {
@@ -328,12 +439,12 @@ const generateExcelReport = async (req, res) => {
 module.exports = {
   loadlogin,
   login,
-  loadDashboard,
   loadUserMangment,
   blockUser,
   unblockUser,
   searchUser,
   salesReport,
   generatePDFReport,
-  generateExcelReport
+  generateExcelReport,
+
 };

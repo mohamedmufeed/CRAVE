@@ -1,14 +1,17 @@
 const WalletTransaction = require('../Model/walletModel')
 const User = require("../Model/usermodel")
 const Address = require("../Model/addresModel")
+const Products=require("../Model/productModel")
 const Cart = require("../Model/cartModel")
 const Order = require("../Model/orderModel")
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
+const crypto = require('crypto');
 const saltround = 10
 const HttpStatusCodes = require("../config/httpStatusCode");
 require('dotenv').config();
 const Razorpay = require('razorpay');
+const { error } = require('console')
 
 
 //register
@@ -27,7 +30,7 @@ function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-async function sendVerificationfEmail(email, otp) {
+async function sendVerificationfEmail(email, otp,username) {
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -39,15 +42,24 @@ async function sendVerificationfEmail(email, otp) {
         pass: process.env.NODEMAILER_PASSWORD
       }
     })
+  
+  
     const info = await transporter.sendMail({
       from: process.env.NODEMAILER_EMAIL,
       to: email,
       subject: 'Welcome to Crave!',
-      text: `  Thank you for signing up with Crave. Your OTP is${otp}`,
-      html: ` '<h1>Welcome!</h1> <p>Thank you for signing up with Crave.</p>' <b> Your OTP :${otp}</b>`
-
-
-    })
+      text: `Hello ${username},\n\nWelcome to Crave! We're thrilled to have you join our community.\n\nWith Crave, you now have access to the best selection of furniture to match your style and comfort needs. Explore our catalog, discover new designs, and enjoy exclusive member benefits.\n\nTo complete your registration, please use the OTP below to verify your email:\n\nYour OTP: ${otp}\n\nThank you for choosing Crave. We're excited to help you make your space truly yours.\n\nBest regards,\nThe Crave Team`,
+      html: `
+        <h1>Welcome to Crave, ${username}!</h1>
+        <p>We're thrilled to have you join our community. At Crave, we bring you the best in comfort, quality, and style. Dive in to explore our wide range of furniture, crafted to suit every taste and need.</p>
+        <h2>Your OTP: <strong>${otp}</strong></h2>
+        <p>Please use this OTP to complete your registration and unlock all the benefits Crave has to offer.</p>
+        <p>Thank you for choosing Crave, ${username}. We can't wait to help you make your space uniquely yours!</p>
+        <br>
+        <p>Best regards,<br>The Crave Team</p>
+      `
+    });
+    
 
     return info.accepted.length > 0
 
@@ -76,6 +88,16 @@ const register = async (req, res) => {
       req.session.message = "All fields are required";
       return res.redirect('/register');
     }
+    const usernamePattern = /^[A-Za-z]+$/;
+    if (!usernamePattern.test(username)) {
+      req.session.message = "Please enter a valid Username";
+      return res.redirect("/register");
+    }
+
+    if (password.length < 5) {
+      req.session.message = "Password must 6 digits";
+      return res.redirect("/register");
+    }
     const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
     if (!emailPattern.test(email)) {
       req.session.message = "Please enter a valid email";
@@ -83,7 +105,7 @@ const register = async (req, res) => {
     }
 
     const otp = generateOtp();
-    const emailSent = await sendVerificationfEmail(email, otp);
+    const emailSent = await sendVerificationfEmail(email, otp,username);
     if (!emailSent) {
       return res.json("email sending error")
     }
@@ -276,15 +298,116 @@ const demologin = async (req, res) => {
 };
 
 
-//home section
+//forgotpassword
+
+async function sendVerificationfEmailvald(email, otp) {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      auth: {
+        user: process.env.NODEMAILER_EMAIL,
+        pass: process.env.NODEMAILER_PASSWORD
+      }
+    })
+
+    const info = await transporter.sendMail({
+      from: process.env.NODEMAILER_EMAIL,
+      to: email,
+      subject: 'Your otp for password reset',
+      text: `   Your OTP is${otp}`,
+      html: ` '<h1>Welcome!</h1> <p>Thank you for signing up with Crave.</p>' <b> Your OTP :${otp}</b>`
 
 
-const loadHome = async (req, res) => {
-  const cartCount = req.session.cartCount
-  res.render("user/index", { cartCount })
+    })
+
+    return true
+  } catch (error) {
+    console.error("error sendign  email", error)
+    return false
+  }
 }
 
 
+const loadForgotPassword = async (req, res) => {
+
+  res.render("user/forgotpassword", {
+    message: req.session.message
+  })
+  req.session.message = null
+}
+
+const forgotEmailValid = async (req, res) => {
+  const { email } = req.body
+  try {
+    const user = await User.findOne({ email: email })
+    if (user) {
+      const otp = generateOtp()
+      const emailSent = await sendVerificationfEmailvald(email, otp)
+      if (emailSent) {
+        req.session.userOtp = otp,
+          req.session.email = email
+        res.render("user/forgotpassword-otp")
+        console.log("Your otp is :", otp)
+      } else {
+        res.json({ success: false, message: "Failed to send otp" })
+      }
+    } else {
+      res.render("user/forgotpassword")
+      req.session.message = "User not exixts with this email"
+    }
+  } catch (error) {
+    res.render("404")
+  }
+
+}
+
+const validateforgotOtp = async (req, res) => {
+  try {
+    const enteredotp = req.body.otp
+    if (enteredotp === req.session.userOtp) {
+      res.render("user/resetPassword")
+    } else {
+      res.render("user/forgotpassword-otp")
+    }
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Please try again" })
+  }
+}
+
+const loadresetPassword = async (req, res) => {
+  try {
+    res.render("user/resetPassword")
+  } catch (error) {
+    res.render("404")
+  }
+}
+
+
+const resetPassword = async (req, res) => {
+  try {
+    const { password, Conformpassword } = req.body
+    console.log(password, Conformpassword)
+    const email = req.session.email
+    if (password === Conformpassword) {
+      const hashedPassword = await bcrypt.hash(password, saltround)
+      const user = await User.findOne({ email: email })
+      if (user) {
+        user.password = hashedPassword
+        await user.save()
+      }
+      res.redirect("/login")
+    } else {
+      res.render("user/resetPassword", { message: "Paasord do not match please try again" })
+    }
+
+  } catch (error) {
+    res.render("404")
+  }
+}
 
 
 //profile
@@ -294,7 +417,10 @@ const profile = async (req, res) => {
   try {
     const userid = req.session.userId
     const cartCount = req.session.cartCount
-    const user = await User.findOne({ _id: userid })
+    const user = await User.findOne({ _id: userid ,isBlocked:false})
+    if(!user){
+      res.status(HttpStatusCodes.BAD_REQUEST).redirect("/login")
+    }
     res.render("user/profile", {
       user,
       message: req.session.message,
@@ -372,6 +498,11 @@ const editPassword = async (req, res) => {
       return res.redirect("/profile");
     }
 
+    if(newpassword === oldpassword){
+      req.session.message = "Please enter a new password";
+      return res.redirect("/profile");
+    }
+
     if (newpassword !== cpassword) {
       req.session.message = "New password and confirmation do not match.";
       return res.redirect("/profile");
@@ -402,7 +533,6 @@ const loadAddress = async (req, res) => {
 
   }
 }
-
 
 
 const addAddress = async (req, res) => {
@@ -503,6 +633,8 @@ const deleteAddress = async (req, res) => {
 
 //razorpay
 
+
+
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
@@ -512,16 +644,18 @@ const razorpay = new Razorpay({
 const razorpayPayment = async (req, res) => {
   const amount = req.body.amount;
   const userId = req.session.userId;
-  console.log(amount);
+
 
   if (!userId) {
     return res.redirect("/login");
   }
 
+
+
   try {
 
     const orderOptions = {
-      amount: amount * 100,
+      amount:  Math.round(amount * 100),
       currency: 'INR',
       payment_capture: 1,
     };
@@ -551,6 +685,10 @@ const razorpayPayment = async (req, res) => {
       }
 
       const price = product.discountPrice ? product.discountPrice : product.price;
+      console.log("discount price",product.discountPrice);
+      console.log("product price",product.price);
+      
+      
 
       product.stock -= item.quantity;
       await product.save();
@@ -562,6 +700,7 @@ const razorpayPayment = async (req, res) => {
         price: price,
       });
     }
+
     const newOrder = new Order({
       userId: userId,
       products: products,
@@ -569,14 +708,20 @@ const razorpayPayment = async (req, res) => {
       total: totalAmount,
       status: 'Pending',
       paymentMethod: 'Razorpay',
+      paymentStatus:"Failed",
+      razorpay_order_id: order.id,
     });
 
     await newOrder.save();
     await Cart.updateOne({ userId: userId }, { products: [] });
+    const orderId= newOrder._id
     res.json({
       amount: order.amount,
       order_id: order.id,
+      neworderId: orderId
+    
     });
+
   } catch (error) {
     console.error("Error in setting Razorpay:", error);
     res.status(500).json({ error: 'Error creating Razorpay order' });
@@ -585,6 +730,70 @@ const razorpayPayment = async (req, res) => {
 
 
 
+const paymentSuccess = async (req, res) => {
+    const {orderId } = req.body;
+    try {
+      const order = await Order.findById(orderId)
+     
+      
+        if (!order) {
+            return res.status(400).json({ success: false, message: "Order not found" });
+        }
+
+
+        order.paymentStatus = "Paid";
+     
+        await order.save();
+
+        res.json({ success: true });
+
+    } catch (error) {
+        console.error("Error in payment success:", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
+
+
+
+const retryPayment = async (req, res) => {
+  const orderId = req.params.id; 
+
+  try {
+    const order = await Order.findById(orderId).populate("address");
+    const amount=order.total
+    const orderOptions = {
+      amount: amount * 100,
+      currency: 'INR',
+      payment_capture: 1,
+    };
+    
+
+
+    if (!order) {
+      return res.status(400).json({ error: "Order not found" });
+    }
+
+    const razorpayOrder = await razorpay.orders.create(orderOptions);
+
+    const customerDetails = {
+      customerName: order.address.firstName,
+      customerEmail: order.address.email,
+      customerContact: order.address.mobile,
+    };
+
+    res.json({
+      success: true,
+      amount: razorpayOrder.amount,
+      razorpay_order_id: razorpayOrder.id, 
+      orderId:orderId,
+      customerDetails,
+    });
+
+  } catch (error) {
+    console.error("Error in retry payment:", error);
+    res.status(500).send("Internal server error");
+  }
+};
 
 
 
@@ -600,6 +809,68 @@ const logout = async (req, res) => {
   })
 }
 
+//about us
+
+const loadAboutus= async(req,res)=>{
+res.render("user/aboutUs")
+}
+
+
+
+
+//home section
+
+
+
+const getTopSellingProducts= async()=>{
+  const topProducts= await Order.aggregate([
+      {$unwind:"$products"},
+      {$group:{
+          _id:"$products.productId",
+          totalSold:{$sum:"$products.quantity"}
+      }
+  },
+  {$sort:{totalSold:-1}},
+  {$limit:10},
+  {
+      $lookup:{
+          from:"products",
+          localField:"_id",
+          foreignField:"_id",
+          as:"productDetails"
+      }
+  },
+  { $unwind: "$productDetails" },
+  { $project: {
+      productId: "$_id",
+      name: "$productDetails.name",
+      totalSold: 1
+    }
+  }
+  ])
+  return topProducts
+}
+
+const loadHome = async (req, res) => {
+  try {
+
+
+    const topSellingData= await getTopSellingProducts()
+  
+    const  productId= topSellingData.map(data=>data.productId)
+    const topSellingProducts= await Products.find({_id:{$in:productId}}).limit(3)
+
+    const cartCount = req.session.cartCount
+    res.render("user/index", { cartCount,topSellingProducts })
+    
+  } catch (error) {
+    console.error("error in loading  home page",error)
+    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({message:"internal server error"})
+  }
+
+}
+
+
 
 module.exports = {
   loadLogin,
@@ -611,20 +882,22 @@ module.exports = {
   resendOtp,
   loadHome,
   demologin,
-
   profile,
   editProfile,
   loadAddress,
   addAddress,
   editAddress,
   deleteAddress,
-
   editPassword,
-
   razorpayPayment,
-
-  logout
-
-
-
+  logout,
+  loadForgotPassword,
+  forgotEmailValid,
+  validateforgotOtp,
+  loadresetPassword,
+  resetPassword,
+  paymentSuccess,
+  retryPayment,
+  loadAboutus
+ 
 }

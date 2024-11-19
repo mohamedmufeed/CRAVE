@@ -16,8 +16,27 @@ const loadProducts = async (req, res) => {
     try {
       const product = await Products.find({ isListed: true })
       const cartCount = req.session.cartCount
+
+      
+      const activeOffers = Array.isArray(product.offersApplied)
+      ? product.offersApplied.filter(offer => offer.isActive)
+      : [];
   
-      res.render("user/shop", { product, cartCount })
+
+      const firstOffer = activeOffers[0];
+      const hasDiscount = firstOffer && product.discountPrice && product.discountPrice < product.price;
+  
+  
+      const discountLabel = hasDiscount
+        ? (firstOffer.discountType === 'percentage' && firstOffer.discountValue
+          ? ` ${firstOffer.discountValue}% off`
+          : firstOffer.discountValue
+            ? `₹${firstOffer.discountValue} off`
+            : '')
+        : '';
+  
+  
+      res.render("user/shop", { product, cartCount,discountLabel })
     } catch (error) {
       console.error("Error in product handling:", error);
       res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).render("404");
@@ -321,46 +340,28 @@ const productManagement = async (req, res) => {
   
   const editProducts = async (req, res) => {
     try {
-      const { id } = req.params;
-      const { name, description, price, category, material, stock } = req.body;
-      const images = req.files;
+      const productId = req.params.id;
+      const { name, description, price, material, stock, category, updatedImages } = req.body;
+
   
+      const existingImages = JSON.parse(updatedImages || '[]');
+      const newImages = req.files.map((file) => file.filename);
+      const finalImages = [...existingImages, ...newImages];
   
-      if (!name || !description || !price || !category || !material || !stock) {
-        return res.status(HttpStatusCodes.BAD_REQUEST).send("All fields are required");
-      }
-  
-      if (price <= 0 || stock <= 0) {
-        return res.status(HttpStatusCodes.BAD_REQUEST).send({ message: 'Invalid price or stock value' });
-      }
-  
-      const product = await Products.findById(id);
-  
-      if (!product) {
-        return res.status(HttpStatusCodes.NOT_FOUND).send("Product not found");
-      }
-  
-      let updatedImages = product.images || [];
-      if (images && images.length > 0) {
-        const newImagePaths = images.map(file => file.path);
-        updatedImages = [...updatedImages, ...newImagePaths];
-      }
-  
-  
-      await Products.findByIdAndUpdate(id, {
+      await Products.findByIdAndUpdate(productId, {
         name,
         description,
         price,
-        category,
         material,
         stock,
-        images: updatedImages
+        category,
+        images: finalImages,
       });
   
-      res.redirect("/admin/productManagement");
+      res.redirect('/admin/productManagement');
     } catch (error) {
-      console.error("Error updating product: ", error.message);
-      res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Error updating product: " + error.message);
+      console.error('Error updating product: ', error.message);
+      res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send('Error updating product: ' + error.message);
     }
   };
   
@@ -395,4 +396,15 @@ const productManagement = async (req, res) => {
 
 
   //admin product details ends 
-  module.exports = {loadProducts,productDetails,filterProducts,userserchProducts,productManagement,adminsearchProduct,addProducts,editProducts,listProduct,unlistProduct}
+  module.exports = {
+    loadProducts,
+    productDetails,
+    filterProducts,
+    userserchProducts,
+    productManagement,
+    adminsearchProduct,
+    addProducts,
+    editProducts,
+    listProduct,
+    unlistProduct
+  }

@@ -149,7 +149,6 @@ const loadCart = async (req, res) => {
       let cart = await Cart.findOne({ userId });
   
       if (cart) {
-        // Find the product in the cart to get its quantity
         const productInCart = cart.products.find(p => p.productId.equals(productId));
   
         if (productInCart) {
@@ -164,13 +163,14 @@ const loadCart = async (req, res) => {
   
           return res.redirect('/cart');
         } else {
+
           return res.status(HttpStatusCodes.NOT_FOUND).json({ error: 'Product not found in cart' });
         }
       } else {
         return res.status(HttpStatusCodes.NOT_FOUND).json({ error: 'Cart not found' });
       }
     } catch (error) {
-      res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error removing product from cart' });
+       return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error removing product from cart' });
       console.error("Error in removing item from cart:", error);
     }
   };

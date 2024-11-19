@@ -135,4 +135,6 @@ const loadCategory = async (req, res) => {
     loadCategory,searchCategory,editCategory,listCategory,unlistCategory,addCategory
    }
 
+   
+
 //   admin categories controller ends 

@@ -29,23 +29,34 @@
 
             <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
                 <li><a class="nav-link" href="/profile"><img src="/user/css,js/images/user.svg"></a></li>
-       		<li>
-					<div class="image-container">
-						<a class="nav-link product-image" href="/cart"><img src="/user/css,js/images/cart.svg"></a>
-						{{#if cartCount}}
-    <span class="badge">{{cartCount}}</span> <!-- Display the cart count dynamically -->
-  {{else}}
-   
-  {{/if}}
-					</div>
+                <li>
+                    <div class="image-container">
+                        <a class="nav-link product-image" href="/cart"><img src="/user/css,js/images/cart.svg"></a>
+                        {{#if cartCount}}
+                        <span class="badge">{{cartCount}}</span> <!-- Display the cart count dynamically -->
+                        {{else}}
 
-				</li>
+                        {{/if}}
+                    </div>
+
+                </li>
             </ul>
         </div>
     </div>
 
 </nav>
 <!-- End Header/Navigation -->
+<div class="toast align-items-center text-bg-danger border-0 position-fixed top-0 end-0 m-3" role="alert"
+    aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+        <div class="toast-body">
+            {{message}}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+            aria-label="Close"></button>
+    </div>
+</div>
+
 
 <!-- Start Hero Section -->
 <div class="hero">
@@ -63,12 +74,6 @@
     </div>
 </div>
 <!-- End Hero Section -->
-
-
-
-
-
-
 <div class="untree_co-section before-footer-section">
     <div class="container">
         <div class="row mb-5">
@@ -109,18 +114,29 @@
                                     <td>{{this.quantity}}</td>
                                 </div>
             </form>
-            <td><strong>{{../status}}</strong></td>
-            <td>
-                <button class="btn">  <a href='/profile/orders/orderdetails/{{../_id}}'> view details</a></button>
-                 <form action="/profile/orders/returnorder/{{../_id}}" method="post">
+           <td><strong>{{this.singleStatus}}</strong></td>
+<td>
+  <button class="btn">
+    <a href='/profile/orders/orderdetails/{{../_id}}'>View details</a>
+  </button>
 
-                    <button type="submit" class="btn btn-black btn-sm">Return order</button>
-                </form>
-                <form action="/prodile/orders/cancelorder/{{../_id}}" method="post">
+  {{#if (eq this.singleStatus "Delivered")}}
+    <form action="/profile/orders/returnorder/{{../_id}}/{{this.id}}" method="post">
+      <button type="submit" class="btn btn-black btn-sm">Return order</button>
+    </form>
+  {{else}}
+    {{#ifRazorpayFailed ../paymentMethod ../paymentStatus}}
+    
+        <button id="retryPaymentBtn" type="button" class="btn btn-black btn-sm"   data-order-id="{{../_id}}" >Retry Payment</button>
 
-                    <button type="submit" class="btn btn-black btn-sm">X</button>
-                </form>
-            </td>
+    {{else}}
+      <form action="/profile/orders/cancelorder/{{../_id}}/{{this.id}}" method="post">
+        <button type="submit" class="btn btn-black btn-sm">Cancel order</button>
+      </form>
+    {{/ifRazorpayFailed}}
+  {{/if}}
+</td>
+
             </tr>
             {{/each}}
             {{/each}}
@@ -245,3 +261,79 @@
 <script src="/user/css,js/js/bootstrap.bundle.min.js"></script>
 <script src="/user/css,js/js/tiny-slider.js"></script>
 <script src="/user/css,js/js/custom.js"></script>
+
+<script>
+   document.getElementById("retryPaymentBtn").addEventListener("click", function(e) {
+    e.preventDefault();
+
+    const orderId = e.target.getAttribute('data-order-id');
+
+    fetch(`/razorpay/retry/${orderId}`, {  
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ orderId: orderId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const orderId=data.orderId
+        console.log("the order id is :",orderId)
+        if (data.success) {
+            var options = {
+                key: 'rzp_test_lHnkQ9Xt6QGUnv',
+                amount: data.amount,
+                currency: 'INR',
+                order_id: data.order_id,
+                name: "CRAVE",
+                description: 'Retrying payment for order',
+                handler: function(response) {
+                    if (orderId) {
+                        console.log("hello nana  ivande indn")
+                        fetch("/payment-sucsess", {
+                            method: "POST",
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_signature: response.razorpay_signature,
+                                orderId:orderId
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.href = '/thankyou';
+                            } else {
+                                alert('Payment verification failed');
+                                window.location.href = '/profile/orders';
+                            }
+                        })
+                        .catch(error => console.error('Error verifying payment:', error));
+                    }
+                },
+                prefill: {
+                    name: data.customerName,
+                    email: data.customerEmail,
+                    contact: data.customerContact
+                },
+                theme: { color: '#F37254' },
+                ondismiss: function() {
+                    window.location.href = '/profile/orders';
+                }
+            };
+
+            var rzp = new Razorpay(options);
+            rzp.open();
+        } else {
+            alert('Failed to create a new Razorpay order for retry.');
+        }
+    })
+    .catch(error => {
+        console.error('Error creating Razorpay order:', error);
+        alert('There was an error retrying the payment.');
+    });
+});
+
+
+</script>

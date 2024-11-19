@@ -7,6 +7,7 @@ const productController=require("../Controller/productController")
 const orderController=require("../Controller/orderController")
 const couponController=require("../Controller/couponController")
 const cartController=require("../Controller/cartController")
+const invoiceController=require("../Controller/invoiceController")
 const passport = require("passport");
 const userAuth = require("../middlware/userAuth");
 const { route } = require("./adminrouter");
@@ -45,7 +46,7 @@ router.post("/placeorder", orderController.placeOrder)
 router.get("/profile/orders", orderController.orderHistory)
 router.get("/profile/orders/orderdetails/:id", orderController.orderDetails);
 router.get("/products/filter", productController.filterProducts)
-router.post("/prodile/orders/cancelorder/:id", orderController.cancelOrder)
+router.post("/profile/orders/cancelorder/:orderId/:productId", orderController.cancelOrder)
 router.get("/products/search", productController.userserchProducts)
 router.get("/profile/wishlist", wishlistController.loadWishlist)
 router.post("/profile/wishlist/add", wishlistController.addWishlist)
@@ -57,7 +58,18 @@ router.post("/razorpay",userController.razorpayPayment)
 router.get("/thankyou",orderController.thankyou)
 router.get("/profile/wallet",walletController.loadWallet)
 router.get("/logout",userController.logout)
-router.post('/profile/orders/returnorder/:id',orderController.returnorder)
+router.post('/profile/orders/returnorder/:orderId/:productId',orderController.returnorder)
+router.get("/forgotPassword",userController.loadForgotPassword)
+router.post("/forgot-password-email-validaion",userController.forgotEmailValid)
+router.post("/forgotpassword-verify-otp",userController.validateforgotOtp)
+router.get("/resetPassword",userController.loadresetPassword)
+router.post("/reset-password",userController.resetPassword)
+router.post("/payment-sucsess",userController.paymentSuccess)
+router.post("/razorpay/retry/:id",userController.retryPayment)
+router.get("/invoice/download/:id",invoiceController.invoiceDownload)
+router.get("/aboutus",userController.loadAboutus)
+
+
 
 
 

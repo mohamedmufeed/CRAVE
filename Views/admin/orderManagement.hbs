@@ -6,13 +6,14 @@
   <nav class="menu">
     <ul>
            <li><a href="/admin/dashboard">Dashboard</a></li>
- <li><a href="/admin/productManagement">Products</a></li>
+    <li><a href="/admin/productManagement">Products</a></li>
         <li><a href="/admin/orderManagement">Orders</a></li>
         <li><a href="/admin/couponManagement">Coupon</a></li>
         <li><a href="/admin/inventory">Inventory</a></li>
         <li><a href="/admin/offerManagement">Offers</a></li>
     <li><a href="/admin/userManagement"> User Management</a></li>
       <li><a href="/admin/category"> Category</a></li>
+         <li><a href="/admin/salesReport"> Sales Report</a></li>
   
     </ul>
   </nav>
@@ -71,8 +72,8 @@
             {{/each}}
           </td>
       <td>
-        <form action="/admin/orderManagement/status/{{this._id}}" method="POST" class="status-form">
-          <select name="status" class="" required onchange="this.form.submit()">
+        <form action="/admin/orderManagement/status/{{this._id}}" method="POST" class="status-form  " id="status-dropdown" >
+          <select name="status" class="" required onchange="this.form.submit()" {{#if (eq this.status "Delivered")}}disabled{{/if}}>
             <option value="Pending" {{#if (eq this.status "Pending")}}selected{{/if}}>Pending</option>
             <option value="Confirmed" {{#if (eq this.status "Confirmed")}}selected{{/if}}>Confirmed</option>
             <option value="Shipped" {{#if (eq this.status "Shipped")}}selected{{/if}}>Shipped</option>

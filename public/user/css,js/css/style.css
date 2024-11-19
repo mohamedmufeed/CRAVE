@@ -752,34 +752,39 @@ font-weight: 400;
 padding: 20px;
 }
 
-.search-container {
+.search {
   display: flex;
-  max-width: 300px;
-  width: 100%;
-  justify-content: flex-end;
+  justify-content: center; 
+  align-items: center; /* Center the content vertically */
+  margin: 20px 10px 10px;
 }
+
+.search-container {
+  width: 80%;
+  max-width: 300px; /* Adjust the width as needed */
+}
+
 .search-input {
-  flex-grow: 1;
-  padding: 10px;
-  font-size: 16px;
-  border: 2px solid #ddd;
-  border-right: none;
-  border-radius: 4px 0 0 4px;
-  outline: none;
+  width: 80%; /* Make the input span the full width */
+  padding: 5px; /* Add padding for better usability */
+  border: none; /* Remove default border */
+  border-bottom: 2px solid #ccc; /* Add a thin line under the input */
+  background-color: transparent; /* Make the input background transparent */
+  color: #333; /* Adjust text color */
+  font-size: 16px; /* Increase font size for better visibility */
+  outline: none; /* Remove default focus outline */
+  transition: border-color 0.3s ease; /* Smooth effect for focus */
 }
-.search-button {
-  padding: 10px 15px;
-  font-size: 16px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 0 4px 4px 0;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+
+.search-input::placeholder {
+  color: #ffffff; /* Placeholder color */
 }
-.search-button:hover {
-  background-color: #45a049;
+
+.search-input:focus {
+  border-bottom-color: #007bff; /* Change border color on focus */
 }
+
+
 .search{
   display: flex;
   justify-content: flex-end;

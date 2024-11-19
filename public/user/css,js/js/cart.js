@@ -82,16 +82,17 @@ fetch("/applyCoupon", {
 
       
       successMessageElement.removeAttribute('hidden');
+      showToast(`Coupon applied successfully! Discount: ₹${discountAmount.toFixed(2)}`, 'success');
     } else {
-      console.error("Elements for discount or new total not found.");
+      showToast(data.message || "An error occurred while applying the coupon.", 'error');
     }
   } else {
-    alert(data.message || "An error occurred while applying the coupon");
+    showToast(data.message || "An error occurred while applying the coupon.", 'error');
   }
 })
 .catch(error => {
   console.error("Error applying coupon:", error);
-  alert("There was an error applying the coupon");
+  showToast("There was an error applying the coupon.", 'error');
 });
 }
 
@@ -123,10 +124,57 @@ console.error("Apply Coupon button not found");
         }
     })
     .catch(error => {
-        console.error("Error removing coupon:", error);
-        alert("There was an error removing the coupon");
+      console.error("Error applying coupon:", error);
+      showToast("There was an error removing the coupon.", 'error');
       });
       
     
   }
   document.getElementById("remove-coupon-button").addEventListener("click",removeCoupon)
+
+
+function showToast(message, type = 'success') {
+  const toastContainer = document.getElementById('toast-container');
+
+  const toast = document.createElement('div');
+  
+  toast.classList.add('toast', 'align-items-center', 'border-0', 'position-relative');
+  toast.classList.add(type === 'success' ? 'text-bg-success' : 'text-bg-danger');
+  toast.setAttribute('role', 'alert');
+  toast.setAttribute('aria-live', 'assertive');
+  toast.setAttribute('aria-atomic', 'true');
+
+  toast.innerHTML = `
+    <div class="d-flex">
+      <div class="toast-body">
+        ${message}
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  `;
+
+  toastContainer.appendChild(toast);
+
+  const bootstrapToast = new bootstrap.Toast(toast);
+
+  bootstrapToast.show();
+
+  setTimeout(() => {
+    bootstrapToast.hide();
+    setTimeout(() => {
+      toastContainer.removeChild(toast);
+    }, 500); 
+  }, 5000); 
+}
+
+
+ document.getElementById("apply-coupon-button").addEventListener("click",function(){
+  this.style.display="none"
+  document.getElementById("remove-coupon-button").style.display="block"
+
+
+  document.getElementById("remove-coupon-button").addEventListener("click",function(){
+    this.style.display="none"
+    document.getElementById("apply-coupon-button").style.display="block"
+  })
+ })

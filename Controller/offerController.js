@@ -174,12 +174,14 @@ const loadOffer = async (req, res) => {
         return res.status(404).json({ message: 'Offer not found' });
       }
   
-      res.json({ message: 'Offer deleted successfully' });
+      res.redirect('/admin/offerManagement'); 
     } catch (error) {
       console.error("Error in deleting offer:", error);
       res.status(500).json({ message: 'Server error' });
     }
   };
+
+
 
   module.exports={loadOffer,createOffer,editOffer,deleteOffer}
 

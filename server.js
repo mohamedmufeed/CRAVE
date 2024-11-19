@@ -16,9 +16,6 @@ const exphbs = require('express-handlebars'); // Import express-handlebars
 
 
 app.use(methodOverride('_method'));
-
-
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(session({
@@ -99,6 +96,17 @@ hbs.registerHelper('formatCurrency', function (value) {
     return options.inverse(this); 
   });
   
+hbs.registerHelper('ifRazorpayFailed', function(paymentMethod, paymentStatus, options) {
+  if (paymentMethod === 'Razorpay' && paymentStatus === 'Failed') {
+    return options.fn(this); 
+  } else {
+    return options.inverse(this);  
+  }
+});
+hbs.registerHelper('json', function(context) {
+  return JSON.stringify(context);
+});
+
 
 
 //Helper ends
@@ -107,19 +115,10 @@ hbs.registerHelper('formatCurrency', function (value) {
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'hbs');
 app.set("views", path.join(__dirname, "views"));
-
 app.use("/uploads", express.static(path.join(__dirname, "uploads")))
-
-
 app.use("/admin", adminrouter);
 app.use("/", userRouter)
-
-
 connectdb();
-
-
-
-
 app.listen(3000, () => {
   console.log("server is working on 3000");
 });

@@ -1,24 +1,139 @@
+<link rel="stylesheet" href="/admin/productManagement.css">
+<link rel="stylesheet" href="/admin/dashboard.css">
+<!-- Add this inside the <head> tag or before your closing </body> tag -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="stylesheet" href="/admin/dashboard.css">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="logo">
-     <a class="navbar-brand" href="index.html">CRAV<span style="font-weight:lighter;">E</span></a>
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="logo">
+    <a class="navbar-brand" href="index.html">CRAV<span style="font-weight:lighter;">E</span></a>
+  </div>
+  <nav class="menu">
+    <ul>
+      <li><a>Dashboard</a></li>
+      <li><a href="/admin/productManagement">Products</a></li>
+      <li><a href="/admin/orderManagement">Orders</a></li>
+      <li><a href="/admin/couponManagement">Coupon</a></li>
+      <li><a href="/admin/inventory">Inventory</a></li>
+      <li><a href="/admin/offerManagement">Offers</a></li>
+      <li><a href="/admin/userManagement">User Management</a></li>
+      <li><a href="/admin/category">Category</a></li>
+      <li><a href="/admin/salesReport">Sales Report</a></li>
+        
+    </ul>
+  </nav>
+</aside>
+
+<div class="main-content">
+  <header class="dashboard-header">
+    <h1>Dashboard</h1>
+  </header>
+
+ 
+ <select id="salesToggle" class="sales-toggle">
+  <option value="yearly">Yearly Sales</option>
+  <option value="monthly">Monthly Sales</option>
+</select>
+
+<div class="container">
+  <h2>Sales Dashboard</h2>
+  <div class="charts-container">
+    <div>
+      <h3 id="chartTitle">Yearly Sales</h3>
+      <canvas id="salesChart"></canvas>
     </div>
-    <nav class="menu">
-      <ul>
-        <li><a>Dashboard</a></li>
-        <li><a href="/admin/productManagement">Products</a></li>
-        <li><a href="/admin/orderManagement">Orders</a></li>
-        <li><a href="/admin/couponManagement">Coupon</a></li>
-        <li><a href="/admin/inventory">Inventory</a></li>
-        <li><a href="/admin/offerManagement">Offers</a></li>
-    <li><a href="/admin/userManagement"> User Management</a></li>
-      <li><a href="/admin/category"> Category</a></li>
-         <li><a href="/admin/salesReport"> Sales Report</a></li>
-  
-      
-      </ul>
-    </nav>
-  </aside>
+  </div>
+</div>
+
+
+
+ <!-- Top-Selling Sections -->
+<section class="top-selling-section">
+  <!-- Best Selling Products Box -->
+  <div class="box">
+    <h3>Top 10 Best Selling Products</h3>
+    <ul>
+      {{#each TopSellingProducts}}
+        <li>{{this.name}} - Sold: {{this.totalSold}}</li>
+      {{/each}}
+    </ul>
+  </div>
+  <!-- Best Selling Categories Box -->
+  <div class="box">
+    <h3>Top 10 Best Selling Categories</h3>
+    <ul>
+      {{#each TopSellingCategories}}
+        <li>{{this.categoryName}} - Sold: {{this.totalSold}}</li>
+      {{/each}}
+    </ul>
+  </div>
+</section>
+
+
+</div>
+<script>
+  const yearlySalesData = JSON.parse('{{{yearlySalesData}}}'); 
+  const monthlySalesData = JSON.parse('{{{monthlySalesData}}}'); 
+console.log("year",yearlySalesData)
+console.log('month',monthlySalesData)
+  const years = yearlySalesData.map(item => item.year);
+  const yearlySales = yearlySalesData.map(item => item.totalSales);
+
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const monthlySales = monthlySalesData.map(item => item.totalSales);
+
+  const ctx = document.getElementById('salesChart').getContext('2d');
+  let salesChart = new Chart(ctx, {
+    type: 'line', 
+    data: {
+      labels: years, 
+      datasets: [{
+        label: 'Total Sales (Yearly)',
+        data: yearlySales,
+        borderColor: 'rgba(54, 162, 235, 1)',
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 200
+          }
+        }
+      }
+    }
+  });
+
+  // Event listener to switch between yearly and monthly data
+  document.getElementById('salesToggle').addEventListener('change', function () {
+    const selectedOption = this.value;
+    let labels = [];
+    let data = [];
+    let chartTitle = '';
+
+    if (selectedOption === 'yearly') {
+      labels = years;
+      data = yearlySales;
+      chartTitle = 'Yearly Sales';
+      salesChart.config.type = 'line';
+    } else {
+      labels = months;
+      data = monthlySales;
+      chartTitle = 'Monthly Sales (2024)';
+      salesChart.config.type = 'bar';
+    }
+
+    document.getElementById('chartTitle').textContent = chartTitle;
+    salesChart.data.labels = labels;
+    salesChart.data.datasets[0].data = data;
+    salesChart.update();
+  });
+</script>
+
+
+
 

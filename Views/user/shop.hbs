@@ -21,7 +21,7 @@
 					<a class="nav-link" href="/">Home</a>
 				</li>
 				<li class="active"><a class="nav-link" href="shop.html">Shop</a></li>
-				<li><a class="nav-link" href="about.html">About us</a></li>
+		<li><a class="nav-link" href="/aboutus">About us</a></li>
 				<li><a class="nav-link" href="services.html">Services</a></li>
 				<li><a class="nav-link" href="blog.html">Blog</a></li>
 				<li><a class="nav-link" href="contact.html">Contact us</a></li>
@@ -54,14 +54,15 @@
 		<div class="search-container">
 			<form action="/products/search" method="GET">
 				<input type="text" name="search" class="search-input" placeholder="Search...">
-				<button class="search-button" type="submit">Search</button>
+	
 			</form>
 		</div>
 
 
 	</div>
 
-
+	{{!-- <form action="/products/search" method="GET"></form>
+<input type="text" name="search" class="search-input" placeholder="Search..."> --}}
 
 	< <div class="container">
 		<div class="row justify-content-between">
@@ -137,7 +138,7 @@
 						<a class="product-item" href="/productdetails/{{this.id}}">
 							<img src="/uploads/{{this.images.[0]}}" class="img-fluid product-thumbnail">
 							<h3 class="product-title">{{this.name}}</h3>
-							<strong class="product-price">₹{{this.price}} {{discountLabel}}</strong>
+							<strong class="product-price">₹{{this.price}} {{this.discountLabel}}</strong>
 
                          	<form action="/cart/add" method="post">
 								<input type="hidden" name="productId" value="{{product._id}}">

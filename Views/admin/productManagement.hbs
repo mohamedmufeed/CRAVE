@@ -16,6 +16,7 @@
         <li><a href="/admin/offerManagement">Offers</a></li>
     <li><a href="/admin/userManagement"> User Management</a></li>
       <li><a href="/admin/category"> Category</a></li>
+         <li><a href="/admin/salesReport"> Sales Report</a></li>
 
     </ul>
   </nav>
@@ -159,7 +160,8 @@
       <label for="productCategory">Category:</label>
       <select id="editProductCategory" name="category" required>
         {{#each categories}}
-        <option value="{{this._id}}">{{this.name}}</option>
+   <option value="{{this._id}}" {{#if (eq this.name ../selectedCategory)}}selected{{/if}}>{{this.name}}</option>
+
         {{/each}}
       </select>
 
@@ -170,18 +172,14 @@
       <input type="number" id="editProductStock" name="stock" value="{{this.stock}}" required />
       <input type="text" id="productId" value="{{this._id}}" hidden>
       <label for="productImage" class="file-upload-label">Update Images:</label>
-      <input type="file" id="editProductImage" name="images" accept="image/*" multiple />
-    
-      <div id="image-preview-container">
-        <p>Existing Images:</p>
-        <div style="display: flex; flex-wrap: wrap;">
-          {{#each this.images}}
-          <div style="margin-right: 10px; height: 150px; width: 150px;">
-            <img src="/uploads/{{this}}" alt="Product Image" style="width: 100%; height: 100%; object-fit: cover;" />
-          </div>
-          {{/each}}
-        </div>
-      </div>
+<input type="file" name="images" id="editProductImage" multiple />
+
+   <div id="image-preview-container">
+  <p>Existing Images:</p>
+  <div id="existing-images" style="display: flex; flex-wrap: wrap;"></div>
+</div>
+<input type="hidden" id="updatedImages" name="updatedImages" />
+
 
       <button type="submit" class="btn" id="submit-btn">Update Product</button>
     </form>
@@ -241,29 +239,27 @@
   let cropper;
   let croppedImages = [];
   let currentImageIndex = 0;
-  let currentImageElement = null; // Store reference to the clicked image
+  let currentImageElement = null; 
 
   document.getElementById('productImage').addEventListener('change', function (event) {
     const files = event.target.files;
     const previewContainer = document.getElementById('image-preview-container');
-    previewContainer.innerHTML = ''; // Clear previous previews
-
+    previewContainer.innerHTML = ''; 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const reader = new FileReader();
 
       reader.onload = function (e) {
-        // Create a container for the image and buttons
+     
         const imageContainer = document.createElement('div');
         imageContainer.style.display = 'flex';
-        imageContainer.style.flexDirection = 'column'; // Stack vertically
+        imageContainer.style.flexDirection = 'column'; 
 
         const image = new Image();
         image.src = e.target.result;
         image.style.maxWidth = '200px';
         image.style.margin = '10px';
 
-        // Create Change Image button
         const changeImageBtn = document.createElement("button");
         changeImageBtn.textContent = "Change Image";
         changeImageBtn.classList.add("btn", "btn-warning", "w-50", "btn-sm", "m-2");
@@ -278,7 +274,7 @@
             if (newFile && newFile.type.startsWith('image/')) {
               const newReader = new FileReader();
               newReader.onload = function (event) {
-                image.src = event.target.result; // Replace the image source
+                image.src = event.target.result; 
               };
               newReader.readAsDataURL(newFile);
             } else {
@@ -287,38 +283,32 @@
           };
         });
 
-        // Create Delete button
         const deleteImageBtn = document.createElement("button");
         deleteImageBtn.textContent = "Delete Image";
         deleteImageBtn.classList.add("btn", "btn-danger", "w-50", "btn-sm", "m-2");
         deleteImageBtn.addEventListener("click", function () {
-          previewContainer.removeChild(imageContainer); // Remove the image container
+          previewContainer.removeChild(imageContainer); 
         });
 
-        // Append image and buttons to the container
         imageContainer.appendChild(image);
         imageContainer.appendChild(changeImageBtn);
         imageContainer.appendChild(deleteImageBtn);
 
-        // Append the container to the preview container
         previewContainer.appendChild(imageContainer);
 
-        // Initialize cropping when the user clicks on the image
         image.addEventListener('click', function () {
           const cropperModal = document.getElementById('imageCropperModal');
           const cropperImage = document.getElementById('cropperImage');
           cropperImage.src = e.target.result;
           cropperModal.style.display = 'block';
           currentImageIndex = i;
-          currentImageElement = image; // Store reference to the clicked image
-
-          // Destroy any existing cropper instance before creating a new one
+          currentImageElement = image; 
           if (cropper) {
             cropper.destroy();
           }
 
           cropper = new Cropper(cropperImage, {
-            aspectRatio: 1 / 1,  // Change aspect ratio as needed
+            aspectRatio: 1 / 1,  
             viewMode: 1
           });
         });
@@ -328,28 +318,23 @@
     }
   });
 
-  // Add the cropButton listener outside the loop to prevent multiple listeners
   document.getElementById('cropButton').addEventListener('click', function () {
     if (cropper) {
       const croppedCanvas = cropper.getCroppedCanvas();
       if (croppedCanvas) {
         const croppedImageURL = croppedCanvas.toDataURL('image/jpeg');
 
-        // Push the cropped image for uploading later
         croppedImages[currentImageIndex] = croppedImageURL;
 
-        // Replace the original image in the preview with the cropped one
         const croppedImage = new Image();
         croppedImage.src = croppedImageURL;
         croppedImage.style.maxWidth = '200px';
         croppedImage.style.margin = '10px';
 
-        // Use the reference of the clicked image to replace it directly
         if (currentImageElement) {
-          currentImageElement.src = croppedImageURL; // Update the image source
+          currentImageElement.src = croppedImageURL; 
         }
 
-        // Hide modal and destroy cropper
         document.getElementById('imageCropperModal').style.display = 'none';
         cropper.destroy();
         cropper = null;
@@ -357,7 +342,6 @@
     }
   });
 
-  // Close the modal when user clicks on "Close" or elsewhere
   document.getElementById('closeModalButton').addEventListener('click', function () {
     if (cropper) {
       cropper.destroy();
@@ -369,37 +353,64 @@
 
   // edit modal function  
 
-  function openEditProductModal(id, name, description, price, material, stock, category, images) {
+ function openEditProductModal(id, name, description, price, material, stock, category, images) {
+  document.getElementById('editProductName').value = name;
+  document.getElementById('editProductDescription').value = description;
+  document.getElementById('editProductPrice').value = price;
+  document.getElementById('editProductMaterial').value = material;
+  document.getElementById('editProductStock').value = stock;
+  document.getElementById('editProductCategory').value = category;
+  document.getElementById('productId').value = id;
 
-    // Populate form fields with the provided product data
-    document.getElementById('editProductName').value = name;
-    document.getElementById('editProductDescription').value = description;
-    document.getElementById('editProductPrice').value = price;
-    document.getElementById('editProductMaterial').value = material;
-    document.getElementById('editProductStock').value = stock;
-    document.getElementById('editProductCategory').value = category;
-    document.getElementById("productId").value = id
+  const existingImagesContainer = document.getElementById('existing-images');
+  existingImagesContainer.innerHTML = ''; // Clear previous images
 
+  images.forEach((image, index) => {
+    const imgWrapper = document.createElement('div');
+    imgWrapper.style.margin = '5px';
+    imgWrapper.style.position = 'relative';
 
+    const imgElement = document.createElement('img');
+    imgElement.src = `/uploads/${image}`;
+    imgElement.alt = `Product Image ${index + 1}`;
+    imgElement.style.width = '100px';
+    imgElement.style.height = '100px';
+    imgElement.style.objectFit = 'cover';
 
-    // Populate existing images for preview (if needed)
-    const imagePreviewContainer = document.getElementById('image-preview-container');
-    imagePreviewContainer.innerHTML = ''; // Clear previous previews
-    images.forEach((image) => {
-      const imgElement = document.createElement('img');
-      imgElement.src = image; // Use the existing image URL
-      imgElement.alt = 'Product Image';
-      imgElement.style.width = '100px'; // Adjust size as needed
-      imgElement.style.margin = '5px'; // Adjust margin as needed
-      imagePreviewContainer.appendChild(imgElement);
-    });
+    const changeBtn = document.createElement('button');
+    changeBtn.textContent = 'Change Image';
+    changeBtn.style.marginTop = '5px';
+    changeBtn.style.display = 'block';
+    changeBtn.style.cursor = 'pointer';
 
-    // Set the form action dynamically with the correct product ID
-    document.getElementById('editProductForm').action = `/admin/product/edit/${id}`;
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.style.display = 'none'; // Hidden by default
+    fileInput.accept = 'image/*';
 
-    // Display the modal
-    document.getElementById('editProductModal').style.display = 'block';
+    // Handle file selection
+   fileInput.addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      imgElement.src = e.target.result; // Update preview
+    };
+    reader.readAsDataURL(file);
+    images[index] = file; // Update image array with new file
   }
+});
+
+    changeBtn.addEventListener('click', () => fileInput.click());
+
+    imgWrapper.appendChild(imgElement);
+    imgWrapper.appendChild(changeBtn);
+    imgWrapper.appendChild(fileInput);
+    existingImagesContainer.appendChild(imgWrapper);
+  });
+
+  document.getElementById('editProductModal').style.display = 'block';
+}
 
 
 
@@ -418,41 +429,41 @@
   document.getElementById('editProductForm').addEventListener('submit', submitEditProductForm);
 
   function submitEditProductForm(e) {
-    e.preventDefault(); // Prevent the default form submission
+  e.preventDefault();
 
-    let name = document.getElementById('editProductName').value;
-    let description = document.getElementById('editProductDescription').value
-    let price = document.getElementById('editProductPrice').value
-    let material = document.getElementById('editProductMaterial').value
-    let stock = document.getElementById('editProductStock').value
-    let category = document.getElementById('editProductCategory').value
-    let id = document.getElementById("productId").value
+  const formData = new FormData();
+  formData.append('name', document.getElementById('editProductName').value);
+  formData.append('description', document.getElementById('editProductDescription').value);
+  formData.append('price', document.getElementById('editProductPrice').value);
+  formData.append('material', document.getElementById('editProductMaterial').value);
+  formData.append('stock', document.getElementById('editProductStock').value);
+  formData.append('category', document.getElementById('editProductCategory').value);
 
-    const formData = { name, description, price, material, stock, category }
-
-
-
-    const response = fetch(`/admin/product/edit/${id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(formData)
-    })
-      .then(response => {
-        if (response.ok) {
-          closeEditProductModal();
-          window.location.href = '/admin/productManagement';
-        } else {
-          console.error('Failed to update product');
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+  const imagesInput = document.getElementById('editProductImage');
+  if (imagesInput.files.length > 0) {
+    for (let i = 0; i < imagesInput.files.length; i++) {
+      formData.append('images', imagesInput.files[i]);
+    }
   }
 
+  const id = document.getElementById('productId').value;
+  fetch(`/admin/product/edit/${id}`, {
+    method: 'POST',
+    body: formData,
+  })
+   .then((response) => {
+  if (response.ok) {
+    closeEditProductModal();
+    window.location.href = '/admin/productManagement';
+  } else {
+    alert('Failed to update product images');
+  }
+})
+.catch((error) => {
+  console.error('Error:', error);
+});
 
+}
 
 
 

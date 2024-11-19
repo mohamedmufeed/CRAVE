@@ -15,6 +15,7 @@
       <li><a href="/admin/offerManagement">Offers</a></li>
       <li><a href="/admin/userManagement"> User Management</a></li>
       <li><a href="/admin/category"> Category</a></li>
+      <li><a href="/admin/salesReport"> Sales Report</a></li>
 
     </ul>
   </nav>
@@ -47,6 +48,7 @@
             <th>Discount Type</th>
             <th>Discount Value</th>
             <th>Minimum Cart value</th>
+            <th>Maximum Purchase Limit</th>
             <th>Usage limit</th>
             <th>Expire Date</th>
             <th>Description</th>
@@ -64,6 +66,7 @@
             <td>{{this.discountType}}</td>
             <td>{{this.discountValue}}</td>
             <td> {{this.minimumCartValue}} </td>
+            <td> {{this.maximumPurchaseLimit}} </td>
             <td>{{this.usageLimit}}</td>
             <td>{{formatDate this.expiryDate}}</td>
             <td> {{this.description}} </td>
@@ -87,6 +90,22 @@
             </td>
             <td>
               <div style="display: flex; gap: 20px;">
+             <button class="btn btn-dark" 
+        onclick="openEditCouponModal('{{this._id}}', 
+                                     '{{this.code}}', 
+                                     '{{this.discountType}}', 
+                                     '{{this.discountValue}}', 
+                                     '{{this.minimumCartValue}}', 
+                                     '{{this.maximumPurchaseLimit}}', 
+                                     '{{this.usageLimit}}', 
+                                     {{json this.applicableProducts}}, 
+                                     {{json this.applicableCategories}}, 
+                                     '{{this.expiryDate}}', 
+                                     '{{this.description}}')">
+    Edit 
+</button>
+
+
                 <form action="/admin/couponManagement/delete/{{this.id}}" method="post">
                   <button type="submit" class="btn btn-dark">Delete</button>
                 </form>
@@ -157,6 +176,11 @@
       <input type="number" id="minimumCartValue" name="minimumCartValue" min="0"
         placeholder="Enter minimum cart value" />
 
+
+      <label for="maximumPurchhaseLimit">Mximum Purchase Limit:</label>
+      <input type="number" id="maximumPurchhaseLimit" name="maximumPurchaseLimit" min="0"
+        placeholder="Enter maximum purchase  Limit" />
+
       <label for="usageLimit">Usage Limit:</label>
       <input type="number" id="usageLimit" name="usageLimit" min="1" placeholder="Enter usage limit" />
 
@@ -190,6 +214,70 @@
 
 
 
+{{!-- Edit Coupon Modal --}}
+<div class="modal" id="editCouponModal" style="display:none;">
+  <div class="modal-content">
+    <span class="close" onclick="closeEditCouponModal()">&times;</span>
+    <h2>Edit Coupon</h2>
+    <form id="EditCouponForm" method="POST" action="/admin/couponManagement/edit">
+
+      <!-- Hidden field for Coupon ID -->
+      <input type="hidden" id="couponId" name="couponId" />
+
+      <label for="code">Coupon Code:</label>
+      <input type="text" id="editCode" name="code" required placeholder="Enter coupon code" />
+
+      <label for="discountType">Discount Type:</label>
+      <select id="editDiscountType" name="discountType" required>
+        <option value="fixed">Fixed</option>
+        <option value="percentage">Percentage</option>
+      </select>
+
+      <label for="discountValue">Discount Value:</label>
+      <input type="number" id="editDiscountValue" name="discountValue" required min="0"
+        placeholder="Enter discount value" />
+
+      <label for="minimumCartValue">Minimum Cart Value:</label>
+      <input type="number" id="editMinimumCartValue" name="minimumCartValue" min="0"
+        placeholder="Enter minimum cart value" />
+
+      <label for="maximumPurchaseLimit">Maximum Purchase Limit:</label>
+      <input type="number" id="editMaximumPurchaseLimit" name="maximumPurchaseLimit" min="0"
+        placeholder="Enter maximum purchase limit" />
+
+      <label for="usageLimit">Usage Limit:</label>
+      <input type="number" id="editUsageLimit" name="usageLimit" min="1" placeholder="Enter usage limit" />
+
+      <label for="editApplicableProducts">Applicable Products:</label>
+      <select id="editApplicableProducts" name="applicableProducts" class="select-group" multiple>
+        <option value="all">All Products</option>
+        {{#each product}}
+        <option value="{{this._id}}">{{this.name}}</option>
+        {{/each}}
+      </select>
+
+      <label for="editApplicableCategories">Applicable Categories:</label>
+      <select id="editApplicableCategories" name="applicableCategories" class="select-group" multiple>
+        <option value="all">All Categories</option>
+        {{#each category}}
+        <option value="{{this._id}}">{{this.name}}</option>
+        {{/each}}
+      </select>
+
+      <label for="editExpiryDate">Expiration Date:</label>
+      <input type="date" id="editExpiryDate" name="expiryDate" required />
+
+      <label for="editDescription">Description:</label>
+      <textarea id="editDescription" name="description" required placeholder="Describe the coupon offer..."></textarea>
+
+      <button type="submit" class="btn">Update Coupon</button>
+    </form>
+  </div>
+</div>
+{{!-- End Edit Coupon Modal --}}
+
+
+
 
 <script src="/js/script.js"></script> <!-- Link to your JavaScript file -->
 <script>
@@ -207,5 +295,47 @@
 
 
   // ---------------add modal ends---------------
+
+
+
+  // -------------edit modal strats-----------------
+  function openEditCouponModal(id, code, discountType, discountValue, minimumCartValue, maximumPurchaseLimit, usageLimit, applicableProducts, applicableCategories, expiryDate, description) {
+    document.getElementById("couponId").value = id;
+
+    document.getElementById("editCode").value = code;
+    document.getElementById("editDiscountType").value = discountType;
+    document.getElementById("editDiscountValue").value = discountValue;
+    document.getElementById("editMinimumCartValue").value = minimumCartValue;
+    document.getElementById("editMaximumPurchaseLimit").value = maximumPurchaseLimit;
+    document.getElementById("editUsageLimit").value = usageLimit;
+    document.getElementById("editExpiryDate").value = expiryDate;
+    document.getElementById("editDescription").value = description;
+
+    const productsSelect = document.getElementById("editApplicableProducts");
+    productsSelect.innerHTML = '<option value="all">All Products</option>';
+    applicableProducts.forEach(product => {
+      const option = document.createElement("option");
+      option.value = product._id;
+      option.text = product.name;
+      option.selected = true;
+      productsSelect.appendChild(option);
+    });
+
+    const categoriesSelect = document.getElementById("editApplicableCategories");
+    categoriesSelect.innerHTML = '<option value="all">All Categories</option>';
+    applicableCategories.forEach(category => {
+      const option = document.createElement("option");
+      option.value = category._id;
+      option.text = category.name;
+      option.selected = true;
+      categoriesSelect.appendChild(option);
+    });
+
+    document.getElementById("editCouponModal").style.display = "block";
+  }
+
+  function closeEditCouponModal() {
+    document.getElementById("editCouponModal").style.display = "none";
+  }
 
 </script>

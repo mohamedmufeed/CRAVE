@@ -74,7 +74,8 @@
     <h1>Order Details</h1>
     <div class="order-summary">
         <div>
-            <h2>Order #{{this.orderId}}</h2>
+        <h2>Order #{{order._id}}</h2>
+
             <p>Placed on: {{formatDate order.createdAt}}</p> 
         </div>
         <div>
@@ -110,10 +111,14 @@
 
     <div class="order-status">
         <h2>Order Status</h2>
-        <p>{{order.status}}</p>
-        
-        <p>Estimated delivery: {{order.deliveryDate}}</p> <!-- Use formatDate helper -->
+        <p> Delivery Status: {{order.status}}</p>
+        <p>Payment Status: {{order.paymentStatus}}</p>
+        <p>Estimated delivery: {{formatDate deliveryDate}}</p> <!-- Use formatDate helper -->
     </div>
+	<button  class="btn">
+		<a  style="color: #fff; text-decoration: none;"  href="/invoice/download/{{order._id}}">Invoice Dowload</a>
+
+		</button>
 </div>
 
 

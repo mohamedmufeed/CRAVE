@@ -31,16 +31,16 @@
 			</ul>
 
 			<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-			
+
 				<li><a class="nav-link" href="/profile"><img src="/user/css,js/images/user.svg"></a></li>
-		<li>
+				<li>
 					<div class="image-container">
 						<a class="nav-link product-image" href="/cart"><img src="/user/css,js/images/cart.svg"></a>
 						{{#if cartCount}}
-    <span class="badge">{{cartCount}}</span> <!-- Display the cart count dynamically -->
-  {{else}}
-   
-  {{/if}}
+						<span class="badge">{{cartCount}}</span> <!-- Display the cart count dynamically -->
+						{{else}}
+
+						{{/if}}
 					</div>
 
 				</li>
@@ -51,16 +51,28 @@
 </nav>
 <!-- End Header/Navigation -->
 
+
+{{!-- toast --}}
+<div id="toast" class="toast align-items-center text-bg-danger border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+  <div class="d-flex">
+    <div class="toast-body">
+    Out of stock!
+    </div>
+    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+</div>
+{{!-- tost ends --}}
+
 <main class="container">
 	<span class="breadcrumb"> <a href="/"> Home /</a> <a href="/products"> sofa & chairs / </a> <a href="">plastic chair
 		</a> </span>
 
-	<div class="product-details">
+	<div class="product-details mt-5">
 		<div class="product-images">
 			<div class="side-images">
-				<img class="more-images" src="/uploads/{{product.images.[0]}}" alt="Chair side view" />
-				<img class="more-images" src="/uploads/{{product.images.[1]}}" alt="Chair front view" />
-			<img class="more-images" src="/uploads/{{product.images.[2]}}" alt="Chair front view" />
+				<img class="more-images" src="/uploads/{{product.images.[0]}}" alt="Chair side view" onclick="updateMainImage(this)" />
+				<img class="more-images" src="/uploads/{{product.images.[1]}}" alt="Chair front view" onclick="updateMainImage(this)" />
+				<img class="more-images" src="/uploads/{{product.images.[2]}}" alt="Chair front view"  onclick="updateMainImage(this)" />
 			</div>
 
 
@@ -70,27 +82,29 @@
     --zoom-x: 0%;
     --zoom-y: 0%;
     --display: none;">
+	
 				<img id="main-image" src="/uploads/{{product.images.[0]}}" alt="Product Image" />
 			</div>
 		</div>
 
 
 		<div class="product-info">
-<span style="display: flex; justify-content: flex-end;" onclick="addToWishlist(this, '{{product._id}}')">
-  <i class="{{#if flag}}fa-solid{{else}}fa-regular{{/if}} fa-heart" id="wishlistIcon-{{product._id}}" style="font-size: 25px; cursor: pointer;"></i>
-</span>
+			<span style="display: flex; justify-content: flex-end;" onclick="addToWishlist(this, '{{product._id}}')">
+				<i class="{{#if flag}}fa-solid{{else}}fa-regular{{/if}} fa-heart" id="wishlistIcon-{{product._id}}"
+					style="font-size: 25px; cursor: pointer;"></i>
+			</span>
 
 
 
 
-<h1 class="product-title">
-  {{product.name}}
-  {{#if discountLabel}}  <!-- Check if discountLabel is defined -->
-    <span style="opacity: 0.8;">
-      ({{discountLabel}})  <!-- Display the discount label -->
-    </span>
-  {{/if}}
-</h1>
+			<h1 class="product-title">
+				{{product.name}}
+				{{#if discountLabel}} <!-- Check if discountLabel is defined -->
+				<span style="opacity: 0.8;">
+					({{discountLabel}}) <!-- Display the discount label -->
+				</span>
+				{{/if}}
+			</h1>
 
 
 
@@ -105,40 +119,24 @@
 
 
 
-<div class="product-price">
-  {{#if product.discountPrice}}
-    <span>₹{{product.discountPrice}} </span>
- <del> <span style="color: rgba(73, 73, 73, 0.804); font-size: 17px;"> ₹{{product.price}}</span> </del>
-  {{else}}
-    <span>₹{{product.price}}</span>
-  {{/if}}
-</div>
-
-		<span class="stock">
-  {{#if product.stock}}
-    <span>Available Stock: {{product.stock}}</span>
-  {{else}}
-   <span class="outOfstock">  Out of Stock   !</span>
-  {{/if}}
-</span>
-
-			<div class="wood-options">
-				<span>Choose Wood Type:</span>
-				<div class="wood-option" style="border: 1px solid #ccc; padding: 10px; margin: 5px; cursor: pointer;"
-					data-wood-type="Teak">
-					<strong>Teak</strong>
-				</div>
-				<div class="wood-option" style="border: 1px solid #ccc; padding: 10px; margin: 5px; cursor: pointer;"
-					data-wood-type="Oak">
-					<strong>Oak</strong>
-				</div>
-
-				<div class="wood-option" style="border: 1px solid #ccc; padding: 10px; margin: 5px; cursor: pointer;"
-					data-wood-type="Mahogany">
-					<strong>Mahogany</strong>
-				</div>
-
+			<div class="product-price">
+				{{#if product.discountPrice}}
+				<span>₹{{product.discountPrice}} </span>
+				<del> <span style="color: rgba(73, 73, 73, 0.804); font-size: 17px;"> ₹{{product.price}}</span> </del>
+				{{else}}
+				<span>₹{{product.price}}</span>
+				{{/if}}
 			</div>
+
+			<span class="stock">
+				{{#if product.stock}}
+				<span>Available Stock: {{product.stock}}</span>
+				{{else}}
+				<span class="outOfstock"> Out of Stock !</span>
+				{{/if}}
+			</span>
+
+			
 
 			<div class="tabs">
 				<div class="tab active">Materials</div>
@@ -153,16 +151,28 @@
 			</div>
 
 			<form action="/cart/add" method="post">
-			<input type="hidden" name="productId" value="{{product._id}}">
+				<input type="hidden" name="productId" value="{{product._id}}">
+				{{#if product.stock}}
 				<button class="btn btn-black btn-sm btn-block">Add to cart</button>
-				<button class="btn btn-black btn-sm btn-block"><a style="color: #fff; text-decoration: none;" href="/cart">Go to cart</a></button>
+				<button class="btn btn-black btn-sm btn-block"><a style="color: #fff; text-decoration: none;"
+						href="/cart">Go to cart</a></button>
+				{{else}}
+				<div class="position-relative">
+					<button class="btn btn-black btn-sm btn-block" disabled>Add to cart</button>
+					<button class="btn btn-black btn-sm btn-block" disabled><a style="color: #000000; text-decoration: none;" href="/cart">Go to cart</a></button>
+					<div class="position-absolute top-0 start-0 w-100 h-100" style="cursor: not-allowed; z-index: 10;"
+						onclick="showToast()">
+					</div>
+				</div>
+
+				{{/if}}
 			</form>
-					
+
 		</div>
 	</div>
 
 
-	<h2 class="section-title">Related Products</h2>
+	<h2 class="section-title mt-6">Related Products</h2>
 	<div class="untree_co-section product-section before-footer-section">
 		<div class="container">
 			<div class="row">
@@ -170,18 +180,18 @@
 				{{#each relatedProducts}}
 				<!-- Start Column 2 -->
 				<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="/productdetails/{{this.id}}">
-							<img src="/uploads/{{this.images.[0]}}" class="img-fluid product-thumbnail">
-							<h3 class="product-title">{{this.name}}</h3>
-							<strong class="product-price">₹{{this.price}}</strong>
+					<a class="product-item" href="/productdetails/{{this.id}}">
+						<img src="/uploads/{{this.images.[0]}}" class="img-fluid product-thumbnail">
+						<h3 class="product-title">{{this.name}}</h3>
+						<strong class="product-price">₹{{this.price}}</strong>
 
-							<span class="icon-cross">
-								<img src="/user/css,js/images/cross.svg" class="img-fluid">
-							</span>
-						</a>
-					</div> 
+						<span class="icon-cross">
+							<img src="/user/css,js/images/cross.svg" class="img-fluid">
+						</span>
+					</a>
+				</div>
 				<!-- End Column 2 -->
-{{/each}}
+				{{/each}}
 			</div>
 		</div>
 	</div>
@@ -368,29 +378,44 @@
 
 
 
-function addToWishlist(element,productId) {
-	const icon = element.querySelector('i');
-    icon.classList.toggle('fa-regular');
-    icon.classList.toggle('fa-solid');
-	console.log("this is ",productId)
-  fetch('/profile/wishlist/add', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ productId })
-  })
-  .then(response => response.json())
-  .then(data => {
-	console.log(data)
-    if(!data.success&&data.message==="User Doesnot exist"){
-		console.log('hjdhfdshf')
-window.location.href = "/login"
+	function addToWishlist(element, productId) {
+		const icon = element.querySelector('i');
+		icon.classList.toggle('fa-regular');
+		icon.classList.toggle('fa-solid');
+		console.log("this is ", productId)
+		fetch('/profile/wishlist/add', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ productId })
+		})
+			.then(response => response.json())
+			.then(data => {
+				console.log(data)
+				if (!data.success && data.message === "User Doesnot exist") {
+					console.log('hjdhfdshf')
+					window.location.href = "/login"
+				}
+			})
+			.catch(error => console.error('Error:', error));
 	}
-  })
-  .catch(error => console.error('Error:', error));
-}
 
+function showToast() {
+  const toastElement = document.getElementById("toast");
+  const toast = new bootstrap.Toast(toastElement);
+  toast.show();
+}
+function updateMainImage(imageElement) {
+  const mainImage = document.getElementById("main-image");
+  const imageZoom = document.getElementById("imageZoom");
+
+  const newSrc = imageElement.src;
+
+  mainImage.src = newSrc;
+
+  imageZoom.style.setProperty("--url", `url(${newSrc})`);
+}
 
 
 </script>

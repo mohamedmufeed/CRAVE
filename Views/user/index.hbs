@@ -23,7 +23,7 @@
 					<a class="nav-link" href="#">Home</a>
 				</li>
 				<li><a class="nav-link" href="/products">Shop</a></li>
-				<li><a class="nav-link" href="about.html">About us</a></li>
+				<li><a class="nav-link" href="/aboutus">About us</a></li>
 				<li><a class="nav-link" href="services.html">Services</a></li>
 				<li><a class="nav-link" href="blog.html">Blog</a></li>
 				<li><a class="nav-link" href="contact.html">Contact us</a></li>
@@ -105,47 +105,20 @@
 			<!-- End Column 1 -->
 
 			<!-- Start Column 2 -->
+			{{#each topSellingProducts}}
 			<div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-				<a class="product-item" href="cart.html">
-					<img src="/user/css,js/images/product-1.png" class="img-fluid product-thumbnail">
-					<h3 class="product-title">Nordic Chair</h3>
-					<strong class="product-price">$50.00</strong>
+			<a class="product-item" href="/productdetails/{{this.id}}">
+					<img src="/uploads/{{this.images.[0]}}" class="img-fluid product-thumbnail">
+					<h3 class="product-title">{{this.name}}</h3>
+					<strong class="product-price">₹{{this.price}}</strong>
 
 					<span class="icon-cross">
 						<img src="/user/css,js/images/cross.svg" class="img-fluid">
 					</span>
 				</a>
 			</div>
+			{{/each}}
 			<!-- End Column 2 -->
-
-			<!-- Start Column 3 -->
-			<div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-				<a class="product-item" href="cart.html">
-					<img src="/user/css,js/images/product-2.png" class="img-fluid product-thumbnail">
-					<h3 class="product-title">Kruzo Aero Chair</h3>
-					<strong class="product-price">$78.00</strong>
-
-					<span class="icon-cross">
-						<img src="/user/css,js/images/cross.svg" class="img-fluid">
-					</span>
-				</a>
-			</div>
-			<!-- End Column 3 -->
-
-			<!-- Start Column 4 -->
-			<div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-				<a class="product-item" href="cart.html">
-					<img src="/user/css,js/images/product-3.png" class="img-fluid product-thumbnail">
-					<h3 class="product-title">Ergonomic Chair</h3>
-					<strong class="product-price">$43.00</strong>
-
-					<span class="icon-cross">
-						<img src="/user/css,js/images/cross.svg" class="img-fluid">
-					</span>
-				</a>
-			</div>
-			<!-- End Column 4 -->
-
 		</div>
 	</div>
 </div>
