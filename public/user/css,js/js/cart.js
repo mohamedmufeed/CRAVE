@@ -2,13 +2,17 @@ function updateCartQuantity(action, productId) {
     const quantityInput = document.getElementById(`quantity-${productId}`);
     let quantity = parseInt(quantityInput.value);
     console.log(`Action: ${action}, Product ID: ${productId}, Current Quantity: ${quantity}`);
-   
-    if (action === "increase") {
-        quantity +=0;
-    } else if (action === "decrease" && quantity > 1) {
-        quantity -= 0 ;
-    }
 
+
+    if (isNaN(quantity) || quantity < 1) {
+      quantity = 1;
+  }
+
+    if (action === 'decrease') {
+      quantity = quantity > 1 ? quantity -- : 1; // Ensure quantity doesn't go below 1
+  } else if (action === 'increase') {
+      quantity =  quantity <=10 ? quantity ++ :10;
+  }
     quantityInput.value = quantity;
 
     fetch("/cart/update", {

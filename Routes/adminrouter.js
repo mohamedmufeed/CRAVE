@@ -47,6 +47,7 @@ router.post("/couponManagement/delete/:id",couponController.deleteCoupon)
 router.get("/salesReport",adminController.salesReport)
 router.get("/downloadSalesReport/pdf", adminController.generatePDFReport);
 router.get("/downloadSalesReport/excel", adminController.generateExcelReport);
+router.get("/logout",adminAuth.checkSession,adminController.logout)
 
 
 module.exports = router;

@@ -11,7 +11,7 @@ const methodOverride = require('method-override');
 const multer = require('multer');
 const { upload } = require("./Controller/ imageController");
 const hbs = require('hbs');
-const exphbs = require('express-handlebars'); // Import express-handlebars
+const exphbs = require('express-handlebars'); 
 
 
 
@@ -107,17 +107,22 @@ hbs.registerHelper('json', function(context) {
   return JSON.stringify(context);
 });
 
-
+hbs.registerHelper('greaterThanOrEqual', function (value1, value2) {
+  return  value1>=value2
+});
 
 //Helper ends
 
-
+//static seting
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'hbs');
 app.set("views", path.join(__dirname, "views"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")))
+
+//route settting
 app.use("/admin", adminrouter);
 app.use("/", userRouter)
+
 connectdb();
 app.listen(3000, () => {
   console.log("server is working on 3000");

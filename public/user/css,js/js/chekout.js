@@ -22,7 +22,7 @@ document.getElementById("checkoutForm").addEventListener("submit",function(e){
         })
         .then(response => response.json())
         .then(data=>{
-            const orderId = data.neworderId; // Retrieve `neworderId` from response
+            const orderId = data.neworderId; 
             console.log("order id from checkout.js", orderId); 
             var options={
                 key:'rzp_test_lHnkQ9Xt6QGUnv',
@@ -89,7 +89,6 @@ document.getElementById("checkoutForm").addEventListener("submit",function(e){
 }) 
 
 
-
 function selectAddress(element, addressId) {
     const allAddress = document.querySelectorAll(".row .col-md-4")
     document.getElementById("address").value = addressId
@@ -102,18 +101,27 @@ function selectAddress(element, addressId) {
     fetch(`/address/default/${addressId}`, {
         method: "POST",
         headers: {
-            'content-TYPE': 'application/json'
+            'Content-Type': 'application/json'
         },
     })
         .then(response => {
             if (response.ok) {
                 showToast("Address selected successfully!", true);
+                element.classList.add("selected"); 
             } else {
                 showToast("Failed to set default address.", false);
             }
         })
+        .catch(error => {
+            console.error("Error selecting address:", error);
+            showToast("An error occurred. Please try again.", false);
+        });
+    
 
 }
+
+
+
 
 document.getElementById("addressForm").addEventListener("submit", function (event) {
     event.preventDefault()
@@ -203,7 +211,6 @@ function showToast(message, type = 'success') {
 
     bootstrapToast.show();
 
-    // Remove the toast after 5 seconds
     setTimeout(() => {
         bootstrapToast.hide();
         setTimeout(() => {

@@ -230,15 +230,18 @@ const salesReport = async (req, res) => {
   try {
     const { salesReport, overallSummary } = await getSalesReport(time, startDate, endDate);
 
-    salesReport.forEach(group => {
-      group.orders.forEach(order => {
-        const totalAmount = order.totalAmount || 0; 
-        const totalDiscount = order.totalDiscount || 0; 
+    salesReport.forEach(report => {
+      report.orders.forEach(order => {
+        const totalAmount = order.totalAmount || 0;
+        const totalDiscount = order.totalDiscount || 0;
     
-        order.netSales = Math.round(totalAmount - totalDiscount);
+        order.netSales = totalAmount - totalDiscount;
+    
       });
     });
     
+  
+   
     res.render('admin/salesReport', {
       salesReport,
       time,
@@ -253,21 +256,14 @@ const salesReport = async (req, res) => {
 };
 
  
-
 const generatePDFReport = async (req, res) => {
   const { time = "monthly", startDate, endDate } = req.query;
 
   try {
-    const { salesReport, overallSummary } = await getSalesReport(
-      time,
-      startDate,
-      endDate
-    );
+    const { salesReport, overallSummary } = await getSalesReport(time, startDate, endDate);
 
     if (!salesReport || salesReport.length === 0) {
-      return res
-        .status(404)
-        .send("No sales data available for the selected period.");
+      return res.status(404).send("No sales data available for the selected period.");
     }
 
     const doc = new PDFDocument();
@@ -279,92 +275,57 @@ const generatePDFReport = async (req, res) => {
 
     doc.fontSize(22).font("Helvetica-Bold").text("CRAVE", 50, 20, { align: "left" });
     doc.moveDown(1);
-
     doc.fontSize(18).text("Sales Report", { align: "center" });
     doc.moveDown();
-    doc
-      .fontSize(12)
-      .text(
-        `Date Range: ${startDate || "All Time"} - ${endDate || "Present"}`,
-        { align: "center" }
-      );
+    doc.fontSize(12).text(`Date Range: ${startDate || "All Time"} - ${endDate || "Present"}`, { align: "center" });
     doc.moveDown();
-    doc
-      .fontSize(14)
-      .text(`Sales Data (${time.charAt(0).toUpperCase() + time.slice(1)})`, {
-        align: "center",
-      });
+    doc.fontSize(14).text(`Sales Data (${time.charAt(0).toUpperCase() + time.slice(1)})`, { align: "center" });
     doc.moveDown(2);
 
     doc.fontSize(12).font("Helvetica-Bold").text("Overall Summary:", { align: "left" });
     doc.moveDown(0.5);
-
-    doc
-      .fontSize(10)
-      .font("Helvetica")
-      .text(`Total Sales Revenue: MRP:${overallSummary.overallOrderAmount}`, {
-        align: "left",
-      });
-    doc.text(`Total Discount Given: MRP:${overallSummary.overallDiscount}`, {
-      align: "left",
-    });
-    doc.text(`Total Orders Delivered: ${overallSummary.overallSalesCount}`, {
-      align: "left",
-    });
+    doc.fontSize(10).font("Helvetica").text(`Total Sales Revenue: MRP:${overallSummary.overallOrderAmount}`, { align: "left" });
+    doc.text(`Total Discount Given: MRP:${overallSummary.overallDiscount}`, { align: "left" });
+    doc.text(`Total Orders Delivered: ${overallSummary.overallSalesCount}`, { align: "left" });
     doc.moveDown(2);
 
-    const tableHeaders = [
-      "Year",
-      "Month",
-      "User Name",
-      "Total Sales ",
-      "Total Discount",
-      "Total Orders",
-    ];
+    const tableHeaders = ["Year", "Month", "User Name", "Total Sales", "Total Discount"];
     const tableWidth = 500;
     const colWidth = tableWidth / tableHeaders.length;
 
-    let startY = doc.y + 20; 
-
+    let startY = doc.y + 20;
     doc.fontSize(10).font("Helvetica-Bold");
     tableHeaders.forEach((header, i) => {
       doc.text(header, 50 + i * colWidth, startY, { width: colWidth, align: "center" });
     });
 
-    startY += 15; 
-    doc.moveTo(50, startY).lineTo(550, startY).stroke(); 
+    startY += 15;
+    doc.moveTo(50, startY).lineTo(550, startY).stroke();
     startY += 10;
 
     doc.fontSize(10).font("Helvetica");
-    salesReport.forEach((report) => {
-      report.orders.forEach((order) => {
+    salesReport.forEach(report => {
+      report.orders.forEach(order => {
         const row = [
           report._id.year,
           report._id.month || "N/A",
           order.userName || "N/A",
-          `MRP : ${order.totalAmount}`,
+          `MRP: ${order.totalAmount}`,
           `${order.totalDiscount || 0}`,
-          report.totalOrders || 0,
+          
         ];
-
         row.forEach((cell, i) => {
           const alignment = i > 2 ? "center" : "left";
-          doc.text(cell, 50 + i * colWidth, startY, {
-            width: colWidth,
-            align: alignment,
-          });
+          doc.text(cell, 50 + i * colWidth, startY, { width: colWidth, align: alignment });
         });
 
-        startY += 15; 
+        startY += 15;
         if (startY > doc.page.height - 50) {
-          doc.addPage(); 
-          startY = 50; 
+          doc.addPage();
+          startY = 50;
           doc.fontSize(10).font("Helvetica-Bold");
           tableHeaders.forEach((header, i) => {
-            doc.text(header, 50 + i * colWidth, startY, {
-              width: colWidth,
-              align: "center",
-            });
+            doc.text(header, 50 + i * colWidth, startY, { width: colWidth, align: "center" });
           });
           startY += 15;
           doc.moveTo(50, startY).lineTo(550, startY).stroke();
@@ -374,7 +335,6 @@ const generatePDFReport = async (req, res) => {
     });
 
     doc.moveTo(50, startY).lineTo(550, startY).stroke();
-
     doc.moveDown(2);
     doc.fontSize(8).text("Generated by Crave Report System", { align: "center" });
 
@@ -390,9 +350,9 @@ const generateExcelReport = async (req, res) => {
   const { time = "monthly", startDate, endDate } = req.query;
 
   try {
-    const reportData = await getSalesReport(time, startDate, endDate);
+    const { salesReport, overallSummary } = await getSalesReport(time, startDate, endDate);
 
-    if (!reportData || reportData.length === 0) {
+    if (!salesReport || salesReport.length === 0) {
       return res.status(404).send('No sales data available for the selected period.');
     }
 
@@ -402,20 +362,28 @@ const generateExcelReport = async (req, res) => {
     worksheet.columns = [
       { header: 'Year', key: 'year' },
       { header: 'Month', key: 'month' },
-      { header: 'Total Sales Revenue', key: 'totalSalesRevenue' },
+      { header: 'User Name', key: 'userName' },
+      { header: 'Total Sales', key: 'totalSales' },
       { header: 'Total Discount', key: 'totalDiscount' },
-      { header: 'Total Orders', key: 'totalOrders' },
-      { header: 'Total Items Sold', key: 'totalItemsSold' },
+      { header: 'Net Sales', key: 'netSales' },
+   
     ];
 
-    reportData.forEach(report => {
-      worksheet.addRow({
-        year: report._id.year,
-        month: report._id.month || 'N/A',
-        totalSalesRevenue: report.totalSalesRevenue,
-        totalDiscount: report.totalDiscount,
-        totalOrders: report.totalOrders,
-        totalItemsSold: report.totalItemsSold
+    salesReport.forEach(report => {
+      report.orders.forEach(order => {
+        const totalAmount = order.totalAmount || 0;
+        const totalDiscount = order.totalDiscount || 0;
+        const netSales = totalAmount - totalDiscount;  
+
+        worksheet.addRow({
+          year: report._id.year,
+          month: report._id.month || 'N/A',
+          userName: order.userName || 'N/A',
+          totalSales: `MRP: ${totalAmount}`,  
+          totalDiscount: totalDiscount || 0,  
+          netSales: netSales || 0,  
+          
+        });
       });
     });
 
@@ -433,6 +401,21 @@ const generateExcelReport = async (req, res) => {
 
 
 
+//logout
+
+const logout= async (req,res)=>{
+  req.session.destroy(err=>{
+    if(err){
+      console.error("Error destroying session during logout:", err);
+            return res.status(500).json({ error: 'Failed to log out' });
+    }
+    res.redirect('/admin/login');
+  })
+
+}
+
+
+
 
 
 
@@ -446,5 +429,6 @@ module.exports = {
   salesReport,
   generatePDFReport,
   generateExcelReport,
+  logout
 
 };

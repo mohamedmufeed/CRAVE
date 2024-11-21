@@ -53,10 +53,6 @@ const loadCheckOut = async (req, res) => {
 
       discountAmount = Math.min(discountAmount, subtotal);
       newTotal = subtotal - discountAmount;
-
-
-
-
     }
 
     newTotal += shippingCharge;
@@ -67,9 +63,6 @@ const loadCheckOut = async (req, res) => {
       discountAmount: discountAmount,
       couponDetails: couponDetails
     };
-
-
-
 
     return res.render("user/chekout", {
       savedAddresses, order,
@@ -93,13 +86,14 @@ const defaultAddress = async (req, res) => {
 
 
   try {
+
     await Address.updateMany({ user: userId }, { isDefault: false })
 
     await Address.findByIdAndUpdate(addressId, { isDefault: true })
 
   } catch (error) {
     console.error('Error setting default address:', error);
-    return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
+    return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error inn' });
   }
 }
 
@@ -108,43 +102,68 @@ const saveBillingAddress = async (req, res) => {
   const userId = req.session.userId
   try {
 
-    const { firstName, lastName, email, mobile, addressLine, city, state, pinCode, country, isDefault } = req.body;
+    const { firstName, lastName, email, mobile, addressLine, city, state, pinCode, country } = req.body;
 
-    if (!firstName || !lastName || !email || !mobile || !addressLine || !city || !state || !pinCode || !country) {
-      req.session.message = "All fields are required";
-      return res.redirect("/checkOut");
+
+    if (!firstName) {
+      return res.status(HttpStatusCodes.BAD_REQUEST).json({ field: "firstName", message: "First name is required" });
+    }
+    if (!lastName) {
+      return res.status(HttpStatusCodes.BAD_REQUEST).json({ field: "lastName", message: "Last name is required" });
+    }
+
+
+    if (!addressLine) {
+      return res.status(HttpStatusCodes.BAD_REQUEST).json({ field: "addressLine", message: "Address line is required" });
+    }
+    if (!city) {
+      return res.status(HttpStatusCodes.BAD_REQUEST).json({ field: "city", message: "City is required" });
+    }
+    if (!state) {
+      return res.status(HttpStatusCodes.BAD_REQUEST).json({ field: "state", message: "State is required" });
+    }
+
+    if (!country) {
+      return res.status(HttpStatusCodes.BAD_REQUEST).json({ field: "country", message: "Country is required" });
     }
 
     if (firstName.length < 2 || lastName.length < 2) {
-      req.session.message = "First and last name must be at least 2 characters long";
-      return res.redirect("/checkOut");
+      return res.status(HttpStatusCodes.BAD_REQUEST).json({
+        field: "firstName",
+        message: "First and last name must be at least 2 characters long"
+      });
     }
-
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      req.session.message = "Invalid email format";
-      return res.redirect("/checkOut");
+      return res.status(HttpStatusCodes.BAD_REQUEST).json({
+        field: "email",
+        message: "Invalid email format"
+      });
     }
-
 
     const mobileRegex = /^[0-9]{10}$/;
     if (!mobileRegex.test(mobile)) {
-      req.session.message = "Mobile number must be 10 digits";
-      return res.redirect("/checkOut");
+      return res.status(HttpStatusCodes.BAD_REQUEST).json({
+        field: "mobile",
+        message: "Mobile number must be 10 digits"
+      });
     }
 
     if (addressLine.length < 5) {
-      req.session.message = "Address must be at least 5 characters long";
-      return res.redirect("/checkOut");
+      return res.status(HttpStatusCodes.BAD_REQUEST).json({
+        field: "addressLine",
+        message: "Address must be at least 5 characters long"
+      });
     }
 
     const pinCodeRegex = /^[0-9]{6}$/;
     if (!pinCodeRegex.test(pinCode)) {
-      req.session.message = "Pin code must be 6 digits";
-      return res.redirect("/checkOut");
+      return res.status(HttpStatusCodes.BAD_REQUEST).json({
+        field: "pinCode",
+        message: "Pin code must be 6 digits"
+      });
     }
-
 
     const newAddres = new Address({
       user: userId,
@@ -157,9 +176,12 @@ const saveBillingAddress = async (req, res) => {
       state,
       pinCode,
       country,
-      isDefault
+      
     })
+
+
     await newAddres.save()
+
   } catch (error) {
     console.error('Error saving address:', error);
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Failed to save address' });
@@ -179,8 +201,11 @@ const placeOrder = async (req, res) => {
 
     if (!addressId) {
       const defaultAddress = await Address.findOne({ user: objectId, isDefault: true });
+
+
       if (!defaultAddress) {
-        return res.status(404).json({ success: false, message: 'No default address found' });
+        req.session.message = "Select a Address";
+        return res.redirect("/checkOut")
       }
       addressId = defaultAddress._id;
     }
@@ -194,12 +219,14 @@ const placeOrder = async (req, res) => {
     let totalDiscount = 0;
     let products = [];
     let price;
+    let couponDetails = null
 
     for (let item of cart.products) {
       const product = await Products.findById(item.productId._id);
 
       if (product.stock < item.quantity) {
-        return res.status(400).json({ success: false, message: `Insufficient stock for ${product.name}` });
+        req.session.message = `Insufficient stock for ${product.name}.`;
+        return res.redirect("/checkOut");
       }
 
 
@@ -219,14 +246,31 @@ const placeOrder = async (req, res) => {
     }
     totalAmount += shippingCharge
 
+
+    if (req.session.coupon) {
+      const coupon = req.session.coupon;
+      couponDetails = {
+        code: coupon.code,
+        discountType: coupon.discountType,
+        discountValue: coupon.discountValue
+      };
+    }
+
+    if (paymentMethod === "no value") {
+      req.session.message = "Select a payment method.";
+      return res.redirect("/checkOut");
+    }
+
     if (paymentMethod === "CashOnDelivery" && totalAmount >= 3000) {
-      return res.status(400).json({ success: false, message: `CashOnDelivery not availbale more than 1000` });
+      req.session.message = "Cash on Delivery is not available for orders above ₹3000.";
+      return res.redirect("/checkOut");
     }
 
     if (paymentMethod === "Wallet") {
       const user = await User.findById(userId)
       if (user.walletBalance < totalAmount) {
-        return res.status(400).json({ success: false, message: "'Insufficient wallet balance'" })
+        req.session.message = "Insufficient wallet balance.";
+        return res.redirect("/checkOut");
       }
       user.walletBalance -= totalAmount
       await user.save()
@@ -240,6 +284,8 @@ const placeOrder = async (req, res) => {
       await walletTransaction.save()
     }
 
+
+
     const newOrder = new Order({
       userId: objectId,
       products,
@@ -247,8 +293,10 @@ const placeOrder = async (req, res) => {
       total: totalAmount,
       status: 'Pending',
       paymentMethod,
-      discountAmount: totalDiscount
+      discountAmount: totalDiscount,
+      coupon: couponDetails
     });
+
 
     await newOrder.save();
     await Cart.updateOne({ userId: objectId }, { products: [] });
@@ -381,7 +429,7 @@ const returnorder = async (req, res) => {
     const product = order.products.find(
       (product) => product._id.toString() === productId.toString()
     );
-    console.log("this is the single product", product)
+
     if (!product) {
       req.session.message = "Product not found in the order";
       return res.redirect("/profile/orders");
@@ -430,12 +478,12 @@ const returnorder = async (req, res) => {
   }
 };
 
-function randomDeliveryDate(date){
-const orderdate= new Date(date)
-const randomDays= Math.floor(Math.random()*10)+1;
-const deliveryDate=new Date(orderdate)
-deliveryDate.setDate(orderdate.getDate()+randomDays)
-return deliveryDate
+function randomDeliveryDate(date) {
+  const orderdate = new Date(date)
+  const randomDays = Math.floor(Math.random() * 10) + 1;
+  const deliveryDate = new Date(orderdate)
+  deliveryDate.setDate(orderdate.getDate() + randomDays)
+  return deliveryDate
 }
 
 const orderDetails = async (req, res) => {
@@ -447,15 +495,14 @@ const orderDetails = async (req, res) => {
     const order = await Order.findOne({ _id: orderId, userId })
       .populate('products.productId')
       .populate('address');
-      const createdAt= order.createdAt
-const deliveryDate=randomDeliveryDate(createdAt)
+
+    const createdAt = order.createdAt
+    const deliveryDate = randomDeliveryDate(createdAt)
     if (!order) {
       return res.status(HttpStatusCodes.NOT_FOUND).render("user/orderDetails", { message: "Order not found or access denied" });
 
     }
-
-
-    res.render("user/orderDetails", { order,deliveryDate });
+    res.render("user/orderDetails", { order, deliveryDate, couponDetails: order.coupon });
   } catch (error) {
     console.error("Error fetching order details:", error);
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Server error");
@@ -545,10 +592,21 @@ const orderStatus = async (req, res) => {
 
 
   try {
-    const updateOrder = await Order.findByIdAndUpdate(orderId, { status: newStatus })
-    if (!updateOrder) {
+    // const updateOrder = await Order.findByIdAndUpdate(orderId, { status: newStatus })
+
+    const order = await Order.findById(orderId)
+    if (!order) {
       return res.status(HttpStatusCodes.NOT_FOUND).json({ message: 'Order not found' });
     }
+    order.status = newStatus
+
+    order.products.map(product => {
+      product.singleStatus = newStatus
+    })
+
+    await order.save()
+
+
     res.redirect("/admin/orderManagement")
   } catch (error) {
     console.error('Error updating order status:', error);

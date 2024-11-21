@@ -89,6 +89,11 @@ const loadOffer = async (req, res) => {
       if (numericDiscountValue <= 0) {
         return res.status(400).json({ message: 'Discount value must be positive' });
       }
+
+      if( discountType === "percentage" &&numericDiscountValue >=10){
+        return res.status(400).json({message:"Maximum Offer values in 10%"})
+      }
+
       if (isNaN(new Date(expirationDate).getTime())) {
         return res.status(400).json({ message: 'Invalid expiration date' });
       }

@@ -3,6 +3,7 @@ const Products = require("../Model/productModel")
 const Cart = require("../Model/cartModel")
 const Coupon = require("../Model/couponModel")
 const HttpStatusCodes = require("../config/httpStatusCode");
+const { productDetails } = require("./productController");
 require('dotenv').config();
 
  
@@ -11,20 +12,29 @@ require('dotenv').config();
 
 const loadCart = async (req, res) => {
     const userId = req.session.userId
-    if (!userId) {
+    if (!userId ) {
       return res.redirect("/login")
     }
     try {
       const coupon = await Coupon.find()
-      const cart = await Cart.findOne({ userId }).populate('products.productId', 'name price images')
+      const cart = await Cart.findOne({userId}).populate({
+        path: 'products.productId',  
+        select: 'name price images isListed'
+      });
+    
+const validProducts= cart.products.filter(product=>product.productId.isListed)
+
+if (validProducts.some(product => product.quantity > 10)) {
+  return res.status(400).send("Invalid Quantity");
+}
       if (cart && cart.products.length > 0) {
-        req.session.cartCount = cart.products.length;
-        const totalCartPrice = cart.products.reduce((total, product) => total + (product.price * product.quantity), 0);
+        req.session.cartCount = validProducts.length;
+        const totalCartPrice = validProducts.reduce((total, product) => total + (product.price * product.quantity), 0);
         const applicableCoupons = coupon.filter(coupon => coupon.minimumCartValue <= totalCartPrice);
-        res.render("user/cart", { products: cart.products, totalCartPrice, applicableCoupons })
+        res.render("user/cart", { products:validProducts, totalCartPrice, applicableCoupons  })
       } else {
         req.session.cartCount = 0;
-        req.session.cartCount = cart.products.length,
+        req.session.cartCount = validProducts.length,
           res.render("user/cart", { products: [], message: req.session.message, coupon })
       }
       req.session.message = null;
@@ -79,13 +89,13 @@ const loadCart = async (req, res) => {
         })
         await cart.save()
         req.session.cartCount = cart.products.length;
-        res.redirect("/cart")
+      
   
       }
-  
+       res.redirect("/cart")
   
     } catch (error) {
-      res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error adding product to cart' });
+      return  res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error adding product to cart' });
       console.error("error in  add cart", error)
     }
   
@@ -136,7 +146,7 @@ const loadCart = async (req, res) => {
         });
       }
     } catch (error) {
-      res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error updating cart' });
+      return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error updating cart' });
       console.error("error in updating cart ", error)
     }
   }

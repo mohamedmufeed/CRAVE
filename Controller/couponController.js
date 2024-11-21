@@ -14,7 +14,12 @@ const applyCoupon = async (req, res) => {
   try {
     const { couponCode, cartTotal } = req.body;
 
+    if(!couponCode){
+      return res.status(400).json({ message: 'Enter coupon code' });
+    }
+
     const coupon = await Coupon.findOne({ code: couponCode });
+
 
     if (!coupon) {
       return res.status(400).json({ message: 'Invalid coupon code' });
@@ -172,7 +177,7 @@ const editCoupon = async (req, res) => {
     res.redirect("/admin/couponManagement")
   } catch (error) {
     console.error("error in edit coupon", error)
-    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" })
+     return  res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" })
   }
 }
 
@@ -208,6 +213,10 @@ const createCoupon = async (req, res) => {
     }
     if (discountValue <= 0) {
       return res.status(400).json({ message: 'Discount value must be positive' });
+    }
+
+    if(discountType==="percentage"&& discountValue>10){
+      return res.status(400).json({message:"Maximum discount is 10%"})
     }
     if (isNaN(new Date(expiryDate).getTime())) {
       return res.status(400).json({ message: 'Invalid expiration date' });

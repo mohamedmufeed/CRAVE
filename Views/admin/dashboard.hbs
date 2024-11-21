@@ -19,6 +19,10 @@
       <li><a href="/admin/userManagement">User Management</a></li>
       <li><a href="/admin/category">Category</a></li>
       <li><a href="/admin/salesReport">Sales Report</a></li>
+
+            <li><a href="/admin/logout">Logout</a></li>
+ 
+
         
     </ul>
   </nav>
@@ -30,9 +34,10 @@
   </header>
 
  
- <select id="salesToggle" class="sales-toggle">
+<select id="salesToggle" class="sales-toggle">
   <option value="yearly">Yearly Sales</option>
   <option value="monthly">Monthly Sales</option>
+  <option value="daily">Daily Sales</option>
 </select>
 
 <div class="container">
@@ -72,19 +77,22 @@
 
 </div>
 <script>
-  const yearlySalesData = JSON.parse('{{{yearlySalesData}}}'); 
-  const monthlySalesData = JSON.parse('{{{monthlySalesData}}}'); 
-console.log("year",yearlySalesData)
-console.log('month',monthlySalesData)
+  const yearlySalesData = JSON.parse('{{{yearlySalesData}}}');
+  const monthlySalesData = JSON.parse('{{{monthlySalesData}}}');
+  const dailySalesData = JSON.parse('{{{dailySalesData}}}');
+
   const years = yearlySalesData.map(item => item.year);
   const yearlySales = yearlySalesData.map(item => item.totalSales);
 
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   const monthlySales = monthlySalesData.map(item => item.totalSales);
 
+  const dailyDates = dailySalesData.map(item => item.date);
+  const dailySales = dailySalesData.map(item => item.totalSales);
+
   const ctx = document.getElementById('salesChart').getContext('2d');
   let salesChart = new Chart(ctx, {
-    type: 'line', 
+    type: 'line',
     data: {
       labels: years, 
       datasets: [{
@@ -97,6 +105,12 @@ console.log('month',monthlySalesData)
     },
     options: {
       responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Yearly Sales' 
+        }
+      },
       scales: {
         y: {
           beginAtZero: true,
@@ -108,31 +122,44 @@ console.log('month',monthlySalesData)
     }
   });
 
-  // Event listener to switch between yearly and monthly data
-  document.getElementById('salesToggle').addEventListener('change', function () {
-    const selectedOption = this.value;
+  function updateChartData(type) {
     let labels = [];
     let data = [];
     let chartTitle = '';
 
-    if (selectedOption === 'yearly') {
-      labels = years;
-      data = yearlySales;
-      chartTitle = 'Yearly Sales';
-      salesChart.config.type = 'line';
-    } else {
-      labels = months;
-      data = monthlySales;
-      chartTitle = 'Monthly Sales (2024)';
-      salesChart.config.type = 'bar';
+    switch (type) {
+      case 'yearly':
+        labels = years;
+        data = yearlySales;
+        chartTitle = 'Yearly Sales';
+        salesChart.config.type = 'line';
+        break;
+      case 'monthly':
+        labels = months;
+        data = monthlySales;
+        chartTitle = 'Monthly Sales (2024)';
+        salesChart.config.type = 'bar';
+        break;
+      case 'daily':
+        labels = dailyDates;
+        data = dailySales;
+        chartTitle = 'Daily Sales';
+        salesChart.config.type = 'line';
+        break;
     }
 
-    document.getElementById('chartTitle').textContent = chartTitle;
+    salesChart.options.plugins.title.text = chartTitle;
     salesChart.data.labels = labels;
     salesChart.data.datasets[0].data = data;
+
     salesChart.update();
+  }
+
+  document.getElementById('salesToggle').addEventListener('change', function () {
+    updateChartData(this.value);
   });
 </script>
+
 
 
 

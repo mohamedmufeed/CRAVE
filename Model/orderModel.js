@@ -67,9 +67,27 @@ const orderSchema = new mongoose.Schema({
     type:String,
     
   },
- 
+  coupon: {
+    code: {
+      type: String
+    },
+    discountType: {
+      type: String,
+      enum: ['percentage', 'fixed']
+    },
+    discountValue: {
+      type: Number
+    },
+  },
+  productCount:{
+    type:Number
+  }
+
 
 }, { timestamps: true });
+  
+
+
 
 const orderModel = mongoose.model('order', orderSchema);
 module.exports = orderModel;

@@ -11,8 +11,16 @@ require('dotenv').config();
 const loadWishlist = async (req, res) => {
     const userId = req.session.userId
     try {
-      const user = await User.findById(userId).populate('wishList');
-      const wishlist = user ? user.wishList : []
+      const user = await User.findById(userId)
+      .populate({
+        path: 'wishList',
+        match: { isListed: true },  
+        select: 'name price images isListed'  
+      });
+
+      const wishlist = user ? user.wishList.filter(product => product) : [];
+    
+       
       res.render("user/wishlist", { wishlist })
   
     } catch (error) {

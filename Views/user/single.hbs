@@ -154,12 +154,11 @@
 				<input type="hidden" name="productId" value="{{product._id}}">
 				{{#if product.stock}}
 				<button class="btn btn-black btn-sm btn-block">Add to cart</button>
-				<button class="btn btn-black btn-sm btn-block"><a style="color: #fff; text-decoration: none;"
-						href="/cart">Go to cart</a></button>
+			
 				{{else}}
 				<div class="position-relative">
 					<button class="btn btn-black btn-sm btn-block" disabled>Add to cart</button>
-					<button class="btn btn-black btn-sm btn-block" disabled><a style="color: #000000; text-decoration: none;" href="/cart">Go to cart</a></button>
+					
 					<div class="position-absolute top-0 start-0 w-100 h-100" style="cursor: not-allowed; z-index: 10;"
 						onclick="showToast()">
 					</div>

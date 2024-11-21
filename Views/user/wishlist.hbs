@@ -75,6 +75,7 @@
 
 
 <div class="untree_co-section before-footer-section">
+	{{#if wishlist.length}}
 	<div class="container">
 		<div class="row mb-5">
 			<form class="col-md-12" method="post">
@@ -120,8 +121,15 @@
 		</div>
 
 	</div>
-
-	
+{{else}}
+ <div class="row">
+        <div class="col-md-12 text-center">
+          <h3 class="text-black">Your Wishlist is empty</h3>
+          <p>Start shopping now and add items to your Wishlist!</p>
+          <a href="/products" class="btn btn-black btn-lg">Go to Shop</a>
+        </div>
+      </div>
+{{/if}}	
 </div>
 </div>
 

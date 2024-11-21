@@ -130,9 +130,13 @@
         <button id="retryPaymentBtn" type="button" class="btn btn-black btn-sm"   data-order-id="{{../_id}}" >Retry Payment</button>
 
     {{else}}
+    {{#if (eq this.singleStatus "Cancelled")}}
+
+    {{else}}
       <form action="/profile/orders/cancelorder/{{../_id}}/{{this.id}}" method="post">
         <button type="submit" class="btn btn-black btn-sm">Cancel order</button>
       </form>
+      {{/if}}
     {{/ifRazorpayFailed}}
   {{/if}}
 </td>

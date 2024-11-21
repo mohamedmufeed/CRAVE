@@ -64,6 +64,16 @@
 
 </nav>
 <!-- End Header/Navigation -->
+<div class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+  <div class="d-flex">
+    <div class="toast-body">
+      {{message}}
+    </div>
+    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+</div>
+
+
 
 <!-- Start Hero Section -->
 <div class="hero">
@@ -550,5 +560,13 @@
 
 </html> --}}
 <script>
-	console.log('{{userId}}')
+	
+	  console.log("{{message}}")
+ document.addEventListener("DOMContentLoaded", function () {
+    const toastEl = document.querySelector('.toast');
+    const toast = new bootstrap.Toast(toastEl);
+    if ("{{message}}") {
+      toast.show();
+    }
+  });
 </script>

@@ -12,6 +12,7 @@ const HttpStatusCodes = require("../config/httpStatusCode");
 require('dotenv').config();
 const Razorpay = require('razorpay');
 const { error } = require('console')
+const { json } = require('express')
 
 
 //register
@@ -176,7 +177,8 @@ const verifyOtp = async (req, res) => {
 
 
       await saveUserData.save();
-      req.session.user = saveUserData._id;
+      req.session.userId= saveUserData._id;
+     
       if (referalCode) {
         const newTransaction = new WalletTransaction({
           userId: saveUserData._id,
@@ -186,7 +188,8 @@ const verifyOtp = async (req, res) => {
         })
         await newTransaction.save()
       }
-      res.render("user/index")
+     req.session.message="Account created successfully! Welcome to Crave."
+     return res.redirect("/")
 
     } else {
       req.session.message = "Invalid Otp!";
@@ -273,7 +276,8 @@ const login = async (req, res) => {
 
 
     req.session.isAuthenticated = true
-    return res.render('user/index');
+    req.session.message="Welcome back! You have successfully logged in."
+    return res.redirect("/")
 
   } catch (error) {
     // Handle any unexpected errors
@@ -524,62 +528,56 @@ const editPassword = async (req, res) => {
 const loadAddress = async (req, res) => {
   try {
     const userId = req.session.userId;
+    if(!userId){
+       return res.redirect("/login")
+    }
     const cartCount = req.session.cartCount
     const addresses = await Address.find({ user: userId });
     res.render("user/address", { addresses, message: req.session.message, cartCount });
     req.session.message = null;
   } catch (error) {
     console.log(error);
-
+return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({message:"internal server error"})
   }
 }
 
-
 const addAddress = async (req, res) => {
   try {
-    const { firstName, lastName, email, mobile, addressLine, city, state, pinCode, country, isDefault } = req.body;
-    if (!firstName || !lastName || !email || !mobile || !addressLine || !city || !state || !pinCode || !country) {
-      req.session.message = "All fields are required";
-      return res.redirect("/profile/address");
+    const { firstName, lastName, email, mobile, addressLine, city, state, pinCode, country } = req.body;
+
+    const errors = {};
+
+    if (!firstName) errors.firstName = "First name is required.";
+    if (!lastName) errors.lastName = "Last name is required.";
+    if (!email) errors.email = "Email is required.";
+    if (!mobile) errors.mobile = "Mobile number is required.";
+    if (!addressLine) errors.addressLine = "Address is required.";
+    if (!city) errors.city = "City is required.";
+    if (!state) errors.state = "State is required.";
+    if (!pinCode) errors.pinCode = "Pincode is required.";
+    if (!country) errors.country = "Country is required.";
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (email && !emailRegex.test(email)) {
+      errors.email = "Please enter a valid email address.";
     }
-
-    if (firstName.length < 2 || lastName.length < 2) {
-      req.session.message = "First and last name must be at least 2 characters long";
-      return res.redirect("/profile/address");
-    }
-
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      req.session.message = "Invalid email format";
-      return res.redirect("/profile/address");
-    }
-
 
     const mobileRegex = /^[0-9]{10}$/;
-    if (!mobileRegex.test(mobile)) {
-      req.session.message = "Mobile number must be 10 digits";
-      return res.redirect("/profile/address");
-    }
-
-    if (addressLine.length < 5) {
-      req.session.message = "Address must be at least 5 characters long";
-      return res.redirect("/profile/address");
+    if (mobile && !mobileRegex.test(mobile)) {
+      errors.mobile = "Please enter a valid 10-digit mobile number.";
     }
 
     const pinCodeRegex = /^[0-9]{6}$/;
-    if (!pinCodeRegex.test(pinCode)) {
-      req.session.message = "Pin code must be 6 digits";
-      return res.redirect("/profile/address");
+    if (pinCode && !pinCodeRegex.test(pinCode)) {
+      errors.pinCode = "Please enter a valid 6-digit pincode.";
     }
 
-
-    const userId = req.session.userId;
-    if (isDefault) {
-      await Address.updateMany({ user: userId }, { isDefault: false });
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).json({ errors });
     }
-    const newAddres = new Address({
-      user: userId,
+
+    const newAddress = new Address({
+      user: req.session.userId,
       firstName,
       lastName,
       email,
@@ -589,17 +587,20 @@ const addAddress = async (req, res) => {
       state,
       pinCode,
       country,
-      isDefault
-    })
+    });
 
-    await newAddres.save()
-    res.redirect("/profile/address")
-
+    await newAddress.save();
+    return res.redirect("/profile/address");
   } catch (error) {
-    console.log(error);
-    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: "An error occurred while adding the address" });
+    console.error(error);
+    return res.status(500).json({ message: "An error occurred while adding the address." });
   }
-}
+};
+
+
+
+
+
 
 
 
@@ -676,6 +677,7 @@ const razorpayPayment = async (req, res) => {
 
     let totalAmount = 0;
     let products = [];
+    let couponDetails=null
 
     for (let item of cart.products) {
       const product = item.productId;
@@ -685,10 +687,6 @@ const razorpayPayment = async (req, res) => {
       }
 
       const price = product.discountPrice ? product.discountPrice : product.price;
-      console.log("discount price",product.discountPrice);
-      console.log("product price",product.price);
-      
-      
 
       product.stock -= item.quantity;
       await product.save();
@@ -701,6 +699,18 @@ const razorpayPayment = async (req, res) => {
       });
     }
 
+    if (req.session.coupon) {
+      const coupon = req.session.coupon;
+      console.log("This is the coupon being applied:", coupon);
+    
+      couponDetails = {
+        code: coupon.code,
+        discountType: coupon.discountType,
+        discountValue: coupon.discountValue
+      };
+    
+    }
+
     const newOrder = new Order({
       userId: userId,
       products: products,
@@ -710,9 +720,13 @@ const razorpayPayment = async (req, res) => {
       paymentMethod: 'Razorpay',
       paymentStatus:"Failed",
       razorpay_order_id: order.id,
+      coupon:couponDetails
+
     });
 
+
     await newOrder.save();
+
     await Cart.updateOne({ userId: userId }, { products: [] });
     const orderId= newOrder._id
     res.json({
@@ -721,6 +735,7 @@ const razorpayPayment = async (req, res) => {
       neworderId: orderId
     
     });
+
 
   } catch (error) {
     console.error("Error in setting Razorpay:", error);
@@ -841,6 +856,9 @@ const getTopSellingProducts= async()=>{
       }
   },
   { $unwind: "$productDetails" },
+  {
+    $match: { "productDetails.isListed": true }  
+  },
   { $project: {
       productId: "$_id",
       name: "$productDetails.name",
@@ -861,11 +879,13 @@ const loadHome = async (req, res) => {
     const topSellingProducts= await Products.find({_id:{$in:productId}}).limit(3)
 
     const cartCount = req.session.cartCount
-    res.render("user/index", { cartCount,topSellingProducts })
+
+    res.render("user/index", { cartCount,topSellingProducts , message: req.session.message})
+    req.session.message=null
     
   } catch (error) {
     console.error("error in loading  home page",error)
-    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({message:"internal server error"})
+      return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({message:"internal server error"})
   }
 
 }
@@ -898,6 +918,7 @@ module.exports = {
   resetPassword,
   paymentSuccess,
   retryPayment,
-  loadAboutus
+  loadAboutus,
+ 
  
 }

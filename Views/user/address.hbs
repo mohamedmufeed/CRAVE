@@ -75,7 +75,7 @@
 	<span class="breadcrumb"> <a href="/profile"> Profile /</a> <a href="/profile/address"> Address  </a> </span>
 
 
-    <div class="toast align-items-center text-bg-secondary.bg-gradientborder-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast align-items-center text-bg-sucsess position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
   <div class="d-flex">
     <div class="toast-body">
       {{message}}
@@ -118,60 +118,71 @@
       </div>
 
       <!-- Modal for Editing Address -->
-      <div class="modal fade" id="editModal-{{this._id}}" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
+  <!-- Edit Address Modal -->
+<div class="modal fade" id="editModal-{{this._id}}" tabindex="-1" aria-labelledby="editModalLabel-{{this._id}}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="editModalLabel">Edit Address</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="editModalLabel-{{this._id}}">Edit Address</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <form action="/profile/address/edit/{{this._id}}" method="POST">
-                <div class="mb-3">
-                  <label for="firstName" class="form-label">First Name</label>
-                  <input type="text" class="form-control" id="firstName" name="firstName" value="{{this.firstName}}" required>
-                </div>
-                <div class="mb-3">
-                  <label for="lastName" class="form-label">Last Name</label>
-                  <input type="text" class="form-control" id="lastName" name="lastName" value="{{this.lastName}}" required>
-                </div>
-                <div class="mb-3">
-                  <label for="email" class="form-label">Email</label>
-                  <input type="email" class="form-control" id="email" name="email" value="{{this.email}}" required>
-                </div>
-                <div class="mb-3">
-                  <label for="mobile" class="form-label">Phone Number</label>
-                  <input type="text" class="form-control" id="mobile" name="mobile" value="{{this.mobile}}" required>
-                </div>
-                <div class="mb-3">
-                  <label for="addressLine" class="form-label">Address</label>
-                  <input type="text" class="form-control" id="addressLine" name="addressLine" value="{{this.addressLine}}" required>
-                </div>
-                <div class="mb-3">
-                  <label for="city" class="form-label">City</label>
-                  <input type="text" class="form-control" id="city" name="city" value="{{this.city}}" required>
-                </div>
-                <div class="mb-3">
-                  <label for="state" class="form-label">State</label>
-                  <input type="text" class="form-control" id="state" name="state" value="{{this.state}}" required>
-                </div>
-                <div class="mb-3">
-                  <label for="pinCode" class="form-label">Pincode</label>
-                  <input type="text" class="form-control" id="pinCode" name="pinCode" value="{{this.pinCode}}" required>
-                </div>
-                <div class="mb-3">
-                  <label for="country" class="form-label">Country</label>
-                  <input type="text" class="form-control" id="country" name="country" value="{{this.country}}" required>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="submit" class="btn btn-primary">Save changes</button>
-                </div>
-              </form>
+                <form id="editAddressForm-{{this._id}}" action="/profile/address/edit/{{this._id}}" method="POST" onsubmit="return validateForm('{{this._id}}')">
+                    <div class="mb-3">
+                        <label for="firstName-{{this._id}}" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstName-{{this._id}}" name="firstName" value="{{this.firstName}}" required>
+                        <div class="invalid-feedback" id="firstNameError-{{this._id}}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastName-{{this._id}}" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastName-{{this._id}}" name="lastName" value="{{this.lastName}}" required>
+                        <div class="invalid-feedback" id="lastNameError-{{this._id}}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email-{{this._id}}" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email-{{this._id}}" name="email" value="{{this.email}}" required>
+                        <div class="invalid-feedback" id="emailError-{{this._id}}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="mobile-{{this._id}}" class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" id="mobile-{{this._id}}" name="mobile" value="{{this.mobile}}" required>
+                        <div class="invalid-feedback" id="mobileError-{{this._id}}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addressLine-{{this._id}}" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="addressLine-{{this._id}}" name="addressLine" value="{{this.addressLine}}" required>
+                        <div class="invalid-feedback" id="addressLineError-{{this._id}}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="city-{{this._id}}" class="form-label">City</label>
+                        <input type="text" class="form-control" id="city-{{this._id}}" name="city" value="{{this.city}}" required>
+                        <div class="invalid-feedback" id="cityError-{{this._id}}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="state-{{this._id}}" class="form-label">State</label>
+                        <input type="text" class="form-control" id="state-{{this._id}}" name="state" value="{{this.state}}" required>
+                        <div class="invalid-feedback" id="stateError-{{this._id}}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="pinCode-{{this._id}}" class="form-label">Pincode</label>
+                        <input type="text" class="form-control" id="pinCode-{{this._id}}" name="pinCode" value="{{this.pinCode}}" required>
+                        <div class="invalid-feedback" id="pinCodeError-{{this._id}}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="country-{{this._id}}" class="form-label">Country</label>
+                        <input type="text" class="form-control" id="country-{{this._id}}" name="country" value="{{this.country}}" required>
+                        <div class="invalid-feedback" id="countryError-{{this._id}}"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
             </div>
-          </div>
         </div>
-      </div>
+    </div>
+</div>
+
     {{/each}}
   </div>
 </div>
@@ -180,77 +191,91 @@
 
 
 <div class="col-md-8 col-lg-8 pb-4 ms-auto me-auto mt-5 mb-3"> 
-              <form action="/profile/addAddress" method="post">
-                <div class="row">
-                  <div class="col-6">
-                    <div class="form-group">
-                      <label class="text-black" for="fname">First name</label>
-                      <input type="text" class="form-control" id="fname" name="firstName">
-                    </div>
-                  </div>
-                  <div class="col-6">
-                    <div class="form-group">
-                      <label class="text-black" for="lname">Last name</label>
-                      <input type="text" class="form-control" id="lname" name="lastName">
-                    </div>
-                  </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-6">
-                      <div class="form-group">
-                        <label class="text-black" for="email">Email</label>
-                        <input type="email" class="form-control" id="fname" name="email">
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <div class="form-group">
-                        <label class="text-black" for="lname">Phone Number</label>
-                        <input type="text" class="form-control" id="lname" name="mobile">
-                      </div>
-                    </div>
-                  </div>
+           <form id="addAddressForm">
+  <div class="row">
+    <div class="col-6">
+      <div class="form-group">
+        <label class="text-black" for="firstName">First Name</label>
+        <input type="text" class="form-control" id="firstName" name="firstName">
+        <small id="firstNameError" class="text-danger"></small>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="form-group">
+        <label class="text-black" for="lastName">Last Name</label>
+        <input type="text" class="form-control" id="lastName" name="lastName">
+        <small id="lastNameError" class="text-danger"> </small>
+      </div>
+    </div>
+  </div>
 
-              <div class="form-group">
-                  <label class="text-black" for="email">Address</label>
-                  <input type="text" class="form-control" id="email" name="addressLine">
-                </div>
+  <div class="row">
+    <div class="col-6">
+      <div class="form-group">
+        <label class="text-black" for="email">Email</label>
+        <input type="email" class="form-control" id="email" name="email">
+        <small id="emailError" class="text-danger"></small>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="form-group">
+        <label class="text-black" for="mobile">Phone Number</label>
+        <input type="text" class="form-control" id="mobile" name="mobile">
+        <small id="mobileError" class="text-danger"></small>
+      </div>
+    </div>
+  </div>
 
-                <div class="row">
-                    <div class="col-6">
-                      <div class="form-group">
-                        <label class="text-black" for="fname">City</label>
-                        <input type="text" class="form-control" id="fname" name="city">
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <div class="form-group">
-                        <label class="text-black" for="lname">State</label>
-                        <input type="text" class="form-control" id="lname" name="state">
-                      </div>
-                    </div>
-                  </div>
-                   
-                <div class="row">
-                    <div class="col-6">
-                      <div class="form-group">
-                        <label class="text-black" for="fname">Pincode</label>
-                        <input type="text" class="form-control" id="fname" name="pinCode">
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <div class="form-group">
-                        <label class="text-black" for="lname">Country</label>
-                        <select class="form-control" id="editProductCategory" name="country" required>
-                            <option class="form-control" value="usa">USA</option>
-                               <option class="form-control" value="usa">India</option>
-                          </select>
-                      </div>
-                    </div>
-                  </div>
+  <div class="form-group">
+    <label class="text-black" for="addressLine">Address</label>
+    <input type="text" class="form-control" id="addressLine" name="addressLine">
+    <small id="addressLineError" class="text-danger"></small>
+  </div>
 
-                <button type="submit" class="btn btn-primary-hover-outline mt-3">Add Address</button>
-              </form>
+  <div class="row">
+    <div class="col-6">
+      <div class="form-group">
+        <label class="text-black" for="city">City</label>
+        <input type="text" class="form-control" id="city" name="city">
+        <small id="cityError" class="text-danger"></small>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="form-group">
+        <label class="text-black" for="state">State</label>
+        <input type="text" class="form-control" id="state" name="state">
+        <small id="stateError" class="text-danger"></small>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-6">
+      <div class="form-group">
+        <label class="text-black" for="pinCode">Pincode</label>
+        <input type="text" class="form-control" id="pinCode" name="pinCode">
+        <small id="pinCodeError" class="text-danger"></small>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="form-group">
+        <label class="text-black" for="country">Country</label>
+        <select class="form-control" id="country" name="country" required>
+          <option value="usa">USA</option>
+          <option value="india">India</option>
+        </select>
+        <small id="countryError" class="text-danger"></small>
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary-hover-outline mt-3">Add Address</button>
+</form>
+
+
+
+
             </div>
 
 
@@ -357,6 +382,7 @@
 		<script src="/user/css,js/js/custom.js"></script>
 
     <script>
+
   document.addEventListener("DOMContentLoaded", function () {
     const toastEl = document.querySelector('.toast');
     const toast = new bootstrap.Toast(toastEl);
@@ -364,6 +390,128 @@
       toast.show();
     }
   });
+
+
+ 
+document.getElementById("addAddressForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  document.querySelectorAll(".text-danger").forEach(el => el.textContent = "");
+
+  const formData = new FormData(event.target);
+  const data = {};
+  formData.forEach((value, key) => {
+    data[key] = value;
+  });
+
+  try {
+    const response = await fetch("/profile/addAddress", {
+      method: "POST",
+       headers: {
+    "Content-Type": "application/json",
+  },
+      body: JSON.stringify(data),
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      alert("Address saved successfully!");
+    } else {
+      const result = await response.json();
+
+      if (result.errors) {
+        for (const [field, message] of Object.entries(result.errors)) {
+          const errorElement = document.getElementById(`${field}Error`);
+          if (errorElement) {
+            errorElement.textContent = message;
+          }
+        }
+      } else {
+        alert("Something went wrong.");
+      }
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    alert("Something went wrong. Please try again.");
+  }
+});
+
+
+ function validateForm(id) {
+    let isValid = true;
+    
+    const firstName = document.getElementById(`firstName-${id}`);
+    const firstNameError = document.getElementById(`firstNameError-${id}`);
+    if (!firstName.value.trim()) {
+      firstNameError.textContent = "First name is required.";
+      firstName.classList.add('is-invalid');
+      isValid = false;
+    } else {
+      firstNameError.textContent = "";
+      firstName.classList.remove('is-invalid');
+    }
+
+    const lastName = document.getElementById(`lastName-${id}`);
+    const lastNameError = document.getElementById(`lastNameError-${id}`);
+    if (!lastName.value.trim()) {
+      lastNameError.textContent = "Last name is required.";
+      lastName.classList.add('is-invalid');
+      isValid = false;
+    } else {
+      lastNameError.textContent = "";
+      lastName.classList.remove('is-invalid');
+    }
+
+    const email = document.getElementById(`email-${id}`);
+    const emailError = document.getElementById(`emailError-${id}`);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.value.trim() || !emailRegex.test(email.value)) {
+      emailError.textContent = "Please enter a valid email address.";
+      email.classList.add('is-invalid');
+      isValid = false;
+    } else {
+      emailError.textContent = "";
+      email.classList.remove('is-invalid');
+    }
+
+    const mobile = document.getElementById(`mobile-${id}`);
+    const mobileError = document.getElementById(`mobileError-${id}`);
+    const mobileRegex = /^[0-9]{10}$/;
+    if (!mobile.value.trim() || !mobileRegex.test(mobile.value)) {
+      mobileError.textContent = "Please enter a valid 10-digit mobile number.";
+      mobile.classList.add('is-invalid');
+      isValid = false;
+    } else {
+      mobileError.textContent = "";
+      mobile.classList.remove('is-invalid');
+    }
+
+    const pinCode = document.getElementById(`pinCode-${id}`);
+    const pinCodeError = document.getElementById(`pinCodeError-${id}`);
+    const pinCodeRegex = /^[0-9]{6}$/;
+    if (!pinCode.value.trim() || !pinCodeRegex.test(pinCode.value)) {
+      pinCodeError.textContent = "Please enter a valid 6-digit pincode.";
+      pinCode.classList.add('is-invalid');
+      isValid = false;
+    } else {
+      pinCodeError.textContent = "";
+      pinCode.classList.remove('is-invalid');
+    }
+
+    const country = document.getElementById(`country-${id}`);
+    const countryError = document.getElementById(`countryError-${id}`);
+    if (!country.value.trim()) {
+      countryError.textContent = "Country is required.";
+      country.classList.add('is-invalid');
+      isValid = false;
+    } else {
+      countryError.textContent = "";
+      country.classList.remove('is-invalid');
+    }
+
+    return isValid;
+  }
+
 
     </script>
    

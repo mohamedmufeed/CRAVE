@@ -71,6 +71,7 @@
 
 <div class="untree_co-section before-footer-section">
 	<div class="container">
+		    {{#if products.length}}
 		<div class="row mb-5">
 			<form class="col-md-12" method="post">
 				<div class="site-blocks-table">
@@ -103,17 +104,25 @@
 												onclick="updateCartQuantity('decrease', '{{this.productId._id}}')">&minus;</button>
 										</div>
 										<input type="text" id="quantity-{{this.productId._id}}"
-											class="form-control text-center quantity-amount" value="{{this.quantity}}"
+											class="form-control text-center quantity-amount" min="1" value="{{this.quantity}}"
 											placeholder="" aria-label="Example text with button addon"
 											aria-describedby="button-addon1">
+											{{#if (greaterThanOrEqual this.quantity 10)}}
 										<div class="input-group-append">
+											<button class="btn btn-outline-black increase" type="button"
+												onclick="updateCartQuantity('increase', '{{this.productId._id}}')" disabled>&plus;</button>
+										</div>
+										{{else}}
+                                       <div class="input-group-append">
 											<button class="btn btn-outline-black increase" type="button"
 												onclick="updateCartQuantity('increase', '{{this.productId._id}}')">&plus;</button>
 										</div>
+
+										{{/if}}
 									</div>
 
 								</td>
-								<td id="product-total-{{this.productId}}">₹{{multiply this.quantity this.price}}</td>
+								<td id="product-total-{{this.productId}}">₹{{ formatCurrency (multiply  this.quantity this.price)}}</td>
 			</form>
 
 			<td>
@@ -166,7 +175,7 @@
 							<span class="text-black">Total</span>
 						</div>
 						<div class="col-md-6 text-right">
-							<strong class="text-black " id="cart-total">₹{{this.totalCartPrice}}</strong>
+							<strong class="text-black " id="cart-total">₹{{ formatCurrency this.totalCartPrice}}</strong>
 						</div>
 					</div>
 
@@ -231,6 +240,16 @@
 			{{/each}}
 		</div>
 	</div>
+	{{else}}
+      <!-- Empty Cart Message -->
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h3 class="text-black">Your cart is empty</h3>
+          <p>Start shopping now and add items to your cart!</p>
+          <a href="/products" class="btn btn-black btn-lg">Go to Shop</a>
+        </div>
+      </div>
+    {{/if}}
 </div>
 </div>
 

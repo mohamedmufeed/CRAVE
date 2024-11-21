@@ -83,7 +83,11 @@
         </form>
       </td>
       <td>  <form action="/admin/orderManagement/cancel/{{this._id}}" method="POST" style="display:inline;">
-          <button type="submit" class="btn btn-dark" >Cancel Order</button>
+      {{#if (eq this.status "Delivered")}}
+          <button type="submit" class="btn btn-dark" disabled >Cancel Order</button>
+          {{else}}
+  <button type="submit" class="btn btn-dark" >Cancel Order</button>
+          {{/if}}
         </form></td>
 
 
