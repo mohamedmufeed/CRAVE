@@ -14,10 +14,13 @@ require('dotenv').config();
 
 const loadProducts = async (req, res) => {
     try {
-      const product = await Products.find({ isListed: true })
+      const products = await Products.find({ isListed: true }).populate({
+        path:'category',
+        select:'isListed'
+      })
       const cartCount = req.session.cartCount
 
-      
+      const product=products.filter(product => product.category && product.category.isListed);
       const activeOffers = Array.isArray(product.offersApplied)
       ? product.offersApplied.filter(offer => offer.isActive)
       : [];

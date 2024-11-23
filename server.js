@@ -111,6 +111,10 @@ hbs.registerHelper('greaterThanOrEqual', function (value1, value2) {
   return  value1>=value2
 });
 
+hbs.registerHelper("or", function(value1,value2){
+  return value1||value2
+})
+
 //Helper ends
 
 //static seting

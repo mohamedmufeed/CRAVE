@@ -10,39 +10,118 @@ require('dotenv').config();
 //cart
 
 
-const loadCart = async (req, res) => {
-    const userId = req.session.userId
-    if (!userId ) {
-      return res.redirect("/login")
-    }
-    try {
-      const coupon = await Coupon.find()
-      const cart = await Cart.findOne({userId}).populate({
-        path: 'products.productId',  
-        select: 'name price images isListed'
-      });
-    
-const validProducts= cart.products.filter(product=>product.productId.isListed)
+// const loadCart = async (req, res) => {
+//   const userId = req.session.userId;
 
-if (validProducts.some(product => product.quantity > 10)) {
-  return res.status(400).send("Invalid Quantity");
-}
-      if (cart && cart.products.length > 0) {
-        req.session.cartCount = validProducts.length;
-        const totalCartPrice = validProducts.reduce((total, product) => total + (product.price * product.quantity), 0);
-        const applicableCoupons = coupon.filter(coupon => coupon.minimumCartValue <= totalCartPrice);
-        res.render("user/cart", { products:validProducts, totalCartPrice, applicableCoupons  })
-      } else {
-        req.session.cartCount = 0;
-        req.session.cartCount = validProducts.length,
-          res.render("user/cart", { products: [], message: req.session.message, coupon })
-      }
-      req.session.message = null;
-    } catch (error) {
-      console.error("Error loading cart: ", error);
-      res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).render("404");
-    }
+//   if (!userId) {
+//     return res.redirect("/login");
+//   }
+
+//   try {
+//     const coupon = await Coupon.find();
+//     const cart = await Cart.findOne({ userId }).populate({
+//       path: 'products.productId',
+//       select: 'name price images isListed'
+//     });
+
+//     if (!cart || !cart.products || cart.products.length === 0) {
+//       req.session.cartCount = 0;
+//       return res.render("user/cart", { products: [], message: req.session.message, coupon });
+//     }
+
+//     const validProducts = cart.products.filter(product => product.productId.isListed);
+//     const removedProducts = cart.products.filter(product => !product.productId.isListed);
+
+//     if (removedProducts.length > 0) {
+//       cart.products = validProducts; 
+//       await cart.save(); 
+//     }
+
+//     req.session.cartCount = validProducts.length;
+
+//     if (validProducts.length > 0) {
+//       const totalCartPrice = validProducts.reduce(
+//         (total, product) => total + (product.productId.price * product.quantity), 
+//         0
+//       );
+
+//       const applicableCoupons = coupon.filter(coupon => coupon.minimumCartValue <= totalCartPrice);
+
+//       return res.render("user/cart", { products: validProducts, totalCartPrice, applicableCoupons ,message: req.session.message,});
+//     } else {
+//       req.session.cartCount = 0;
+//      res.render("user/cart", { products: [], message: req.session.message, coupon });
+//     }
+   
+//   } catch (error) {
+//     console.error("Error loading cart: ", error);
+//     return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).render("404");
+//   }
+//   req.session.message=null
+// };
+
+
+
+const loadCart = async (req, res) => {
+  const userId = req.session.userId;
+
+  if (!userId) {
+    req.session.message = "Please log in to access your cart.";
+    return res.redirect("/login");
   }
+
+  try {
+    const coupon = await Coupon.find();
+    const cart = await Cart.findOne({ userId }).populate({
+      path: 'products.productId',
+      select: 'name price images isListed'
+    });
+
+    if (!cart || !cart.products || cart.products.length === 0) {
+      req.session.cartCount = 0;
+      req.session.message = "Your cart is empty.";
+      return res.render("user/cart", { products: [], message: req.session.message, coupon });
+    }
+
+    const validProducts = cart.products.filter(product => product.productId.isListed);
+    const removedProducts = cart.products.filter(product => !product.productId.isListed);
+
+    if (removedProducts.length > 0) {
+      req.session.message = "Some products were removed from your cart as they are no longer available.";
+      cart.products = validProducts;
+      await cart.save();
+    }
+
+    req.session.cartCount = validProducts.length;
+
+    if (validProducts.length > 0) {
+      const totalCartPrice = validProducts.reduce(
+        (total, product) => total + (product.productId.price * product.quantity), 
+        0
+      );
+
+      const applicableCoupons = coupon.filter(coupon => coupon.minimumCartValue <= totalCartPrice);
+
+      return res.render("user/cart", { 
+        products: validProducts, 
+        totalCartPrice, 
+        applicableCoupons,
+        message: req.session.message 
+      });
+    } else {
+      req.session.cartCount = 0;
+      req.session.message = "Your cart is empty.";
+      return res.render("user/cart", { products: [], message: req.session.message, coupon });
+    }
+  } catch (error) {
+    console.error("Error loading cart: ", error);
+    req.session.message = "An error occurred while loading the cart. Please try again later.";
+    return res.status(500).render("404", { message: req.session.message });
+  } finally {
+    req.session.message = null; 
+  }
+};
+
   
   const addCart = async (req, res) => {
     const userId = req.session.userId
@@ -102,6 +181,9 @@ if (validProducts.some(product => product.quantity > 10)) {
   
   }
   
+
+  
+  
   
   const updateCart = async (req, res) => {
     const userId = req.session.userId
@@ -151,6 +233,7 @@ if (validProducts.some(product => product.quantity > 10)) {
     }
   }
   
+
   const removeCart = async (req, res) => {
     const userId = req.session.userId;
     const productId = req.params.Id;

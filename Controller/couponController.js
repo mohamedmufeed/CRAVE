@@ -161,6 +161,23 @@ const editCoupon = async (req, res) => {
   try {
     const { couponId, code, discountType, discountValue, minimumCartValue, maximumPurchaseLimit, usageLimit, applicableProducts, applicableCategories, expiryDate, description } = req.body
 
+    if (!code || !discountType || !discountValue || !expiryDate || !description) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    if (!['fixed', 'percentage'].includes(discountType)) {
+      return res.status(400).json({ message: 'Invalid discount type' });
+    }
+    if (discountValue <= 0) {
+      return res.status(400).json({ message: 'Discount value must be positive' });
+    }
+
+    if(discountType==="percentage"&& discountValue>10){
+      return res.status(400).json({message:"Maximum discount is 10%"})
+    }
+    if (isNaN(new Date(expiryDate).getTime())) {
+      return res.status(400).json({ message: 'Invalid expiration date' });
+    }
     await Coupon.findByIdAndUpdate(couponId, {
       code,
       discountType,
@@ -236,6 +253,7 @@ const createCoupon = async (req, res) => {
     })
 
     await coupon.save()
+ 
     res.redirect("/admin/couponManagement")
   } catch (error) {
     console.error("error in creating coupon ", error)

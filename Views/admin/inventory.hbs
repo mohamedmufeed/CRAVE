@@ -1,138 +1,175 @@
-
-  <link rel="stylesheet" href="/admin/productManagement.css">
-  <aside class="sidebar">
-    <div class="logo">
-     <a class="navbar-brand" href="index.html">CRAV<span style="font-weight:lighter;">E</span></a>
-    </div>
-    <nav class="menu">
-      <ul>
-             <li><a href="/admin/dashboard">Dashboard</a></li>
-          <li><a href="/admin/productManagement">Products</a></li>
-        <li><a href="/admin/orderManagement">Orders</a></li>
-        <li><a href="/admin/couponManagement">Coupon</a></li>
-        <li><a href="/admin/inventory">Inventory</a></li>
-        <li><a href="/admin/offerManagement">Offers</a></li>
-    <li><a href="/admin/userManagement"> User Management</a></li>
-      <li><a href="/admin/category"> Category</a></li>
-         <li><a href="/admin/salesReport"> Sales Report</a></li>
-  
-      </ul>
-    </nav>
-  </aside>
-
-  <!-- Main Content -->
-  <div class="main-content">
-    <header class="dashboard-header">
-      <h1>Inventory Management</h1>
-     
-    </header>
-
-    <!-- User Table Section -->
-    <section class="user-table">
-  
-      <div class="table-container">
-        <table>
-          <thead >
-            <tr>
-         
-              <th>Product name</th>
-              <th >Stock</th>
-                         <th >Price</th>
-              <th>Status</th>
-              <th >Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-          
-            {{#each product}}
-              <tr>
-              
-                <td>{{this.name}}</td>
-                <td>{{this.stock}}</td>
-                         <td>₹{{this.price}}</td>
-                <td>{{#if this.isListed}}Active{{else}}Non active{{/if}}</td>
-               <td class="action-buttons">
-                 <button class="btn" onclick="openEditInventoryModal('{{this._id}}', '{{this.name}}', '{{this.stock}}', '{{this.price}}')">Edit</button>
-
-                </td>
-              </tr>
-            {{/each}}
-          </tbody>
-        </table>
-       
-      </div>
-      
-    </section>
-
-
-
-    {{!-- edit category modal --}}
-
-<div class="modal" id="editInventoryModal" style="display:none">
-  <div class="modal-content">
-    <span class="close" onclick="clodeEditModal()">&times;</span>
-    <h2>Edit Inventory</h2>
-    <form id="editInventoryForm" method="POST" action="/admin/inventory/edit/{{this._id}}">
-      <input type="hidden" name="_method" value="PUT" />
-      <label for="productName">Product Name:</label>
-      <input type="text" id="productName" name="name" />
-      <label for="productStock">Product Stock:</label>
-      <input type="number" id="productStock" name="stock" />
-      <label for="productPrice">Product Price:</label>
-      <input type="number" id="productPrice" name="price" />
-      <button type="submit" class="btn">Update Inventory</button>
-    </form>
+<link rel="stylesheet" href="/admin/productManagement.css">
+<aside class="sidebar">
+  <div class="logo">
+    <a class="navbar-brand" href="index.html">CRAV<span style="font-weight:lighter;">E</span></a>
   </div>
+  <nav class="menu">
+    <ul>
+      <li><a href="/admin/dashboard">Dashboard</a></li>
+      <li><a href="/admin/productManagement">Products</a></li>
+      <li><a href="/admin/orderManagement">Orders</a></li>
+      <li><a href="/admin/couponManagement">Coupon</a></li>
+      <li><a href="/admin/inventory">Inventory</a></li>
+      <li><a href="/admin/offerManagement">Offers</a></li>
+      <li><a href="/admin/userManagement"> User Management</a></li>
+      <li><a href="/admin/category"> Category</a></li>
+      <li><a href="/admin/salesReport"> Sales Report</a></li>
+
+    </ul>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<div class="main-content">
+  <header class="dashboard-header">
+    <h1>Inventory Management</h1>
+
+  </header>
+
+  <!-- User Table Section -->
+  <section class="user-table">
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+
+            <th>Product name</th>
+            <th>Stock</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          {{#each product}}
+          <tr>
+
+            <td>{{this.name}}</td>
+            <td>{{this.stock}}</td>
+            <td>₹{{this.price}}</td>
+            <td>{{#if this.isListed}}Active{{else}}Non active{{/if}}</td>
+            <td class="action-buttons">
+              <button class="btn"
+                onclick="openEditInventoryModal('{{this._id}}', '{{this.name}}', '{{this.stock}}', '{{this.price}}')">Edit</button>
+
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+    </div>
+
+  </section>
+
+
+
+  {{!-- edit inventory modal --}}
+
+  <div class="modal" id="editInventoryModal" style="display:none">
+    <div class="modal-content">
+      <span class="close" onclick="clodeEditModal()">&times;</span>
+      <h2>Edit Inventory</h2>
+      <form id="editInventoryForm" method="POST" action="/admin/inventory/edit/{{this._id}}">
+        <input type="hidden" name="_method" value="PUT" />
+        <label for="productName">Product Name:</label>
+        <input type="text" id="productName" name="name" />
+        <small id="nameError" style="color: red;"></small>
+        <label for="productStock">Product Stock:</label>
+        <input type="number" id="productStock" name="stock" />
+        <small id="stockError" style="color: red;"></small>
+        <label for="productPrice">Product Price:</label>
+        <input type="number" id="productPrice" name="price" />
+        <small id="priceError" style="color: red;"></small>
+        <button type="submit" class="btn">Update Inventory</button>
+      </form>
+    </div>
+  </div>
+
+
+
+
+  {{!-- pagination --}}
+
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center pages custom-pagination">
+      {{#if previousPage}}
+      <li class="page-item">
+        <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      {{/if}}
+
+      {{#each (range 1 totalPages)}}
+      <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
+        <a class="page-link" href="?page={{this}}">{{this}}</a>
+      </li>
+      {{/each}}
+
+      {{#if nextPage}}
+      <li class="page-item">
+        <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+      {{/if}}
+    </ul>
+  </nav>
+
+  {{!-- end pagination --}}
+
+
 </div>
 
-
-
-
- {{!-- pagination --}}
-
-<nav aria-label="Page navigation">
-    <ul class="pagination justify-content-center pages custom-pagination" >
-        {{#if previousPage}}
-        <li class="page-item">
-            <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-            </a>
-        </li>
-        {{/if}}
-
-        {{#each (range 1 totalPages)}}
-        <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
-            <a class="page-link" href="?page={{this}}">{{this}}</a>
-        </li>
-        {{/each}}
-
-        {{#if nextPage}}
-        <li class="page-item">
-            <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
-        </li>
-        {{/if}}
-    </ul>
-</nav>
-
- {{!-- end pagination --}}
-
-    
-  </div>
-
-  <script src="/js/script.js"></script> <!-- Link to your JavaScript file -->
+<script src="/js/script.js"></script> <!-- Link to your JavaScript file -->
 <script>
   function openEditInventoryModal(id, name, stock, price) {
-  document.getElementById('editInventoryForm').action = `/admin/inventory/edit/${id}`;
-  document.getElementById('productName').value = name;
-  document.getElementById('productStock').value = stock;
-  document.getElementById('productPrice').value = price;
-  document.getElementById('editInventoryModal').style.display = 'block';
-}
+    document.getElementById('editInventoryForm').action = `/admin/inventory/edit/${id}`;
+    document.getElementById('productName').value = name;
+    document.getElementById('productStock').value = stock;
+    document.getElementById('productPrice').value = price;
+    document.getElementById('editInventoryModal').style.display = 'block';
+  }
 
-      function clodeEditModal(){
-      document.getElementById("editInventoryModal").style.display="none"
-    }
+  function clodeEditModal() {
+    document.getElementById("editInventoryModal").style.display = "none"
+  }
+
+
+  const form = document.getElementById("editInventoryForm");
+
+form.addEventListener("submit", (event) => {
+  let isValid = true;
+
+  document.getElementById("nameError").innerText = "";
+  document.getElementById("priceError").innerText = "";
+  document.getElementById("stockError").innerText = "";
+
+  const name = document.getElementById("productName").value;
+  const stock = document.getElementById("productStock").value;
+  const price = document.getElementById("productPrice").value;
+
+  if (name.length < 2) {
+    document.getElementById("nameError").innerText = "Product name must be greater than 2 letters";
+    isValid = false; 
+  }
+
+  if (price <= 0) {
+    document.getElementById("priceError").innerText = "Price must be greater than 0";
+    isValid = false; 
+  }
+
+  if (stock <= 0) {
+    document.getElementById("stockError").innerText = "Stock must be greater than 0";
+    isValid = false; 
+  }
+
+  if (!isValid) {
+    event.preventDefault();
+  }
+});
+
 </script>
-

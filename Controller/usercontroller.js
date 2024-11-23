@@ -17,6 +17,14 @@ const { json } = require('express')
 
 //register
 
+const googleCallback=async(req,res)=>{
+  req.session.userId = req.user._id; 
+
+  res.redirect('/');
+}
+
+
+
 const loadRegister = async (req, res) => {
   res.render("user/register", {
     message: req.session.message
@@ -286,20 +294,6 @@ const login = async (req, res) => {
   }
 };
 
-const demologin = async (req, res) => {
-
-  try {
-    const { email, password } = req.body;
-    if (email === "demo@gmail.com" && password === "demo12345") {
-      res.redirect("/");
-    } else {
-      res.status(HttpStatusCodes.UNAUTHORIZED).send("Invalid Credentials");
-    }
-  } catch (error) {
-    console.error("Demo login not successful", error);
-    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
-  }
-};
 
 
 //forgotpassword
@@ -458,7 +452,11 @@ const editProfile = async (req, res) => {
     }
 
 
-
+    const usernamePattern = /^[A-Za-z]+$/;
+    if (!usernamePattern.test(username)) {
+      req.session.message = "Invalid username";
+      return res.redirect("/profile");
+    }
 
     if (!email || !username) {
       req.session.message = "All fields are required";
@@ -674,6 +672,7 @@ const razorpayPayment = async (req, res) => {
     if (!cart.products || cart.products.length === 0) {
       return res.status(400).json({ error: 'Cart is empty' });
     }
+   
 
     let totalAmount = 0;
     let products = [];
@@ -901,7 +900,7 @@ module.exports = {
   login,
   resendOtp,
   loadHome,
-  demologin,
+
   profile,
   editProfile,
   loadAddress,
@@ -919,6 +918,6 @@ module.exports = {
   paymentSuccess,
   retryPayment,
   loadAboutus,
- 
+  googleCallback
  
 }

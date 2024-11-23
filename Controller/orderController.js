@@ -16,15 +16,27 @@ require('dotenv').config();
 const loadCheckOut = async (req, res) => {
   const userId = req.session.userId
   const cartCount = req.session.cartCount
+
   if (!userId) {
     return res.redirect("/login")
   }
+
+
   try {
+    const userCart = await Cart.findOne({ userId }).populate("products.productId");
     const savedAddresses = await Address.find({ user: userId })
-    const userCart = await Cart.findOne({ userId });
+   
     if (!userCart || !userCart.products || userCart.products.length === 0) {
       req.session.message = "Your cart is empty. Please add products to proceed.";
       return res.redirect("/cart");
+    }
+
+    for (let item of userCart.products) {
+      if (item.quantity > item.productId.stock) {
+        req.session.message = `The requested quantity for "${item.productId.name}" exceeds the available stock. Please adjust your cart.`;
+        return res.redirect("/cart");
+        // return res.status(400).send("invalis quanityt")
+      }
     }
 
     let subtotal = 0;
@@ -105,6 +117,7 @@ const saveBillingAddress = async (req, res) => {
     const { firstName, lastName, email, mobile, addressLine, city, state, pinCode, country } = req.body;
 
 
+
     if (!firstName) {
       return res.status(HttpStatusCodes.BAD_REQUEST).json({ field: "firstName", message: "First name is required" });
     }
@@ -181,7 +194,7 @@ const saveBillingAddress = async (req, res) => {
 
 
     await newAddres.save()
-
+res.redirect("/checkOut")
   } catch (error) {
     console.error('Error saving address:', error);
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Failed to save address' });
@@ -329,8 +342,9 @@ const orderHistory = async (req, res) => {
 
     if (!orders || orders.length === 0) {
       req.session.message = "No orders found";
-      return res.redirect("/profile/orders");
+      return res.redirect("/profile");
     }
+    
     res.render("user/orderHistory", {
       orders,
       message: req.session.message

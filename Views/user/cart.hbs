@@ -68,6 +68,15 @@
 <!-- End Hero Section -->
 
 
+<div class="toast align-items-center text-bg-danger border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
+  <div class="d-flex">
+    <div class="toast-body">
+      {{message}}
+    </div>
+    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+</div> 
+
 
 <div class="untree_co-section before-footer-section">
 	<div class="container">
@@ -216,9 +225,9 @@
 <div class="row mb-5 ms-2 me-2">
 	<div class="col-md-12">
 		<h2 class="h3 mb-3 text-black">Coupons</h2>
-		<div class="p-3 p-lg-5">
+		<div class="p-3 p-lg-5 row">
 			{{#each applicableCoupons}}
-			<div class="col-md-4 mb-3">
+			<div class="col-md-2 mb-3">
 				<div class="coupon">
 					<div class="content">
 						<div class="header">
@@ -239,6 +248,7 @@
 			</div>
 			{{/each}}
 		</div>
+	</div>
 	</div>
 	{{else}}
       <!-- Empty Cart Message -->

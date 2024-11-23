@@ -15,6 +15,7 @@ async (accessToken, refreshToken, profile, done)=>{
 try {
     let user= await User.findOne({googleId:profile.id})
      if(user){
+    
         return done(null,user)
      }else{
         user= new User({
@@ -23,6 +24,7 @@ try {
             googleId:profile.id
         })
         await user.save()
+      
         return done(null,user);
 
      }

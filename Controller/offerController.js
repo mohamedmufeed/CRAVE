@@ -150,7 +150,21 @@ const loadOffer = async (req, res) => {
   
    const editOffer= async (req, res) => {
     const { offerId, discountType, discountValue, description, expirationDate, isActive, applicableProducts, applicableCategories } = req.body;
-  
+    if (!discountType || !discountValue || !expirationDate || !description) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    if (!['fixed', 'percentage'].includes(discountType)) {
+      return res.status(400).json({ message: 'Invalid discount type' });
+    }
+    const numericDiscountValue = Number(discountValue);
+    if (numericDiscountValue <= 0) {
+      return res.status(400).json({ message: 'Discount value must be positive' });
+    }
+
+    if( discountType === "percentage" &&numericDiscountValue >=10){
+      return res.status(400).json({message:"Maximum Offer values in 10%"})
+    }
     try {
       await Offer.findByIdAndUpdate(offerId, {
         discountType,

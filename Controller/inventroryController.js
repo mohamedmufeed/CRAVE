@@ -51,11 +51,14 @@ const loadInventory = async (req, res) => {
   
       if (existingProduct) {
   
-        return res.status(HttpStatusCodes.UNAUTHORIZED).send("Product with this name already exists.");
+        return res.status(HttpStatusCodes.UNAUTHORIZED).json({message:"Poroduct with this name alredy exits!"})
       }
   
       if (price <= 0) {
-        return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Invalid price")
+        return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({message:"price must be postive number"})
+      }
+      if(stock <=0){
+        return res.status(HttpStatusCodes.BAD_REQUEST).json({message:"Stock must be postive number"})
       }
       await Products.findByIdAndUpdate(prdoductId, { name, price, stock })
       res.redirect("/admin/inventory")

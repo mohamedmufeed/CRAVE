@@ -1,15 +1,12 @@
 function updateCartQuantity(action, productId) {
     const quantityInput = document.getElementById(`quantity-${productId}`);
     let quantity = parseInt(quantityInput.value);
-    console.log(`Action: ${action}, Product ID: ${productId}, Current Quantity: ${quantity}`);
-
-
     if (isNaN(quantity) || quantity < 1) {
       quantity = 1;
   }
 
     if (action === 'decrease') {
-      quantity = quantity > 1 ? quantity -- : 1; // Ensure quantity doesn't go below 1
+      quantity = quantity > 1 ? quantity -- : 1; 
   } else if (action === 'increase') {
       quantity =  quantity <=10 ? quantity ++ :10;
   }
@@ -182,3 +179,13 @@ function showToast(message, type = 'success') {
     document.getElementById("apply-coupon-button").style.display="block"
   })
  })
+
+
+ console.log("{{message}}")
+ document.addEventListener("DOMContentLoaded", function () {
+    const toastEl = document.querySelector('.toast');
+    const toast = new bootstrap.Toast(toastEl);
+    if ("{{message}}") {
+      toast.show();
+    }
+  });

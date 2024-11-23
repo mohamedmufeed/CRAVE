@@ -33,7 +33,7 @@
                         <a href="/forgotPassword" class="forgot-password">Forgot Password?</a></div>
                         
             <button   onclick="loginAction('/login')" type="submit" class="btn btn-dark mt-3">Sign in</button>
-            <button   class="btn btn-dark mt-3" onclick="loginAction('/demo-login')">Demo Login</button>
+           
           <hr>
             
  <a href="/auth/google " style="text-decoration: none;" >
@@ -65,17 +65,7 @@
     }
   });
 
-function loginAction(action) {
-    const form = document.getElementById("loginForm");
-    form.action = action;
 
-    if (action === '/demo-login') {
-        document.querySelector('input[name="email"]').value = "demo@gmail.com"; // Ensure email is correct
-        document.querySelector('input[name="password"]').value = "demo12345"; // Correct demo password
-    }
-
-    form.submit(); // Submit the form
-}
 
 
 </script>
