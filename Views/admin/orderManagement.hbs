@@ -47,7 +47,7 @@
             <th>Products</th>
             <th>Quantity</th>
             <th>Status</th>
-            <th>Actions</th>
+            {{!-- <th>Actions</th> --}}
 
           </tr>
         </thead>
@@ -78,17 +78,21 @@
             <option value="Confirmed" {{#if (eq this.status "Confirmed")}}selected{{/if}}>Confirmed</option>
             <option value="Shipped" {{#if (eq this.status "Shipped")}}selected{{/if}}>Shipped</option>
             <option value="Delivered" {{#if (eq this.status "Delivered")}}selected{{/if}}>Delivered</option>
-            <option value="Cancelled" {{#if (eq this.status "Cancelled")}}selected{{/if}}>Cancelled</option>
+         {{#if (and (eq this.paymentMethod "Razorpay") (eq this.paymentStatus "Failed"))}}
+        <option value="Cancelled" disabled>Cancelled</option>
+      {{else}}
+        <option value="Cancelled" {{#if (eq this.status "Cancelled")}}selected{{/if}}>Cancelled</option>
+      {{/if}}
           </select>
         </form>
       </td>
-      <td>  <form action="/admin/orderManagement/cancel/{{this._id}}" method="POST" style="display:inline;">
-      {{#if (or (eq this.status "Delivered" )(eq this.status "Cancelled"))}}
+      {{!-- <td>  <form action="/admin/orderManagement/cancel/{{this._id}}" method="POST" style="display:inline;">
+      {{#if (or (eq this.status "Delivered" )(eq this.status "Cancelled")) }}
           <button type="submit" class="btn btn-dark" disabled >Cancel Order</button>
           {{else}}
   <button type="submit" class="btn btn-dark" >Cancel Order</button>
           {{/if}}
-        </form></td>
+        </form></td> --}}
 
 
       

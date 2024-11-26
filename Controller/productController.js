@@ -6,6 +6,7 @@ const Category = require("../Model/categoryModel")
 const Products = require("../Model/productModel")
 const { serchProducts } = require("./usercontroller");
 const HttpStatusCodes = require("../config/httpStatusCode");
+
 require('dotenv').config();
 
 
@@ -242,8 +243,6 @@ const productManagement = async (req, res) => {
         .skip(skip)
         .limit(limit);
   
-  
-  
       if (!products || products.length === 0) {
         console.log("No products found");
       }
@@ -341,17 +340,51 @@ const productManagement = async (req, res) => {
     }
   };
   
+  // const editProducts = async (req, res) => {
+  //   try {
+  //     const productId = req.params.id;
+  //     const { name, description, price, material, stock, category, updatedImages } = req.body;
+
+  
+  //     const existingImages = JSON.parse(updatedImages || '[]');
+  //     const newImages = req.files.map((file) => file.filename);
+  //     const finalImages = [...existingImages, ...newImages];
+  
+  //     await Products.findByIdAndUpdate(productId, {
+  //       name,
+  //       description,
+  //       price,
+  //       material,
+  //       stock,
+  //       category,
+  //       images: finalImages,
+  //     });
+  
+  //     res.redirect('/admin/productManagement');
+  //   } catch (error) {
+  //     console.error('Error updating product: ', error.message);
+  //     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send('Error updating product: ' + error.message);
+  //   }
+  // };
+  
   const editProducts = async (req, res) => {
     try {
       const productId = req.params.id;
+  console.log("the product id",productId);
+  
       const { name, description, price, material, stock, category, updatedImages } = req.body;
-
   
-      const existingImages = JSON.parse(updatedImages || '[]');
-      const newImages = req.files.map((file) => file.filename);
-      const finalImages = [...existingImages, ...newImages];
+      if (!name || !description || !price || !material || !stock || !category) {
+        return res.status(400).send('All fields are required.');
+      }
   
-      await Products.findByIdAndUpdate(productId, {
+      const existingImages = updatedImages ? JSON.parse(updatedImages) : [];
+  
+      const newImages = req.files && req.files.length > 0 ? req.files.map((file) => file.filename) : [];
+  
+      const finalImages = [...new Set([...existingImages, ...newImages])];
+  
+      const updatedProduct = await Products.findByIdAndUpdate(productId, {
         name,
         description,
         price,
@@ -361,13 +394,16 @@ const productManagement = async (req, res) => {
         images: finalImages,
       });
   
+      if (!updatedProduct) {
+        return res.status(404).send('Product not found.');
+      }
+  
       res.redirect('/admin/productManagement');
     } catch (error) {
       console.error('Error updating product: ', error.message);
-      res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send('Error updating product: ' + error.message);
+      res.status(500).send('Error updating product: ' + error.message);
     }
   };
-  
   
   
   

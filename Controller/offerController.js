@@ -17,8 +17,10 @@ const loadOffer = async (req, res) => {
       const offers = await Offer.find()
         .skip(skip)
         .limit(limit)
+        .sort({ createdAt: -1 })
         .populate('applicableProducts', 'name')
         .populate('applicableCategories', 'name');
+       
   
   
       const totalPages = Math.ceil(totalOffers / limit);
@@ -90,9 +92,6 @@ const loadOffer = async (req, res) => {
         return res.status(400).json({ message: 'Discount value must be positive' });
       }
 
-      if( discountType === "percentage" &&numericDiscountValue >=10){
-        return res.status(400).json({message:"Maximum Offer values in 10%"})
-      }
 
       if (isNaN(new Date(expirationDate).getTime())) {
         return res.status(400).json({ message: 'Invalid expiration date' });
@@ -162,8 +161,8 @@ const loadOffer = async (req, res) => {
       return res.status(400).json({ message: 'Discount value must be positive' });
     }
 
-    if( discountType === "percentage" &&numericDiscountValue >=10){
-      return res.status(400).json({message:"Maximum Offer values in 10%"})
+    if( discountType === "percentage" &&numericDiscountValue >=30){
+      return res.status(400).json({message:"Maximum Offer values in 30%"})
     }
     try {
       await Offer.findByIdAndUpdate(offerId, {

@@ -43,6 +43,7 @@ router.get("/", userController.loadHome)
 router.get("/products", productController.loadProducts)
 router.get("/productdetails/:id", productController.productDetails)
 router.get("/products/filter", productController.filterProducts)
+router.get("/products/search",productController.userserchProducts)
 
 
 //profile page
@@ -88,6 +89,7 @@ router.post("/addtocart", wishlistController.addCartFromWishlist);
 //coupon controller
 router.post("/applyCoupon",couponController.applyCoupon)
 router.post("/removeCoupon",couponController.removeCoupon)
+router.post("/copondiscount",couponController.total)
 
 // razorpay cntroller 
 router.post("/razorpay",userController.razorpayPayment)

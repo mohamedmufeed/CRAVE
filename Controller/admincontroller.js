@@ -45,7 +45,8 @@ const loadUserMangment = async (req, res) => {
 
     const users = await User.find({})
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .sort({ createdAt: -1 })
 
 
     const totalPages = Math.ceil(totalUsers / limit);

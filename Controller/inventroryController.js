@@ -14,7 +14,7 @@ const loadInventory = async (req, res) => {
   
       const totalProducts = await Products.countDocuments();
   
-      const product = await Products.find().skip(skip)
+      const product = await Products.find().skip(skip).sort({ createdAt: -1 })
         .limit(limit);
   
       const totalPages = Math.ceil(totalProducts / limit);

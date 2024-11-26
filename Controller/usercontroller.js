@@ -13,6 +13,7 @@ require('dotenv').config();
 const Razorpay = require('razorpay');
 const { error } = require('console')
 const { json } = require('express')
+const { findOne } = require('../Model/adminmodel')
 
 
 //register
@@ -88,6 +89,7 @@ const register = async (req, res) => {
   try {
 
     const exitsUser = await User.findOne({ email })
+    
     if (exitsUser) {
       req.session.message = "Email is already registered"
       return res.redirect("/register")
@@ -102,9 +104,10 @@ const register = async (req, res) => {
       req.session.message = "Please enter a valid Username";
       return res.redirect("/register");
     }
+const passwordPattern= /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
 
-    if (password.length < 5) {
-      req.session.message = "Password must 6 digits";
+    if (!passwordPattern.test(password)) {
+      req.session.message = "Password must include an uppercase letter, a lowercase letter, a number, and a special character";
       return res.redirect("/register");
     }
     const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
@@ -118,6 +121,14 @@ const register = async (req, res) => {
     if (!emailSent) {
       return res.json("email sending error")
     }
+
+ if(referalCode){
+  const referalCodeUser= await User.findOne({referralCode:referalCode})
+  if(!referalCodeUser){
+    req.session.message="Invalid Referal code"
+    return res.redirect("/register");
+  }
+ }
 
     req.session.userOTP = otp
     req.session.userData = { username, email, password }
@@ -263,6 +274,7 @@ const login = async (req, res) => {
     return res.redirect("/login");
   }
 
+  
   try {
 
     const existUser = await User.findOne({ email: email, isBlocked: false });
@@ -504,6 +516,12 @@ const editPassword = async (req, res) => {
       req.session.message = "Please enter a new password";
       return res.redirect("/profile");
     }
+    const passwordPattern= /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+
+    if (!passwordPattern.test(newpassword)) {
+      req.session.message = "Password must include an uppercase letter, a lowercase letter, a number, and a special character";
+      return res.redirect("/profile");
+    }
 
     if (newpassword !== cpassword) {
       req.session.message = "New password and confirmation do not match.";
@@ -513,6 +531,8 @@ const editPassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(newpassword, 10);
     user.password = hashedPassword;
     await user.save();
+    req.session.message = "Password changed successfully!";
+
     res.redirect("/profile")
   } catch (error) {
     console.error("Error updating password:", error);
@@ -542,6 +562,7 @@ return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({message:"internal
 const addAddress = async (req, res) => {
   try {
     const { firstName, lastName, email, mobile, addressLine, city, state, pinCode, country } = req.body;
+
 
     const errors = {};
 
@@ -587,6 +608,7 @@ const addAddress = async (req, res) => {
       country,
     });
 
+
     await newAddress.save();
     return res.redirect("/profile/address");
   } catch (error) {
@@ -594,11 +616,6 @@ const addAddress = async (req, res) => {
     return res.status(500).json({ message: "An error occurred while adding the address." });
   }
 };
-
-
-
-
-
 
 
 
@@ -823,17 +840,10 @@ const logout = async (req, res) => {
   })
 }
 
-//about us
-
-const loadAboutus= async(req,res)=>{
-res.render("user/aboutUs")
-}
-
 
 
 
 //home section
-
 
 
 const getTopSellingProducts= async()=>{
@@ -889,7 +899,14 @@ const loadHome = async (req, res) => {
 
 }
 
+//other
 
+const loadAboutus= async(req,res)=>{
+  res.render("user/aboutUs")
+  }
+
+// const load
+  
 
 module.exports = {
   loadLogin,
@@ -900,7 +917,6 @@ module.exports = {
   login,
   resendOtp,
   loadHome,
-
   profile,
   editProfile,
   loadAddress,

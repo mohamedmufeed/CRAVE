@@ -353,7 +353,8 @@
 
   // edit modal function  
 
- function openEditProductModal(id, name, description, price, material, stock, category, images) {
+ // Function to open the edit product modal
+function openEditProductModal(id, name, description, price, material, stock, category, images) {
   document.getElementById('editProductName').value = name;
   document.getElementById('editProductDescription').value = description;
   document.getElementById('editProductPrice').value = price;
@@ -361,9 +362,10 @@
   document.getElementById('editProductStock').value = stock;
   document.getElementById('editProductCategory').value = category;
   document.getElementById('productId').value = id;
+  console.log("the product id is ",id)
 
   const existingImagesContainer = document.getElementById('existing-images');
-  existingImagesContainer.innerHTML = ''; // Clear previous images
+  existingImagesContainer.innerHTML = ''; 
 
   images.forEach((image, index) => {
     const imgWrapper = document.createElement('div');
@@ -389,17 +391,19 @@
     fileInput.accept = 'image/*';
 
     // Handle file selection
-   fileInput.addEventListener('change', (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      imgElement.src = e.target.result; // Update preview
-    };
-    reader.readAsDataURL(file);
-    images[index] = file; // Update image array with new file
-  }
-});
+    fileInput.addEventListener('change', (event) => {
+      event.preventDefault();
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          imgElement.src = e.target.result; // Update preview
+        };
+        reader.readAsDataURL(file);
+        // Replace the old file with the new one in the form
+        images[index] = file; 
+      }
+    });
 
     changeBtn.addEventListener('click', () => fileInput.click());
 
@@ -412,23 +416,23 @@
   document.getElementById('editProductModal').style.display = 'block';
 }
 
-
-
-  //closee modal function 
-
-  function closeEditProductModal() {
-    document.getElementById("editProductModal").style.display = "none"
+function closeEditProductModal() {
+  const modal = document.getElementById('editProductModal');
+  if (modal) {
+    modal.style.display = 'none';
   }
+}
 
+// Attach event listener to the edit product form
+const editForm = document.getElementById('editProductForm');
+if (editForm) {
+  editForm.addEventListener('submit', submitEditProductForm);
+} else {
+  console.error('Edit product form not found in the DOM.');
+}
 
-
-
-
-
-
-  document.getElementById('editProductForm').addEventListener('submit', submitEditProductForm);
-
-  function submitEditProductForm(e) {
+// Function to handle form submission
+function submitEditProductForm(e) {
   e.preventDefault();
 
   const formData = new FormData();
@@ -439,11 +443,15 @@
   formData.append('stock', document.getElementById('editProductStock').value);
   formData.append('category', document.getElementById('editProductCategory').value);
 
-  const imagesInput = document.getElementById('editProductImage');
-  if (imagesInput.files.length > 0) {
-    for (let i = 0; i < imagesInput.files.length; i++) {
-      formData.append('images', imagesInput.files[i]);
-    }
+  // Attach updated images to the formData
+  const existingImagesContainer = document.getElementById('existing-images');
+  if (existingImagesContainer) {
+    const fileInputs = existingImagesContainer.querySelectorAll('input[type="file"]');
+    fileInputs.forEach((input, index) => {
+      if (input.files[0]) {
+        formData.append(`images`, input.files[0]);
+      }
+    });
   }
 
   const id = document.getElementById('productId').value;
@@ -451,18 +459,19 @@
     method: 'POST',
     body: formData,
   })
-   .then((response) => {
-  if (response.ok) {
-    closeEditProductModal();
-    window.location.href = '/admin/productManagement';
-  } else {
-    alert('Failed to update product images');
-  }
-})
-.catch((error) => {
-  console.error('Error:', error);
-});
-
+    .then((response) => {
+      if (response.ok) {
+        closeEditProductModal();
+        window.location.href = '/admin/productManagement';
+      } else {
+        return response.json().then((data) => {
+          alert(`Failed to update product: ${data.message || 'Unknown error'}`);
+        });
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
 }
 
 

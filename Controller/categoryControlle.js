@@ -17,6 +17,7 @@ const loadCategory = async (req, res) => {
   
   
       const categories = await Category.find({})
+      .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
   

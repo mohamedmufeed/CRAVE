@@ -12,6 +12,7 @@ const multer = require('multer');
 const { upload } = require("./Controller/ imageController");
 const hbs = require('hbs');
 const exphbs = require('express-handlebars'); 
+require('dotenv').config();
 
 
 
@@ -114,7 +115,18 @@ hbs.registerHelper('greaterThanOrEqual', function (value1, value2) {
 hbs.registerHelper("or", function(value1,value2){
   return value1||value2
 })
-
+hbs.registerHelper('coupon', function (context, options) {
+  if (context && context.code) {
+    return `Applied Coupon: ${context.code} (${context.discountAmount ? `₹${context.discountAmount}` : 'No Discount'})`;
+  }
+  return 'No coupon applied.';
+});
+hbs.registerHelper("and",function(a,b){
+  return a&&b
+})
+hbs.registerHelper("not",function(a,b){
+  return a !==b
+})
 //Helper ends
 
 //static seting

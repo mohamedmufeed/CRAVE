@@ -141,12 +141,22 @@
 		<h2>Order Status</h2>
 		<p> Delivery Status: {{order.status}}</p>
 		<p>Payment Status: {{order.paymentStatus}}</p>
-		<p>Estimated delivery: {{formatDate deliveryDate}}</p> <!-- Use formatDate helper -->
+		<p>Estimated delivery: {{formatDate deliveryDate}}</p> 
 	</div>
-	<button class="btn">
-		<a style="color: #fff; text-decoration: none;" href="/invoice/download/{{order._id}}">Invoice Dowload</a>
+	{{#if (eq order.status "Cancelled")}}
+	<button class="btn" disabled>
+		<a style="color: #000000; text-decoration: none;" href="/invoice/download/{{order._id}}" >Invoice Dowload</a>
 
 	</button>
+
+	{{else}}
+<button class="btn" >
+		<a style="color: #fff; text-decoration: none;" href="/invoice/download/{{order._id}}" >Invoice Dowload</a>
+
+	</button>
+
+
+	{{/if}}
 </div>
 
 

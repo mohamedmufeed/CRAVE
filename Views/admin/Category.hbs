@@ -1,180 +1,220 @@
-
-  <link rel="stylesheet" href="/admin/category.css">
-  <aside class="sidebar">
-    <div class="logo">
-          <a class="navbar-brand" href="index.html">CRAV<span style="font-weight:lighter;">E</span></a>
-    </div>
-    <nav class="menu">
-      <ul>
-          <li><a href="/admin/dashboard">Dashboard</a></li>
-       <li><a href="/admin/productManagement">Products</a></li>
-        <li><a href="/admin/orderManagement">Orders</a></li>
-        <li><a href="/admin/couponManagement">Coupon</a></li>
-        <li><a href="/admin/inventory">Inventory</a></li>
-        <li><a href="/admin/offerManagement">Offers</a></li>
-    <li><a href="/admin/userManagement"> User Management</a></li>
+<link rel="stylesheet" href="/admin/category.css">
+<aside class="sidebar">
+  <div class="logo">
+    <a class="navbar-brand" href="index.html">CRAV<span style="font-weight:lighter;">E</span></a>
+  </div>
+  <nav class="menu">
+    <ul>
+      <li><a href="/admin/dashboard">Dashboard</a></li>
+      <li><a href="/admin/productManagement">Products</a></li>
+      <li><a href="/admin/orderManagement">Orders</a></li>
+      <li><a href="/admin/couponManagement">Coupon</a></li>
+      <li><a href="/admin/inventory">Inventory</a></li>
+      <li><a href="/admin/offerManagement">Offers</a></li>
+      <li><a href="/admin/userManagement"> User Management</a></li>
       <li><a href="/admin/category"> Category</a></li>
-         <li><a href="/admin/salesReport"> Sales Report</a></li>
-  
-      </ul>
-    </nav>
-  </aside>
+      <li><a href="/admin/salesReport"> Sales Report</a></li>
 
-
-
-  <!-- Main Content -->
-  <div class="main-content">
-    <header class="dashboard-header">
-      <h1>Category</h1>
-      <div>
-  <form class="form-inline my-2 my-lg-0" action="/admin/category/search" method="GET">
-    <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
- 
-  </form>
-</div>
-    </header>
-<button class="add-btn" onclick="addCategoryModal()">Add Category</button>
-    <!-- User Table Section -->
-    <section class="user-table">
-      <h2>All Category</h2>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-           
-            
-              <th> Category Name</th>
-              <th>Material</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-          
-     {{#each category}}
-<tr>
-  
-  <td>{{this.name}}</td>
-   <td>{{this.material}}</td>
-
-  <td class="action-buttons">
-    <div class="buttons">
- 
-    <button class="btn" onclick="openEditCtegoryModal('{{this.name}}','{{this._id}}','{{this.material}}')">Edit</button>  
-
-     
-      {{#if this.isListed}}
-        <form action="/admin/category/unlist/{{this._id}}" method="POST">
-          <button type="submit" class="btn unblock-btn">Unlist</button>
-        </form>
-      {{else}}
-        <form action="/admin/category/list/{{this._id}}" method="POST">
-          <button type="submit" class="btn block-btn">List</button>
-        </form>
-      {{/if}}
-    </div>
-  </td>
-</tr>
-{{/each}}
-
-
-
-<nav aria-label="Page navigation">
-    <ul class="pagination justify-content-center pages custom-pagination" >
-        {{#if previousPage}}
-        <li class="page-item">
-            <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-            </a>
-        </li>
-        {{/if}}
-
-        {{#each (range 1 totalPages)}}
-        <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
-            <a class="page-link" href="?page={{this}}">{{this}}</a>
-        </li>
-        {{/each}}
-
-        {{#if nextPage}}
-        <li class="page-item">
-            <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
-        </li>
-        {{/if}}
     </ul>
-</nav>
-
-</section>
-{{!-- pagination --}}
+  </nav>
+</aside>
 
 
 
- {{!-- end pagination --}}
+<!-- Main Content -->
+<div class="main-content">
+  <header class="dashboard-header">
+    <h1>Category</h1>
+    <div>
+      <form class="form-inline my-2 my-lg-0" action="/admin/category/search" method="GET">
+        <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
 
-{{!-- edit category modal --}}
+      </form>
+    </div>
+  </header>
+  <button class="add-btn" onclick="addCategoryModal()">Add Category</button>
+  <!-- User Table Section -->
+  <section class="user-table">
+    <h2>All Category</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
 
-<div class="modal" id="editCategoryModal" style="display:none">
-  <div class="modal-content">
-    <span class="close" onclick="closeEditModal()">&times;</span>
-    <h2>Edit Category</h2>
-    <form id="editCategoryForm" method="POST" action="/admin/category/edit/{{this._id}}">
-      <input type="hidden" name="_method" value="PUT" />
-      <label for="categoryName">Category Name:</label>
-      <input type="text" id="categoryName" name="name" value="{{this.name}}" />
-      <label for="categoryMaterial">Material:</label>
-      <input type="text" id="categoryMaterial" name="material" value="{{this.material}}"  />
-      <button type="submit" class="btn">Update Category</button>
-    </form>
+
+            <th> Category Name</th>
+            <th>Material</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          {{#each category}}
+          <tr>
+
+            <td>{{this.name}}</td>
+            <td>{{this.material}}</td>
+
+            <td class="action-buttons">
+              <div class="buttons">
+
+                <button class="btn"
+                  onclick="openEditCtegoryModal('{{this.name}}','{{this._id}}','{{this.material}}')">Edit</button>
+
+
+                {{#if this.isListed}}
+                <form action="/admin/category/unlist/{{this._id}}" method="POST">
+                  <button type="submit" class="btn unblock-btn">Unlist</button>
+                </form>
+                {{else}}
+                <form action="/admin/category/list/{{this._id}}" method="POST">
+                  <button type="submit" class="btn block-btn">List</button>
+                </form>
+                {{/if}}
+              </div>
+            </td>
+          </tr>
+          {{/each}}
+
+
+
+          <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center pages custom-pagination">
+              {{#if previousPage}}
+              <li class="page-item">
+                <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              {{/if}}
+
+              {{#each (range 1 totalPages)}}
+              <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
+                <a class="page-link" href="?page={{this}}">{{this}}</a>
+              </li>
+              {{/each}}
+
+              {{#if nextPage}}
+              <li class="page-item">
+                <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+              {{/if}}
+            </ul>
+          </nav>
+
+  </section>
+  {{!-- pagination --}}
+
+
+
+  {{!-- end pagination --}}
+
+  {{!-- edit category modal --}}
+
+  <div class="modal" id="editCategoryModal" style="display:none">
+    <div class="modal-content">
+      <span class="close" onclick="closeEditModal()">&times;</span>
+      <h2>Edit Category</h2>
+      <form id="editCategoryForm" method="POST" action="/admin/category/edit/{{this._id}}">
+        <input type="hidden" name="_method" value="PUT" />
+        <label for="categoryName">Category Name:</label>
+        <input type="text" id="categoryName" name="name" value="{{this.name}}" />
+        <label for="categoryMaterial">Material:</label>
+        <input type="text" id="categoryMaterial" name="material" value="{{this.material}}" />
+        <button type="submit" class="btn">Update Category</button>
+      </form>
+    </div>
   </div>
-</div>
 
 
 
 
- 
+
   {{!-- add category modal --}}
- 
-<div class="modal" id="addCategoryModal" style="display:none;">
-  <div class="modal-content">
-    <span class="close" onclick="closeaddCategoryModal()">&times;</span>
-    <h2>Add Category</h2>
-    <form id="addCategoryForm" method="POST" action="/admin/category/add">
-      <label for="categoryName">Category Name:</label>
-      <input type="text" id="categoryName" name="name" required />
-      
-      <label for="categoryMaterial">Material:</label>
-      <input type="text" id="categoryMaterial" name="material" required />
-      
-      <button type="submit" class="btn">Add Category</button>
-    </form>
+
+  <div class="modal" id="addCategoryModal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeaddCategoryModal()">&times;</span>
+      <h2>Add Category</h2>
+      <form id="addCategoryForm" method="POST" action="/admin/category/add">
+        <label for="categoryName">Category Name:</label>
+        <input type="text" id="categoryName" name="name" required />
+
+        <label for="categoryMaterial">Material:</label>
+        <input type="text" id="categoryMaterial" name="material" required />
+
+        <button type="submit" class="btn">Add Category</button>
+      </form>
+    </div>
   </div>
-</div>
 
 
- <script>
-  function openEditCtegoryModal(categoryName, categoryId,categoryMaterial) {
-    document.getElementById("editCategoryModal").style.display = "block";
-    document.getElementById("categoryName").value = categoryName;
-          document.getElementById("categoryMaterial").value = categoryMaterial;
-   document.getElementById("editCategoryForm").action = "/admin/category/edit/" + categoryId;
-  }
-
-  function closeEditModal() {
-    document.getElementById("editCategoryModal").style.display = "none";
-  }
-
-   function addCategoryModal(){
-    document.getElementById("addCategoryModal").style.display="block"
-   }
-    function closeaddCategoryModal(){
-       document.getElementById("addCategoryModal").style.display="none"
+  <script>
+    //edit modal
+    function openEditCtegoryModal(categoryName, categoryId, categoryMaterial) {
+      document.getElementById("editCategoryModal").style.display = "block";
+      document.getElementById("categoryName").value = categoryName;
+      document.getElementById("categoryMaterial").value = categoryMaterial;
+      document.getElementById("editCategoryForm").action = "/admin/category/edit/" + categoryId;
     }
-</script>
 
-  
+    function closeEditModal() {
+      document.getElementById("editCategoryModal").style.display = "none";
+    }
+
+    document.getElementById("editCategoryModal").addEventListener("submit",async (event)=>{
+      const data={}
+      const formData=new FormData(event.target)
+      formData.forEach((value,key)=>{
+        data[key]=value
+      })
+       const { material, name } = data
+
+
+      if (material.length < 3) {
+        alert("Material should be greater than 2 letters.");
+        event.preventDefault()
+      } else if (name.length < 2) {
+        alert("Name should be greater than 2 letters.");
+        event.preventDefault()
+      }
+
+    })
+
+    //edit modal ends
+
+
+    //add modal starts
+
+    function addCategoryModal() {
+      document.getElementById("addCategoryModal").style.display = "block"
+
+    }
+    function closeaddCategoryModal() {
+      document.getElementById("addCategoryModal").style.display = "none"
+    }
+
+    document.getElementById("addCategoryModal").addEventListener("submit", async (event) => {
+
+      const data = {}
+      const formData = new FormData(event.target)
+      formData.forEach((value, key) => {
+        data[key] = value
+      })
+      const { material, name } = data
+
+
+      if (material.length < 3) {
+        alert("Material should be greater than 2 letters.");
+        event.preventDefault()
+      } else if (name.length < 2) {
+        alert("Name should be greater than 2 letters.");
+        event.preventDefault()
+      }
 
 
 
-  
-
-
+    })
+  </script>

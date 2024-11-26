@@ -22,10 +22,11 @@ const loadCheckOut = async (req, res) => {
   }
 
 
+
   try {
     const userCart = await Cart.findOne({ userId }).populate("products.productId");
     const savedAddresses = await Address.find({ user: userId })
-   
+
     if (!userCart || !userCart.products || userCart.products.length === 0) {
       req.session.message = "Your cart is empty. Please add products to proceed.";
       return res.redirect("/cart");
@@ -34,19 +35,33 @@ const loadCheckOut = async (req, res) => {
     for (let item of userCart.products) {
       if (item.quantity > item.productId.stock) {
         req.session.message = `The requested quantity for "${item.productId.name}" exceeds the available stock. Please adjust your cart.`;
+        req.session.coupon = null
+        console.log("Coupon cleared");
         return res.redirect("/cart");
         // return res.status(400).send("invalis quanityt")
       }
     }
 
+
+
     let subtotal = 0;
     userCart.products.forEach(item => {
-      subtotal += item.price * item.quantity;
+      const productPrice = item.productId.discountPrice || item.productId.price;
+      subtotal += productPrice * item.quantity;
     });
+
+
+
     let discountAmount = 0;
-    let newTotal = subtotal;
+    let newTotal = 0;
     let couponDetails = null;
     const shippingCharge = 100
+
+    if (req.session.newTotal) {
+      newTotal = req.session.newTotal;
+    } else {
+      newTotal = subtotal
+    }
 
     if (req.session.coupon) {
       const coupon = req.session.coupon;
@@ -64,8 +79,9 @@ const loadCheckOut = async (req, res) => {
 
 
       discountAmount = Math.min(discountAmount, subtotal);
-      newTotal = subtotal - discountAmount;
+      newTotal = newTotal - discountAmount;
     }
+
 
     newTotal += shippingCharge;
     const order = {
@@ -76,7 +92,7 @@ const loadCheckOut = async (req, res) => {
       couponDetails: couponDetails
     };
 
-    return res.render("user/chekout", {
+    res.render("user/chekout", {
       savedAddresses, order,
       message: req.session.message,
       cartCount,
@@ -115,7 +131,6 @@ const saveBillingAddress = async (req, res) => {
   try {
 
     const { firstName, lastName, email, mobile, addressLine, city, state, pinCode, country } = req.body;
-
 
 
     if (!firstName) {
@@ -189,12 +204,12 @@ const saveBillingAddress = async (req, res) => {
       state,
       pinCode,
       country,
-      
+
     })
 
 
     await newAddres.save()
-res.redirect("/checkOut")
+   return  res.redirect("/checkOut")
   } catch (error) {
     console.error('Error saving address:', error);
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Failed to save address' });
@@ -207,7 +222,6 @@ const placeOrder = async (req, res) => {
   if (!userId) {
     return res.status(401).json({ success: false, message: 'User not authenticated' });
   }
-
   try {
     const objectId = new mongoose.Types.ObjectId(userId);
     let { addressId, paymentMethod } = req.body;
@@ -297,22 +311,29 @@ const placeOrder = async (req, res) => {
       await walletTransaction.save()
     }
 
-
+    let paymentStatus="Pending"
+    if(paymentMethod==="Wallet"){
+     paymentStatus="Paid"
+    }
 
     const newOrder = new Order({
       userId: objectId,
       products,
       address: addressId,
       total: totalAmount,
-      status: 'Pending',
+      status: "Pending",
       paymentMethod,
       discountAmount: totalDiscount,
-      coupon: couponDetails
+      coupon: couponDetails,
+      paymentStatus:paymentStatus
     });
 
+  
 
     await newOrder.save();
     await Cart.updateOne({ userId: objectId }, { products: [] });
+    req.session.coupon = null;
+
 
     return res.redirect("/thankyou");
   } catch (error) {
@@ -326,6 +347,8 @@ const placeOrder = async (req, res) => {
 //  hrere
 
 const thankyou = async (req, res) => {
+  req.session.newTotal = null
+  req.session.coupon = null;
   res.render("user/thankyou")
 }
 
@@ -344,7 +367,7 @@ const orderHistory = async (req, res) => {
       req.session.message = "No orders found";
       return res.redirect("/profile");
     }
-    
+
     res.render("user/orderHistory", {
       orders,
       message: req.session.message
@@ -534,7 +557,7 @@ const loadOrder = async (req, res) => {
   try {
 
     const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 7; // Set items per page
+    const limit = parseInt(req.query.limit, 10) || 11;
     const skip = (page - 1) * limit;
 
     // Fetch total number of categories
@@ -546,7 +569,8 @@ const loadOrder = async (req, res) => {
       .populate('address')
       .populate('products.productId', 'name price')
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .sort({ createdAt: -1 })
 
 
     const totalPages = Math.ceil(totalOrders / limit);
@@ -606,13 +630,16 @@ const orderStatus = async (req, res) => {
 
 
   try {
-    // const updateOrder = await Order.findByIdAndUpdate(orderId, { status: newStatus })
 
     const order = await Order.findById(orderId)
     if (!order) {
       return res.status(HttpStatusCodes.NOT_FOUND).json({ message: 'Order not found' });
     }
     order.status = newStatus
+
+    if(order.paymentMethod ==="CashOnDelivery" && newStatus==="Delivered"){
+      order.paymentStatus="Paid"
+    }
 
     order.products.map(product => {
       product.singleStatus = newStatus

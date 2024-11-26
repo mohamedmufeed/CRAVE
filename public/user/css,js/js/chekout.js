@@ -152,7 +152,7 @@ function showToast(message, type = 'success') {
 
     const toast = document.createElement('div');
     toast.classList.add('toast', 'align-items-center', 'border-0', 'position-relative');
-    toast.classList.add(type === 'success' ? 'text-bg-success' : 'text-bg-danger');
+    toast.classList.add(type === 'success' ? 'text-bg-danger' : 'text-bg-success');
     toast.setAttribute('role', 'alert');
     toast.setAttribute('aria-live', 'assertive');
     toast.setAttribute('aria-atomic', 'true');

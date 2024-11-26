@@ -294,6 +294,32 @@
   }
 
 
+ document.getElementById("createCouponModal").addEventListener("submit",async (event)=>{
+let isValid=true
+  const data={}
+  const formData=new FormData(event.target)
+  formData.forEach((value,key)=>{
+    data[key]=value
+  })
+const{discountValue,discountType}=data
+const discount=Number(discountValue)
+if(discount <0){
+  alert("Discount values must should be postive number")
+  isValid=false
+
+}
+if(discountType === "percentage"&& discount>30){
+   alert("Discount values must should be less  than ")
+   isValid=false
+
+}
+
+if(isValid=false){
+  event.preventDefault()
+}
+})
+
+
   // ---------------add modal ends---------------
 
 

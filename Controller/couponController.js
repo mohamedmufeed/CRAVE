@@ -13,6 +13,8 @@ const couponModel = require("../Model/couponModel");
 const applyCoupon = async (req, res) => {
   try {
     const { couponCode, cartTotal } = req.body;
+    
+
 
     if(!couponCode){
       return res.status(400).json({ message: 'Enter coupon code' });
@@ -67,11 +69,7 @@ const applyCoupon = async (req, res) => {
     }
 
 
-    req.session.coupon = {
-      code: couponCode,
-      discountType: coupon.discountType,
-      discountValue: coupon.discountValue
-    };
+  
 
     let discountAmount = 0;
     if (coupon.discountType === 'percentage') {
@@ -83,15 +81,26 @@ const applyCoupon = async (req, res) => {
 
     const newTotal = cartTotal - discountAmount;
 
+
+    req.session.coupon = {
+      code: couponCode,
+      discountType: coupon.discountType,
+      discountValue: coupon.discountValue,
+      discountedTotal:newTotal
+    };
+
     coupon.usageLimit -= 1;
     await coupon.save();
 
     return res.json({
       success: true,
       discountAmount,
-      newTotal
+      newTotal,
+      couponCode:couponCode
     });
 
+  
+    
   } catch (error) {
     console.log('Error applying coupon:', error);
     return res.status(500).json({ message: 'An error occurred while applying the coupon' });
@@ -111,6 +120,28 @@ const removeCoupon = async (req, res) => {
   })
 }
 
+const total= async(req,res)=>{
+try {
+  const {newTotal}=req.body
+  if (!newTotal || isNaN(newTotal)) {
+    return res.status(400).json({ success: false, message: "Invalid newTotal received" });
+  }
+  
+req.session.newTotal=newTotal
+req.session.save(err => {
+  if (err) {
+    console.error("Session save error:", err);
+  }
+  console.log("Session saved with newTotal:", req.session.newTotal);
+});
+
+  
+} catch (error) {
+  console.error("Error in total:", error);
+  res.status(500).json({ success: false, message: "An error occurred" });
+  
+}
+}
 
 //user coupon controler edns here 
 
@@ -130,6 +161,7 @@ const loadCoupon = async (req, res) => {
     const coupons = await Coupon.find()
       .skip(skip)
       .limit(limit)
+      .sort({ createdAt: -1 })
       .populate('applicableProducts', 'name')
       .populate('applicableCategories', 'name');
 
@@ -172,8 +204,8 @@ const editCoupon = async (req, res) => {
       return res.status(400).json({ message: 'Discount value must be positive' });
     }
 
-    if(discountType==="percentage"&& discountValue>10){
-      return res.status(400).json({message:"Maximum discount is 10%"})
+    if(discountType==="percentage"&& discountValue>=60){
+      return res.status(400).json({message:"Maximum discount is 60%"})
     }
     if (isNaN(new Date(expiryDate).getTime())) {
       return res.status(400).json({ message: 'Invalid expiration date' });
@@ -232,8 +264,8 @@ const createCoupon = async (req, res) => {
       return res.status(400).json({ message: 'Discount value must be positive' });
     }
 
-    if(discountType==="percentage"&& discountValue>10){
-      return res.status(400).json({message:"Maximum discount is 10%"})
+    if(discountType==="percentage"&& discountValue>=60){
+      return res.status(400).json({message:"Maximum discount is 60%"})
     }
     if (isNaN(new Date(expiryDate).getTime())) {
       return res.status(400).json({ message: 'Invalid expiration date' });
@@ -278,4 +310,4 @@ const deleteCoupon = async (req, res) => {
 
 //   admin coupon controller ends herhe
 
-module.exports = { applyCoupon, removeCoupon, loadCoupon, createCoupon, deleteCoupon, editCoupon }
+module.exports = { applyCoupon, removeCoupon, loadCoupon, createCoupon, deleteCoupon, editCoupon,total }
