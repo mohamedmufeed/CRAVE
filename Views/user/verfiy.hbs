@@ -67,13 +67,12 @@ function showToast(message) {
  function validateOtpForm() {
             const otpInput = document.getElementById("otp").value;
 
-            // Optional: Add client-side validation for the OTP format
             if (!/^\d{6}$/.test(otpInput)) {
-                alert("Please enter a valid 6-digit OTP.");
-                return false; // Prevent form submission
+               
+                return false; 
             }
 
-            return true; // Allow form submission
+            return true; 
         }
 
 

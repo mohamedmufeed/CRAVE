@@ -112,7 +112,7 @@ const loadProducts = async (req, res) => {
         const selectedCategory = category.find(cat => cat !== '');
         if (selectedCategory) {
           try {
-            console.log(selectedCategory);
+          
   
             const foundCategory = await Category.findOne({ name: selectedCategory });
             if (foundCategory) {
@@ -152,25 +152,25 @@ const loadProducts = async (req, res) => {
       if (sort && sort !== "") {
         switch (sort) {
           case 'popularity':
-            products = product.sort((a, b) => b.popularity - a.popularity);
+            product = product.sort((a, b) => b.popularity - a.popularity);
             break;
           case 'priceLow':
-            products = product.sort((a, b) => a.price - b.price);
+            product = product.sort((a, b) => a.price - b.price);
             break;
           case 'priceHigh':
-            products = product.sort((a, b) => b.price - a.price);
+            product = product.sort((a, b) => b.price - a.price);
             break;
           case 'averageRating':
-            products = product.sort((a, b) => b.rating - a.rating);
+            product = product.sort((a, b) => b.rating - a.rating);
             break;
           case 'newArrivals':
-            products = product.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            product = product.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             break;
           case 'aToZ':
-            products = product.sort((a, b) => a.name.localeCompare(b.name));
+            product = product.sort((a, b) => a.name.localeCompare(b.name));
             break;
           case 'zToA':
-            products = product.sort((a, b) => b.name.localeCompare(a.name));
+            product = product.sort((a, b) => b.name.localeCompare(a.name));
             break;
           default:
             break;
@@ -178,7 +178,7 @@ const loadProducts = async (req, res) => {
       }
   
   
-  
+      // res.json({ products: product });
       res.render('user/shop', { product });
     } catch (error) {
       console.error(error);

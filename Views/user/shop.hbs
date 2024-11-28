@@ -22,7 +22,7 @@
 				</li>
 				<li class="active"><a class="nav-link" href="shop.html">Shop</a></li>
 		<li><a class="nav-link" href="/aboutus">About us</a></li>
-				<li><a class="nav-link" href="services.html">Services</a></li>
+				<li><a class="nav-link" href="/services">Services</a></li>
 				<li><a class="nav-link" href="blog.html">Blog</a></li>
 				<li><a class="nav-link" href="contact.html">Contact us</a></li>
 			</ul>
@@ -82,13 +82,14 @@
 
 
 <div class="untree_co-section product-section before-footer-section">
+	{{#if product}}
 	<div class="container">
 
 		<div class="row">
 			{{!-- filter bar starts --}}
 			<div class="filter-bar  col-md-2">
 				<h3>Advanced Search</h3>
-				<form action="/products/filter" method="GET" class="filter-form">
+				<form  action="/products/filter" method="GET" class="filter-form">
 					<label for="category">Category</label>
 					<select class="form-control" name="category[]" id="category">
 						<option>All Categories</option>
@@ -153,6 +154,19 @@
 			</div>
 		</div>
 	</div>
+
+	{{else}}
+<div class="row">
+  <div class="col-md-12 text-center">
+    <h3 class="text-black">No Products Found</h3>
+    <p>We're sorry, but we couldn't find any products matching your search or selection. Try exploring all available items!</p>
+    <a href="/products" class="btn btn-black btn-lg">View All Products</a>
+  </div>
+</div>
+
+
+
+	{{/if}}
 </div>
 </div>
 
@@ -272,4 +286,7 @@
 	function updateMaxValue(value) {
 		document.getElementById('max-price-value').textContent = value;
 	}
+
+	
+	document.getElementById("")
 </script>

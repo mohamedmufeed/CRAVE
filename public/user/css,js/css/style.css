@@ -894,3 +894,15 @@ left: 20px;
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
+
+
+.some{
+  width: 450px;
+}
+.buttn{
+  width: 70px;
+  font-size:13px;
+  height: 30px;
+  color: rgb(255, 255, 255);
+  background-color: red;
+}

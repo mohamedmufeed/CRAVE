@@ -45,3 +45,7 @@ input:checked + .slider:before {
 .select-group {
     margin-bottom: 20px; /* Adjust this value to increase or decrease space */
 }
+.higlight{
+    background-color: #000;
+  }
+  

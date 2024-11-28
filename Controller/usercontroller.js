@@ -82,66 +82,68 @@ async function sendVerificationfEmail(email, otp,username) {
 
 
 
+
 const register = async (req, res) => {
-  const { username, email, password, referalCode } = req.body;
-  req.session.referalCode = referalCode
+  const { username, email, password, referalCode, Conformpassword } = req.body;
 
   try {
+    const errors = {};
 
-    const exitsUser = await User.findOne({ email })
-    
+    const exitsUser = await User.findOne({ email });
     if (exitsUser) {
-      req.session.message = "Email is already registered"
-      return res.redirect("/register")
+      errors.email = "Email is already registered";
     }
 
-    if (username.length === 0 || email.length === 0 || password.length === 0) {
-      req.session.message = "All fields are required";
-      return res.redirect('/register');
-    }
+    if (!username) errors.username = "Username is required";
+    if (!email) errors.email = "Email is required";
+    if (!password) errors.password = "Password is required";
+
     const usernamePattern = /^[A-Za-z]+$/;
-    if (!usernamePattern.test(username)) {
-      req.session.message = "Please enter a valid Username";
-      return res.redirect("/register");
+    if (username && !usernamePattern.test(username)) {
+      errors.username = "Please enter a valid Username";
     }
-const passwordPattern= /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
 
-    if (!passwordPattern.test(password)) {
-      req.session.message = "Password must include an uppercase letter, a lowercase letter, a number, and a special character";
-      return res.redirect("/register");
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (password && !passwordPattern.test(password)) {
+      errors.password = "Password must include uppercase, lowercase, number, special character, and 8+ characters.";
     }
+
+    if (password !== Conformpassword) {
+      errors.Conformpassword = "Passwords do not match";
+    }
+
     const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
-    if (!emailPattern.test(email)) {
-      req.session.message = "Please enter a valid email";
-      return res.redirect("/register");
+    if (email && !emailPattern.test(email)) {
+      errors.email = "Please enter a valid email";
+    }
+
+    if (referalCode) {
+      const referalCodeUser = await User.findOne({ referralCode: referalCode });
+      if (!referalCodeUser) {
+        errors.referalCode = "Invalid referral code";
+      }
+    }
+
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).json({ errors });
     }
 
     const otp = generateOtp();
-    const emailSent = await sendVerificationfEmail(email, otp,username);
+    const emailSent = await sendVerificationfEmail(email, otp, username);
     if (!emailSent) {
-      return res.json("email sending error")
+      return res.status(500).json({ message: "Failed to send email" });
     }
 
- if(referalCode){
-  const referalCodeUser= await User.findOne({referralCode:referalCode})
-  if(!referalCodeUser){
-    req.session.message="Invalid Referal code"
-    return res.redirect("/register");
-  }
- }
-
-    req.session.userOTP = otp
-    req.session.userData = { username, email, password }
-    res.render("user/verfiy",)
-
+    req.session.userOTP = otp;
+    req.session.userData = { username, email, password };
     console.log(`OTP send ${otp}`)
-
+    return res.status(200).json({ message: "OTP sent successfully", redirect: "/verify-otp" });
   } catch (error) {
-    console.error("signup error");
-    // res.redirect("/pagenot found")
+    console.error("Registration error:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
+};
 
-}
 
 
 const loadVerifyOtp = async (req, res) => {
@@ -259,53 +261,37 @@ const loadLogin = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
 
-
-
-
-  if (!email || !password) {
-    req.session.message = "All fields are required";
-    return res.redirect("/login");
-  }
-
-  // Validate email format
-  const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
-  if (!emailPattern.test(email)) {
-    req.session.message = "Please enter a valid email";
-    return res.redirect("/login");
-  }
-
-  
   try {
+    const errors = {};
 
-    const existUser = await User.findOne({ email: email, isBlocked: false });
+    if (!email) errors.email = "Email is required";
+    if (!password) errors.password = "Password is required";
+
+    const existUser = await User.findOne({ email, isBlocked: false });
 
     if (!existUser) {
-      req.session.message = "User does not exist";
-      return res.redirect("/login");
+      errors.email = "User does not exist";
+    } else {
+      const isMatch = await bcrypt.compare(password, existUser.password);
+      if (!isMatch) {
+        errors.password = "Password is incorrect";
+      }
     }
 
-    const isMatch = await bcrypt.compare(password, existUser.password);
-    if (!isMatch) {
-      req.session.message = "Password is incorrect";
-      return res.redirect("/login");
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).json({ errors });
     }
-
-
 
     req.session.userId = existUser._id;
-
-
-    req.session.isAuthenticated = true
+    req.session.isAuthenticated = true;
     req.session.message="Welcome back! You have successfully logged in."
-    return res.redirect("/")
-
+    return res.status(200).json({ redirectUrl: "/" });
   } catch (error) {
-    // Handle any unexpected errors
+    console.error("Login error:", error);
     req.session.message = "An error occurred. Please try again.";
     return res.redirect("/login");
   }
 };
-
 
 
 //forgotpassword
@@ -905,6 +891,11 @@ const loadAboutus= async(req,res)=>{
   res.render("user/aboutUs")
   }
 
+  const loadServices= async(req,res)=>{
+    res.render("user/services")
+  }
+  
+
 // const load
   
 
@@ -934,6 +925,7 @@ module.exports = {
   paymentSuccess,
   retryPayment,
   loadAboutus,
-  googleCallback
+  googleCallback,
+  loadServices
  
 }

@@ -232,4 +232,4 @@ const removeCart = async (req, res) => {
   }
 };
 
-module.exports = { loadCart, addCart, updateCart, removeCart }
+module.exports = { loadCart, addCart, updateCart, removeCart }    

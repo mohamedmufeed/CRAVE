@@ -1,5 +1,6 @@
 function updateCartQuantity(action, productId) {
   const quantityInput = document.getElementById(`quantity-${productId}`);
+
   let quantity = parseInt(quantityInput.value);
   if (isNaN(quantity) || quantity < 1) {
     quantity = 1;
@@ -27,16 +28,20 @@ function updateCartQuantity(action, productId) {
       if (data.success) {
 
         console.log("cart data", data)
+      
         document.getElementById(`product-total-${productId}`).innerText = `₹${data.newTotal}`;
         document.getElementById('cart-total').innerText = `₹${data.cartTotal}`;
       }
+      
     })
     .catch(error => {
       console.error('Error updating cart:', error);
     });
 
-
+   
 }
+
+
 
 document.querySelector('form').addEventListener('submit', function (event) {
   event.preventDefault();
@@ -151,6 +156,8 @@ function removeCoupon() {
 
 
 }
+
+
 document.getElementById("remove-coupon-button").addEventListener("click", removeCoupon)
 
 
@@ -211,3 +218,22 @@ document.addEventListener("DOMContentLoaded", function () {
     toast.show();
   }
 });
+
+
+let productIdToRemove=null
+function confirmremove(productId){
+  productIdToRemove=productId;
+  const toastElement= new bootstrap.Toast(document.getElementById("confirmation-toast"))
+  toastElement.show()
+  document.getElementById("confirmation-toast").style.display="block"
+
+  document.getElementById('confirm-remove').addEventListener('click', function () {
+    if (productIdToRemove) {
+      document.getElementById(`remove-form-${productIdToRemove}`).submit();
+
+      const toastElement = bootstrap.Toast.getInstance(document.getElementById('confirmation-toast'));
+      toastElement.hide();
+    }
+  });
+
+}

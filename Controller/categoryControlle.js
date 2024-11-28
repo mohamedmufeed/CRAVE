@@ -26,9 +26,9 @@ const loadCategory = async (req, res) => {
       const previousPage = page > 1 ? page - 1 : null;
       const nextPage = page < totalPages ? page + 1 : null;
   
-      if (!categories || categories.length === 0) {
-        return res.status(HttpStatusCodes.NOT_FOUND).send("No categories found");
-      }
+      // if (!categories || categories.length === 0) {
+      //   return res.status(HttpStatusCodes.NOT_FOUND).send("No categories found");
+      // }
   
   
       res.render("admin/Category", {
