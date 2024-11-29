@@ -73,7 +73,7 @@
             {{/each}}
           </td>
       <td>
-        <form action="/admin/orderManagement/status/{{this._id}}" method="POST" class="status-form  " id="status-dropdown" >
+        <form action="/admin/orderManagement/status/{{this._id}}?_method=PATCH" method="POST" class="status-form  " id="status-dropdown" >
           <select name="status" class="" required onchange="this.form.submit()" {{#if (or (eq this.status "Delivered")(eq this.status "Cancelled"))}}disabled{{/if}}>
             <option value="Pending" {{#if (eq this.status "Pending")}}selected{{/if}}>Pending</option>
             <option value="Confirmed" {{#if (eq this.status "Confirmed")}}selected{{/if}}>Confirmed</option>

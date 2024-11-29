@@ -59,11 +59,11 @@
                 <td>{{#if this.isBlocked}}Blocked{{else}}Active{{/if}}</td>
                <td class="action-buttons">
   {{#if this.isBlocked}}
-    <form action="/admin/userManagement/unblock/{{this._id}}" method="POST">
+    <form action="/admin/userManagement/unblock/{{this._id}}?_method=PATCH" method="POST">
       <button type="submit" class="btn unblock-btn">Unblock</button>
     </form>
   {{else}}
-    <form action="/admin/userManagement/block/{{this._id}}" method="POST">
+    <form action="/admin/userManagement/block/{{this._id}}?_method=PATCH" method="POST">
       <button type="submit" class="btn block-btn">Block</button>
     </form>
   {{/if}}

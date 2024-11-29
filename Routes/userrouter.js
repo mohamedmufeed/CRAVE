@@ -75,15 +75,15 @@ router.post("/placeorder", orderController.placeOrder)
 //order history
 router.get("/profile/orders", orderController.orderHistory)
 router.get("/profile/orders/orderdetails/:id", orderController.orderDetails);
-router.post("/profile/orders/cancelorder/:orderId/:productId", orderController.cancelOrder)
-router.post('/profile/orders/returnorder/:orderId/:productId',orderController.returnorder)
+router.patch("/profile/orders/cancelorder/:orderId/:productId", orderController.cancelOrder)
+router.patch('/profile/orders/returnorder/:orderId/:productId',orderController.returnorder)
 
 
 //wishlist 
 
 router.get("/profile/wishlist", wishlistController.loadWishlist)
 router.post("/profile/wishlist/add", wishlistController.addWishlist)
-router.post("/profile/wishlist/remove/:id", wishlistController.removeWishlist)
+router.delete("/profile/wishlist/remove/:id", wishlistController.removeWishlist)
 router.post("/addtocart", wishlistController.addCartFromWishlist);
 
 //coupon controller
@@ -100,7 +100,7 @@ router.post("/razorpay/retry/:id",userController.retryPayment)
 
 //walet
 router.get("/profile/wallet",walletController.loadWallet)
-router.get("/logout",userController.logout)
+
 
 // forgot password
 router.get("/forgotPassword",userController.loadForgotPassword)
@@ -117,7 +117,7 @@ router.get("/invoice/download/:id",invoiceController.invoiceDownload)
 router.get("/aboutus",userController.loadAboutus)
 router.get("/services",userController.loadServices)
 
-
+router.get("/logout",userController.logout)
 
 
 module.exports = router;

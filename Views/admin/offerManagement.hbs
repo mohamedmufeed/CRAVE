@@ -210,7 +210,7 @@
   <div class="modal-content">
     <span class="close" onclick="closeEditOfferModal()">&times;</span>
     <h2>Edit Offer</h2>
-    <form id="EditOfferForm" method="POST" action="/admin/offerManagement/edit">
+    <form id="EditOfferForm" method="POST" action="/admin/offerManagement/edit?_method=PUT">
       <input type="hidden" id="offerId" name="offerId" />
 
       <label for="editDiscountType">Discount Type:</label>

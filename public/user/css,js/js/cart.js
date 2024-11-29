@@ -8,9 +8,9 @@ function updateCartQuantity(action, productId) {
   }
 
   if (action === 'decrease') {
-    quantity = quantity--
+    quantity = quantity > 1 ? quantity--: 1; 
   } else if (action === 'increase') {
-    quantity = quantity++
+    quantity = quantity < 10 ? quantity++ : 10; 
   }
 
   quantityInput.value = quantity ;

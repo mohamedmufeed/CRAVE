@@ -108,7 +108,7 @@
 </button>
 
 
-                <form action="/admin/couponManagement/delete/{{this.id}}" method="post">
+                <form action="/admin/couponManagement/delete/{{this.id}}?_method=DELETE" method="post">
                   <button type="submit" class="btn btn-dark">Delete</button>
                 </form>
               </div>
@@ -229,7 +229,7 @@
   <div class="modal-content">
     <span class="close" onclick="closeEditCouponModal()">&times;</span>
     <h2>Edit Coupon</h2>
-    <form id="EditCouponForm" method="POST" action="/admin/couponManagement/edit">
+    <form id="EditCouponForm" method="POST" action="/admin/couponManagement/edit?_method=PUT">
 
       <!-- Hidden field for Coupon ID -->
       <input type="hidden" id="couponId" name="couponId" />

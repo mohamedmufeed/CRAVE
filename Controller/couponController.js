@@ -91,7 +91,7 @@ const applyCoupon = async (req, res) => {
 
     coupon.usageLimit -= 1;
     await coupon.save();
-
+console.log(coupon)
     return res.json({
       success: true,
       discountAmount,

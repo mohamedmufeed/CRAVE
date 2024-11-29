@@ -70,11 +70,11 @@
                 onclick="openEditProductModal('{{this._id}}','{{this.name}}','{{this.description}}','{{this.price}}','{{this.material}}','{{this.stock}}','{{this.category.name}}',[{{#each this.images}}'{{this}}'{{#unless @last}},{{/unless}}{{/each}}])">Edit</button>
 
               {{#if this.isListed}}
-              <form action="/admin/productManagement/unlist/{{this._id}}" method="POST">
+              <form action="/admin/productManagement/unlist/{{this._id}}?_method=PATCH" method="POST">
                 <button type="submit" class="btn unblock-btn">Unlist</button>
               </form>
               {{else}}
-              <form action="/admin/productManagement/list/{{this._id}}" method="POST">
+              <form action="/admin/productManagement/list/{{this._id}}?_method=PATCH" method="POST">
                 <button type="submit" class="btn block-btn">List</button>
               </form>
               {{/if}}

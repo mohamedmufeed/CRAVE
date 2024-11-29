@@ -428,7 +428,7 @@
         }
         try {
             const response = await fetch(`/profile/orders/cancelorder/${orderId}/${productId}`, {
-                method: "POST",
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -460,7 +460,7 @@
         }
         try {
             const response = await fetch(`/profile/orders/returnorder/${orderId}/${productId}`, {
-                method: "POST",
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
 
