@@ -36,7 +36,9 @@
   </header>
   <button class="add-btn" onclick="openCreateCouponModal()">Create Coupon</button>
   <!-- User Table Section -->
+      {{#if coupons}}
   <section class="user-table">
+
     <h2>All Coupon</h2>
 
     <div class="table-container">
@@ -119,7 +121,15 @@
     </div>
 
   </section>
+  {{else}}
 
+<div class="no-results ">
+        <div class="icon">🔍</div>
+        <div class="message">No results found</div>
+        <div class="sub-message">Try adjusting your search to find what you're looking for.</div>
+    </div>
+
+    {{/if}}
   {{!-- pagination --}}
 
   <nav aria-label="Page navigation">

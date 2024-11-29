@@ -58,13 +58,13 @@ router.post("/profile/editpassword", userController.editPassword)
 router.get("/profile/address", userController.loadAddress)
 router.post("/profile/addAddress", userController.addAddress)
 router.post("/profile/address/edit/:id", userController.editAddress)
-router.post("/profile/address/delete/:id", userController.deleteAddress)
+router.delete("/profile/address/delete/:id", userController.deleteAddress)
 
 // cart  
 router.get("/cart", cartController.loadCart)
 router.post("/cart/add", cartController.addCart)
-router.post("/cart/update", cartController.updateCart)
-router.post("/cart/remove/:Id", cartController.removeCart);
+router.patch("/cart/update", cartController.updateCart)
+router.delete("/cart/remove/:Id", cartController.removeCart);
 
 // checkout
 router.get("/checkOut", orderController.loadCheckOut)

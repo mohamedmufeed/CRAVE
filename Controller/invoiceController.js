@@ -41,10 +41,10 @@ function generateCustomerInformation(doc, orderData) {
     .fontSize(10)
     .text("Invoice Number:", 50, customerInformationTop)
     .font("Helvetica-Bold")
-    .text(orderData._id.toString(), 150, customerInformationTop) // Using order ID as the invoice number
+    .text(orderData._id.toString(), 150, customerInformationTop) 
     .font("Helvetica")
     .text("Invoice Date:", 50, customerInformationTop + 15)
-    .text(formatDate(orderData.createdAt), 150, customerInformationTop + 15) // Order creation date
+    .text(formatDate(orderData.createdAt), 150, customerInformationTop + 15) 
     .text("Balance Due:", 50, customerInformationTop + 30)
     .text(
       formatCurrency(orderData.total - (orderData.discountAmount || 0)),
@@ -81,6 +81,7 @@ function generateInvoiceTable(doc, invoice) {
     doc,
     invoiceTableTop,
     "Item",
+    "    ",
     "Unit Cost",
     "Quantity",
     "Line Total"
@@ -92,7 +93,7 @@ function generateInvoiceTable(doc, invoice) {
     for (let i = 0; i < invoice.products.length; i++) {
       const product = invoice.products[i];
       const position = invoiceTableTop + (i + 1) * 30;
-
+const empty="       "
       const unitPrice = `₹${product.price.toFixed(2)}`;
       const lineTotal = `₹${(product.price * product.quantity).toFixed(2)}`;
 
@@ -100,6 +101,7 @@ function generateInvoiceTable(doc, invoice) {
         doc,
         position,
         product.name,
+        empty,
         unitPrice,
         product.quantity,
         lineTotal

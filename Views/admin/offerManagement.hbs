@@ -36,6 +36,7 @@
   </header>
   <button class="add-btn" onclick="openCreateOfferModal()">Create Offer</button>
   <!-- User Table Section -->
+  {{#if offers}}
   <section class="user-table">
     <h2>All Offers</h2>
 
@@ -109,7 +110,14 @@
     </div>
 
   </section>
+{{else}}
+<div class="no-results ">
+        <div class="icon">🔍</div>
+        <div class="message">No results found</div>
+        <div class="sub-message">Try adjusting your search to find what you're looking for.</div>
+    </div>
 
+{{/if}}
   {{!-- pagination --}}
 
   <nav aria-label="Page navigation">

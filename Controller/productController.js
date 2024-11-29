@@ -19,12 +19,16 @@ const loadProducts = async (req, res) => {
         path:'category',
         select:'isListed'
       })
+
+      
+      
       const cartCount = req.session.cartCount
 
       const product=products.filter(product => product.category && product.category.isListed);
       const activeOffers = Array.isArray(product.offersApplied)
       ? product.offersApplied.filter(offer => offer.isActive)
       : [];
+
   
 
       const firstOffer = activeOffers[0];
@@ -38,6 +42,7 @@ const loadProducts = async (req, res) => {
             ? `₹${firstOffer.discountValue} off`
             : '')
         : '';
+
   
   
       res.render("user/shop", { product, cartCount,discountLabel })

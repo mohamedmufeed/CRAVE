@@ -64,7 +64,9 @@
   </header>
 
   <!-- Sales Report Section -->
+     {{#if salesReport}}
   <section class="user-table">
+
     <div class="table-container">
      <table>
   <thead>
@@ -83,9 +85,9 @@
         <tr>
           <td>{{this.orderId}}</td>
           <td>{{this.userName}}</td>
-          <td>₹{{this.totalAmount}}</td>
+          <td>₹{{formatCurrency this.totalAmount}}</td>
           <td>{{formatDate  this.orderDate}}</td>
-  <td>₹{{this.netSales}}</td>
+  <td>₹{{formatCurrency this.netSales}}</td>
         </tr>
       {{/each}}
     {{/each}}
@@ -95,7 +97,15 @@
 
     </div>
   </section>
+{{else}}
+<div class="no-results ">
+        <div class="icon">🔍</div>
+        <div class="message">No results found</div>
+        <div class="sub-message">Try adjusting your search to find what you're looking for.</div>
+    </div>
 
+
+{{/if}}
 
   {{!-- overall side --}}
 
@@ -114,7 +124,7 @@
         <div class="card text-center">
           <div class="card-body">
             <h5 class="card-title">Total Order Amount</h5>
-            <p id="totalOrderAmount" class="card-text">₹{{overallSummary.overallOrderAmount}}</p>
+            <p id="totalOrderAmount" class="card-text">₹{{formatCurrency overallSummary.overallOrderAmount}}</p>
           </div>
         </div>
       </div>
@@ -123,7 +133,7 @@
         <div class="card text-center">
           <div class="card-body">
             <h5 class="card-title">Total Discount Applied</h5>
-            <p id="totalDiscount" class="card-text">₹{{overallSummary.overallDiscount}}</p>
+            <p id="totalDiscount" class="card-text">₹{{formatCurrency overallSummary.overallDiscount}}</p>
           </div>
         </div>
       </div>

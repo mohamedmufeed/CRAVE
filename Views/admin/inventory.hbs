@@ -27,6 +27,7 @@
   </header>
 
   <!-- User Table Section -->
+  {{#if product}}
   <section class="user-table">
 
     <div class="table-container">
@@ -63,9 +64,13 @@
     </div>
 
   </section>
-
-
-
+{{else}}
+<div class="no-results ">
+        <div class="icon">🔍</div>
+        <div class="message">No results found</div>
+        <div class="sub-message">Try adjusting your search to find what you're looking for.</div>
+    </div>
+{{/if}}
   {{!-- edit inventory modal --}}
 
   <div class="modal" id="editInventoryModal" style="display:none">

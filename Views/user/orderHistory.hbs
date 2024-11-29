@@ -58,6 +58,55 @@
 </div>
 
 
+
+<!--  cancel order  Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to cancel order...?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea id="cancelReasonText" class="form-control" placeholder="Enter the reason for cancellation"
+                    rows="4"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" onclick="submitCancelReason()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- cancel order modal ends --}}
+
+
+
+{{!-- return order modal starts --}}
+
+<div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to return order...?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea id="returnReasonText" class="form-control" placeholder="Enter the reason for cancellation"
+                    rows="4"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" onclick="submitReturnReason()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{!-- return order modal ends --}}
+
 <!-- Start Hero Section -->
 <div class="hero">
     <div class="container">
@@ -112,35 +161,40 @@
                                 <div class="input-group mb-3 d-flex align-items-center quantity-container"
                                     style="max-width: 120px;">
 
-                                  <td>{{this.quantity}}</td>
+                                    <td>{{this.quantity}}</td>
                                 </div>
             </form>
-           <td><strong>{{this.singleStatus}}</strong></td>
-<td>
-  <button class="btn">
-    <a style="text-decoration: none;" href='/profile/orders/orderdetails/{{../_id}}'>View details</a>
-  </button>
+            <td><strong>{{this.singleStatus}}</strong></td>
+            <td>
+                <button class="btn">
+                    <a style="text-decoration: none;" href='/profile/orders/orderdetails/{{../_id}}'>View details</a>
+                </button>
 
-  {{#if (eq this.singleStatus "Delivered")}}
-    <form action="/profile/orders/returnorder/{{../_id}}/{{this.id}}" method="post">
-      <button type="submit" class="btn btn-black btn-sm">Return order</button>
-    </form>
-  {{else}}
-    {{#ifRazorpayFailed ../paymentMethod ../paymentStatus}}
-    
-        <button id="retryPaymentBtn" type="button" class="btn btn-black btn-sm"   data-order-id="{{../_id}}" >Retry Payment</button>
+                {{#if (eq this.singleStatus "Delivered")}}
 
-    {{else}}
-    {{#if ( or (eq this.singleStatus "Cancelled")(eq this.singleStatus  "Returned"))}}
+                <button data-bs-toggle="modal" data-bs-target="#returnModal"
+                    onclick="Reason('{{../_id}}','{{this.id}}')" type="button" class="btn btn-black btn-sm">Return
+                    order</button>
 
-    {{else}}
-      <form action="/profile/orders/cancelorder/{{../_id}}/{{this.id}}" method="post">
-        <button type="submit" class="btn btn-black btn-sm">Cancel order</button>
-      </form>
-      {{/if}}
-    {{/ifRazorpayFailed}}
-  {{/if}}
-</td>
+                {{else}}
+                {{#ifRazorpayFailed ../paymentMethod ../paymentStatus}}
+
+                <button id="retryPaymentBtn" type="button" class="btn btn-black btn-sm" data-order-id="{{../_id}}">Retry
+                    Payment</button>
+
+                {{else}}
+                {{#if ( or (eq this.singleStatus "Cancelled")(eq this.singleStatus "Returned"))}}
+
+                {{else}}
+
+                <button data-bs-toggle="modal" data-bs-target="#cancelModal"
+                    onclick="Reason('{{../_id}}', '{{this.id}}')" type="button" class="btn btn-black btn-sm">Cancel
+                    Order</button>
+
+                {{/if}}
+                {{/ifRazorpayFailed}}
+                {{/if}}
+            </td>
 
             </tr>
             {{/each}}
@@ -148,21 +202,21 @@
             </tbody>
             </table>
         </div>
-{{else}}
+        {{else}}
 
-<div class="row">
-        <div class="col-md-12 text-center">
-          <h3 class="text-black">Your Dont have orders !</h3>
-          <p>Start shopping now and Make orders!</p>
-          <a href="/products" class="btn btn-black btn-lg">Go to Shop</a>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h3 class="text-black">Your Dont have orders !</h3>
+                <p>Start shopping now and Make orders!</p>
+                <a href="/products" class="btn btn-black btn-lg">Go to Shop</a>
+            </div>
         </div>
-      </div>
 
 
 
 
 
-{{/if}}
+        {{/if}}
     </div>
 </div>
 </div>
@@ -282,77 +336,151 @@
 <script src="/user/css,js/js/custom.js"></script>
 
 <script>
-   document.getElementById("retryPaymentBtn").addEventListener("click", function(e) {
-    e.preventDefault();
+    document.getElementById("retryPaymentBtn").addEventListener("click", function (e) {
+        e.preventDefault();
 
-    const orderId = e.target.getAttribute('data-order-id');
+        const orderId = e.target.getAttribute('data-order-id');
 
-    fetch(`/razorpay/retry/${orderId}`, {  
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ orderId: orderId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        const orderId=data.orderId
-        console.log("the order id is :",orderId)
-        if (data.success) {
-            var options = {
-                key: 'rzp_test_lHnkQ9Xt6QGUnv',
-                amount: data.amount,
-                currency: 'INR',
-                order_id: data.order_id,
-                name: "CRAVE",
-                description: 'Retrying payment for order',
-                handler: function(response) {
-                    if (orderId) {
-                        console.log("hello nana  ivande indn")
-                        fetch("/payment-sucsess", {
-                            method: "POST",
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                razorpay_payment_id: response.razorpay_payment_id,
-                                razorpay_order_id: response.razorpay_order_id,
-                                razorpay_signature: response.razorpay_signature,
-                                orderId:orderId
-                            })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                window.location.href = '/thankyou';
-                            } else {
-                                alert('Payment verification failed');
-                                window.location.href = '/profile/orders';
+        fetch(`/razorpay/retry/${orderId}`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ orderId: orderId })
+        })
+            .then(response => response.json())
+            .then(data => {
+                const orderId = data.orderId
+                console.log("the order id is :", orderId)
+                if (data.success) {
+                    var options = {
+                        key: 'rzp_test_lHnkQ9Xt6QGUnv',
+                        amount: data.amount,
+                        currency: 'INR',
+                        order_id: data.order_id,
+                        name: "CRAVE",
+                        description: 'Retrying payment for order',
+                        handler: function (response) {
+                            if (orderId) {
+                                console.log("hello nana  ivande indn")
+                                fetch("/payment-sucsess", {
+                                    method: "POST",
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        razorpay_payment_id: response.razorpay_payment_id,
+                                        razorpay_order_id: response.razorpay_order_id,
+                                        razorpay_signature: response.razorpay_signature,
+                                        orderId: orderId
+                                    })
+                                })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            window.location.href = '/thankyou';
+                                        } else {
+                                            alert('Payment verification failed');
+                                            window.location.href = '/profile/orders';
+                                        }
+                                    })
+                                    .catch(error => console.error('Error verifying payment:', error));
                             }
-                        })
-                        .catch(error => console.error('Error verifying payment:', error));
-                    }
-                },
-                prefill: {
-                    name: data.customerName,
-                    email: data.customerEmail,
-                    contact: data.customerContact
-                },
-                theme: { color: '#F37254' },
-                ondismiss: function() {
-                    window.location.href = '/profile/orders';
+                        },
+                        prefill: {
+                            name: data.customerName,
+                            email: data.customerEmail,
+                            contact: data.customerContact
+                        },
+                        theme: { color: '#F37254' },
+                        ondismiss: function () {
+                            window.location.href = '/profile/orders';
+                        }
+                    };
+
+                    var rzp = new Razorpay(options);
+                    rzp.open();
+                } else {
+                    alert('Failed to create a new Razorpay order for retry.');
                 }
-            };
-
-            var rzp = new Razorpay(options);
-            rzp.open();
-        } else {
-            alert('Failed to create a new Razorpay order for retry.');
-        }
-    })
-    .catch(error => {
-        console.error('Error creating Razorpay order:', error);
-        alert('There was an error retrying the payment.');
+            })
+            .catch(error => {
+                console.error('Error creating Razorpay order:', error);
+                alert('There was an error retrying the payment.');
+            });
     });
-});
 
+    let orderId = null;
+    let productId = null;
+
+    function Reason(order_id, product_Id) {
+
+        orderId = order_id;
+        productId = product_Id
+        console.log("this is the order id :", orderId)
+        console.log("this is the poduct id:", productId)
+    }
+
+    async function submitCancelReason() {
+
+        const reason = document.getElementById("cancelReasonText").value
+        if (!reason.trim()) {
+            console.log("please enter a reasin korah kaxnibjttt inkline akkanam")
+            return
+        }
+        try {
+            const response = await fetch(`/profile/orders/cancelorder/${orderId}/${productId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ reason })
+            })
+            const result = await response.json()
+            if (response.ok) {
+                const cancelModal = bootstrap.Modal.getInstance(document.getElementById("cancelModal"));
+                if (cancelModal) {
+                    cancelModal.hide();
+                }
+                window.location.reload();
+            } else {
+                console.log(`errror in cancel order${result.message}`)
+            }
+        } catch (error) {
+            console.error("Error submitting cancel reason:", error);
+        }
+    }
+
+
+
+
+    async function submitReturnReason() {
+        const reason = document.getElementById("returnReasonText").value
+        if (!reason.trim()) {
+            console.log("please enter a reasin korah kaxnibjttt inkline akkanam")
+            return
+        }
+        try {
+            const response = await fetch(`/profile/orders/returnorder/${orderId}/${productId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+
+                },
+                body: JSON.stringify({ reason })
+            })
+            const result = await response.json()
+            if (result.ok) {
+                const cancelModal = bootstrap.Modal.getInstance(document.getElementById("returnModal"));
+                if (cancelModal) {
+                    cancelModal.hide();
+                }
+                window.location.reload();
+            } else {
+                console.log(`errror in return order${result.message}`)
+            }
+        }
+        catch (error) {
+            console.error("Error submitting return reason:", error);
+        }
+    }
 
 </script>

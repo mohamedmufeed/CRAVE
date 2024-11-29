@@ -1,20 +1,25 @@
 function updateCartQuantity(action, productId) {
   const quantityInput = document.getElementById(`quantity-${productId}`);
-
-  let quantity = parseInt(quantityInput.value);
+ 
+  let  quantity = parseInt(quantityInput.value);
+  console.log("the quanitty after adding",quantity)
   if (isNaN(quantity) || quantity < 1) {
     quantity = 1;
   }
 
   if (action === 'decrease') {
-    quantity = quantity > 1 ? quantity-- : 1;
+    quantity = quantity--
   } else if (action === 'increase') {
-    quantity = quantity <= 10 ? quantity++ : 10;
+    quantity = quantity++
   }
-  quantityInput.value = quantity;
+
+  quantityInput.value = quantity ;
+
+  console.log(quantity)
+console.log("the quaity inout",quantityInput)
 
   fetch("/cart/update", {
-    method: "POST",
+    method: "PATCH",
     headers: {
       'Content-Type': 'application/json'
     },
@@ -25,12 +30,19 @@ function updateCartQuantity(action, productId) {
   })
     .then(response => response.json())
     .then(data => {
-      if (data.success) {
 
-        console.log("cart data", data)
+      if (data.success) {
+ 
+        const productTotalElement = document.getElementById(`product-total-${productId}`);
+          if(productTotalElement){
+         productTotalElement.innerText=`₹${data.data.productTotal}`
+        }
+
+        const cartTotalElement = document.getElementById('cart-total');
+        if(cartTotalElement){
+          cartTotalElement.innerText=`₹${data.data.cartTotal}`;
+        }
       
-        document.getElementById(`product-total-${productId}`).innerText = `₹${data.newTotal}`;
-        document.getElementById('cart-total').innerText = `₹${data.cartTotal}`;
       }
       
     })

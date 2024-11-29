@@ -1,3 +1,4 @@
+// const { document } = require("pdfkit/js/page");
 
 
 document.getElementById("checkoutForm").addEventListener("submit", function (e) {
@@ -66,10 +67,13 @@ document.getElementById("checkoutForm").addEventListener("submit", function (e) 
                     theme: {
                         color: '#F37254'
                     },
-                    ondismiss: function () {
-                        window.location.href = '/profile/orders';
+                    modal:{
+                        ondismiss: function () {
+                            window.location.href = '/profile/orders';
+                        }
+    
                     }
-
+                   
                 }
                 var rzp = new Razorpay(options)
                 rzp.on('payment.failed', function (response) {
@@ -205,14 +209,25 @@ document.getElementById("addressForm").addEventListener("submit", function (even
         pinCode,
         country
     } = addressData;
+
+    const  firstNameError= document.getElementById("firstNameError")
+    const lastNameError=document.getElementById("lastNameError")
+   const addressLineError= document.getElementById("addressLineError")
+   const stateError= document.getElementById("stateError")
+   const pinCodeError= document.getElementById("pinCodeError")
+   const cityError= document.getElementById("cityError")
+   const emailError=document.getElementById("emailError")
+   const mobileError= document.getElementById("mobileError")
+
+
     if (!country || country === "Select a country") {
         isValid = false;
         return showToast("Country is required.")
     }
     if (!firstName) {
         isValid = false;
-        return showToast("First name is required.")
-
+       
+       return  showToast("First name is required")
     } else if (firstName.length < 2) {
         isValid = false;
         return showToast("First name must be at least 2 characters.")
@@ -265,7 +280,7 @@ document.getElementById("addressForm").addEventListener("submit", function (even
     if (!mobile) {
         isValid = false;
         return showToast("Mobile number is required.")
-    } else if (mobile.length < 10) {
+    } else if (mobile.length < 10 || mobile.length >10) {
         isValid = false;
         return showToast("Mobile number should be at least 10 digits.")
     }
@@ -294,6 +309,7 @@ document.getElementById("addressForm").addEventListener("submit", function (even
     }
     location.reload()
 });
+
 
 
 

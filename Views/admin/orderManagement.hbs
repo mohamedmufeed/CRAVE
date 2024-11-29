@@ -32,6 +32,7 @@
   </header>
 
   <!-- User Table Section -->
+  {{#if orders}}
   <section class="user-table">
     <h2>All Orders</h2>
   
@@ -105,7 +106,13 @@
     </div>
 
   </section>
-
+{{else}}
+<div class="no-results ">
+        <div class="icon">🔍</div>
+        <div class="message">No results found</div>
+        <div class="sub-message">Try adjusting your search to find what you're looking for.</div>
+    </div>
+{{/if}}
   {{!-- pagination --}}
 
   <nav aria-label="Page navigation">

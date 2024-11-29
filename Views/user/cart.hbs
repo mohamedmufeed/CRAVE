@@ -78,14 +78,14 @@
 {{/if}}
 <!-- Toast for Confirmation -->
 
-<div
+{{!-- <div
   id="confirmation-toast"
   class="toast position-fixed top-0 start-50 translate-middle-x some"
   role="alert"
   aria-live="assertive"
   aria-atomic="true"
   style="z-index: 1055; display: none;"
->
+></div>
   <div class="toast-body">
     <p>Are you sure you want to remove this product from your cart?</p>
     <div class="d-flex justify-content-end">
@@ -93,7 +93,46 @@
       <button class="  btn-sm buttn" data-bs-dismiss="toast">Cancel</button>
     </div>
   </div>
+</div> --}}
+
+<div
+  id="confirmation-toast"
+  class="toast position-fixed top-0 start-50 translate-middle-x p-3 border rounded shadow-sm bg-light"
+  role="alert"
+  aria-live="assertive"
+  aria-atomic="true"
+  style="z-index: 1055; display: none; width: 350px;"
+>
+  <div class="toast-header bg-black text-white">
+    <strong class="me-auto">Confirmation</strong>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      data-bs-dismiss="toast"
+      aria-label="Close"
+    ></button>
+  </div>
+  <div class="toast-body text-center">
+    <p class="mb-3">
+      Are you sure you want to remove this product from your cart?
+    </p>
+    <div class="d-flex justify-content-center gap-2">
+      <button
+        id="confirm-remove"
+        class="btn btn-danger btn-sm px-3"
+      >
+        Remove
+      </button>
+      <button
+        class="btn btn-secondary btn-sm px-3"
+        data-bs-dismiss="toast"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
 </div>
+
 
 
 
@@ -132,7 +171,7 @@
 												onclick="updateCartQuantity('decrease', '{{this.productId._id}}')">&minus;</button>
 										</div>
 										<input type="text" id="quantity-{{this.productId._id}}"
-											class="form-control text-center quantity-amount" min="1" value="{{this.quantity}}"
+											class="form-control text-center quantity-amount" min="1" max="10" value="{{this.quantity}}"
 											placeholder="" aria-label="Example text with button addon"
 											aria-describedby="button-addon1">
 											{{#if (greaterThanOrEqual this.quantity 10)}}
@@ -150,11 +189,11 @@
 									</div>
 
 								</td>
-								<td id="product-total-{{this.productId}}">₹{{ formatCurrency (multiply  this.quantity this.price)}}</td>
+								<td id="product-total-{{this.productId._id}}">₹{{ formatCurrency (multiply  this.quantity this.price)}}</td>
 			</form>
 
 			<td>
-				<form id="remove-form-{{this.productId._id}}" action="/cart/remove/{{this.productId._id}}" method="post">
+				<form id="remove-form-{{this.productId._id}}" action="/cart/remove/{{this.productId._id}}?_method=DELETE" method="post">
 
 					<button type="button" class="btn btn-black btn-sm" onclick="confirmremove('{{this.productId._id}}')">X</button>
 				</form>

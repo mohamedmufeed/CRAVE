@@ -385,11 +385,15 @@ const cancelOrder = async (req, res) => {
   const userId = req.session.userId;
   const orderId = req.params.orderId;
   const productId = req.params.productId;
+  const reason=req.body.reason
+
 
   if (!userId) {
     return res.redirect('/login');
   }
 
+
+ 
   try {
     const user = await User.findById(userId);
     if (!user) {
@@ -397,9 +401,11 @@ const cancelOrder = async (req, res) => {
     }
 
     const order = await Order.findById(orderId);
+    
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
+
 
     const product = order.products.find(
       (product) => product._id.toString() === productId.toString()
@@ -407,6 +413,10 @@ const cancelOrder = async (req, res) => {
 
     if (!product) {
       return res.status(404).json({ message: 'Product not found in order' });
+    }
+
+    if(reason){
+      order.reason.cancelReason=reason
     }
 
     if (product.singleStatus === 'Cancelled') {
@@ -443,7 +453,8 @@ const cancelOrder = async (req, res) => {
 
     await order.save();
 
-    res.redirect('/profile/orders');
+    // res.redirect('/profile/orders');
+    return res.json({sucsess:true})
   } catch (error) {
     console.error('Error in cancel order:', error);
     res.status(500).json({ message: 'An error occurred while cancelling the order' });
@@ -454,7 +465,7 @@ const cancelOrder = async (req, res) => {
 const returnorder = async (req, res) => {
   const orderId = req.params.orderId;
   const productId = req.params.productId;
-
+const reason=req.body.reason
   try {
     const order = await Order.findById(orderId).populate('products.productId');
 
@@ -476,6 +487,10 @@ const returnorder = async (req, res) => {
       req.session.message = "Product is not delivered yet, cannot return";
       return res.redirect("/profile/orders");
     }
+    if(reason){
+       order.reason.returnReason=reason
+    }
+
 
     product.singleStatus = "Returned";
 
@@ -504,8 +519,8 @@ const returnorder = async (req, res) => {
     await order.save();
 
     req.session.message = "Product returned and refund processed.";
-    return res.redirect("/profile/orders");
-
+    // return res.redirect("/profile/orders");
+return res.json({sucsess:true})
   } catch (error) {
     console.error("Error in return order:", error);
 

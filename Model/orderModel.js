@@ -79,9 +79,15 @@ const orderSchema = new mongoose.Schema({
       type: Number
     },
   },
-  productCount:{
-    type:Number
+  reason:{
+    cancelReason:{
+      type:String
+    },
+    returnReason:{
+      type:String
+    }
   }
+  
 
 
 }, { timestamps: true });

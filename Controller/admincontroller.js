@@ -227,9 +227,10 @@ const getSalesReport = async (time, startDate, endDate) => {
 
 const salesReport = async (req, res) => {
   const { time = "monthly", startDate, endDate } = req.query;
-
+  
   try {
     const { salesReport, overallSummary } = await getSalesReport(time, startDate, endDate);
+
 
     salesReport.forEach(report => {
       report.orders.forEach(order => {
@@ -260,6 +261,16 @@ const salesReport = async (req, res) => {
 const generatePDFReport = async (req, res) => {
   const { time = "monthly", startDate, endDate } = req.query;
 
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (isNaN(start) || isNaN(end)) {
+    return res.status(400).json({ message: "Invalid date format" });
+  }
+
+  if (start >= end) {
+    return res.status(400).json({ message: "Invalid date range. Start date must be earlier than end date." });
+  }
   try {
     const { salesReport, overallSummary } = await getSalesReport(time, startDate, endDate);
 
@@ -350,6 +361,16 @@ const generatePDFReport = async (req, res) => {
 const generateExcelReport = async (req, res) => {
   const { time = "monthly", startDate, endDate } = req.query;
 
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (isNaN(start) || isNaN(end)) {
+    return res.status(400).json({ message: "Invalid date format" });
+  }
+
+  if (start >= end) {
+    return res.status(400).json({ message: "Invalid date range. Start date must be earlier than end date." });
+  }
   try {
     const { salesReport, overallSummary } = await getSalesReport(time, startDate, endDate);
 
@@ -361,8 +382,7 @@ const generateExcelReport = async (req, res) => {
     const worksheet = workbook.addWorksheet('Sales Report');
 
     worksheet.columns = [
-      { header: 'Year', key: 'year' },
-      { header: 'Month', key: 'month' },
+      { header: 'Date Range', key: 'dateRange' },
       { header: 'User Name', key: 'userName' },
       { header: 'Total Sales', key: 'totalSales' },
       { header: 'Total Discount', key: 'totalDiscount' },
@@ -376,9 +396,13 @@ const generateExcelReport = async (req, res) => {
         const totalDiscount = order.totalDiscount || 0;
         const netSales = totalAmount - totalDiscount;  
 
+        const formattedStartDate = new Date(start).toISOString().split('T')[0]; 
+        const formattedEndDate = new Date(end).toISOString().split('T')[0];
+        const dateRange = `${formattedStartDate} to ${formattedEndDate}`;
+
         worksheet.addRow({
           year: report._id.year,
-          month: report._id.month || 'N/A',
+          dateRange: dateRange,
           userName: order.userName || 'N/A',
           totalSales: `MRP: ${totalAmount}`,  
           totalDiscount: totalDiscount || 0,  
