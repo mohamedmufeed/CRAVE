@@ -6,10 +6,19 @@ const Category = require("../Model/categoryModel")
 const Products = require("../Model/productModel")
 const { serchProducts } = require("./usercontroller");
 const HttpStatusCodes = require("../config/httpStatusCode");
+const cloudinary = require('cloudinary').v2;
+const streamifier = require("streamifier");
+
 
 require('dotenv').config();
 
 
+
+   cloudinary.config({ 
+  cloud_name: 'do4wdvbcy', 
+  api_key: '398738496838286', 
+  api_secret:process.env.CLOUD_SECRET 
+  });
 
 //  user product details
 
@@ -322,8 +331,31 @@ const productManagement = async (req, res) => {
         return res.status(HttpStatusCodes.BAD_REQUEST).send({ message: 'Please upload at least one image' });
       }
   
-      // Process image file names
-      const imagePaths = images.map(file => file.filename);
+ const uploadImageToCloudinary = (file) => {
+  return new Promise((resolve, reject) => {
+    const uploadResult = cloudinary.uploader.upload_stream(
+      { folder: "crave/products" },
+      (error, result) => {
+        if (error) {
+          reject(error); 
+        } else {
+          resolve(result.secure_url);
+        }
+      }
+    );
+
+    streamifier.createReadStream(file.buffer).pipe(uploadResult);
+  });
+};
+
+const imagePaths = [];
+for (const file of images) {
+  const imageUrl = await uploadImageToCloudinary(file);
+  imagePaths.push(imageUrl); 
+}
+
+
+
   
       // Create new product
       const newProduct = new Products({
@@ -335,6 +367,7 @@ const productManagement = async (req, res) => {
         stock,
         images: imagePaths
       });
+
   
       // Save product to DB
       await newProduct.save();
@@ -345,37 +378,27 @@ const productManagement = async (req, res) => {
     }
   };
   
-  // const editProducts = async (req, res) => {
-  //   try {
-  //     const productId = req.params.id;
-  //     const { name, description, price, material, stock, category, updatedImages } = req.body;
-
+  const uploadImageToCloudinary = (file) => {
+    return new Promise((resolve, reject) => {
+      const uploadResult = cloudinary.uploader.upload_stream(
+        { folder: "crave/products" }, 
+        (error, result) => {
+          if (error) {
+            reject(error); 
+          } else {
+            resolve(result.secure_url); 
+          }
+        }
+      );
   
-  //     const existingImages = JSON.parse(updatedImages || '[]');
-  //     const newImages = req.files.map((file) => file.filename);
-  //     const finalImages = [...existingImages, ...newImages];
+      streamifier.createReadStream(file.buffer).pipe(uploadResult);
+    });
+  };
   
-  //     await Products.findByIdAndUpdate(productId, {
-  //       name,
-  //       description,
-  //       price,
-  //       material,
-  //       stock,
-  //       category,
-  //       images: finalImages,
-  //     });
-  
-  //     res.redirect('/admin/productManagement');
-  //   } catch (error) {
-  //     console.error('Error updating product: ', error.message);
-  //     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send('Error updating product: ' + error.message);
-  //   }
-  // };
   
   const editProducts = async (req, res) => {
     try {
       const productId = req.params.id;
-  console.log("the product id",productId);
   
       const { name, description, price, material, stock, category, updatedImages } = req.body;
   
@@ -385,9 +408,12 @@ const productManagement = async (req, res) => {
   
       const existingImages = updatedImages ? JSON.parse(updatedImages) : [];
   
-      const newImages = req.files && req.files.length > 0 ? req.files.map((file) => file.filename) : [];
+    const newImages = req.files && req.files.length > 0 
+      ? await Promise.all(req.files.map(file => uploadImageToCloudinary(file))) 
+      : [];
   
-      const finalImages = [...new Set([...existingImages, ...newImages])];
+    const finalImages = [...new Set([...existingImages, ...newImages])];
+  
   
       const updatedProduct = await Products.findByIdAndUpdate(productId, {
         name,

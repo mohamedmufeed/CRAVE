@@ -86,7 +86,7 @@
 		<h2 class="product-thumbnail">Items in Your Order</h2>
 		{{#each order.products}}
 		<div class="item">
-			<img src="/uploads/{{this.productId.images.[0]}}" alt="Product Image" class="img-fluid">
+			<img src="{{this.productId.images.[0]}}" alt="Product Image" class="img-fluid">
 			<div class="item-details">
 				<h3>{{this.name}}</h3>
 				<p>Quantity: {{this.quantity}}</p>

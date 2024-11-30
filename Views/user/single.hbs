@@ -70,20 +70,20 @@
 	<div class="product-details mt-5">
 		<div class="product-images">
 			<div class="side-images">
-				<img class="more-images" src="/uploads/{{product.images.[0]}}" alt="Chair side view" onclick="updateMainImage(this)" />
-				<img class="more-images" src="/uploads/{{product.images.[1]}}" alt="Chair front view" onclick="updateMainImage(this)" />
-				<img class="more-images" src="/uploads/{{product.images.[2]}}" alt="Chair front view"  onclick="updateMainImage(this)" />
+				<img class="more-images" src="{{product.images.[0]}}" alt="Chair side view" onclick="updateMainImage(this)" />
+				<img class="more-images" src="{{product.images.[1]}}" alt="Chair front view" onclick="updateMainImage(this)" />
+				<img class="more-images" src="{{product.images.[2]}}" alt="Chair front view"  onclick="updateMainImage(this)" />
 			</div>
 
 
 
 			<div id="imageZoom" style="
-    --url: url(/uploads/{{product.images.[0]}});
+    --url: url({{product.images.[0]}});
     --zoom-x: 0%;
     --zoom-y: 0%;
     --display: none;">
 	
-				<img id="main-image" src="/uploads/{{product.images.[0]}}" alt="Product Image" />
+				<img id="main-image" src="{{product.images.[0]}}" alt="Product Image" />
 			</div>
 		</div>
 
