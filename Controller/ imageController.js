@@ -23,4 +23,6 @@ const upload = multer({
   },
 }).array("images", 3); // Accept up to 3 image files
 
+
+//hiii
 module.exports = { upload };
