@@ -20,7 +20,7 @@ const { findOne } = require('../Model/adminmodel')
 
 const googleCallback=async(req,res)=>{
   req.session.userId = req.user._id; 
-
+  req.session.isAuthenticated = true;
   res.redirect('/');
 }
 
@@ -209,6 +209,7 @@ const verifyOtp = async (req, res) => {
         })
         await newTransaction.save()
       }
+      req.session.isAuthenticated = true;
      req.session.message="Account created successfully! Welcome to Crave."
      return res.redirect("/")
 
