@@ -2,7 +2,6 @@ function updateCartQuantity(action, productId) {
   const quantityInput = document.getElementById(`quantity-${productId}`);
  
   let  quantity = parseInt(quantityInput.value);
-  console.log("the quanitty after adding",quantity)
   if (isNaN(quantity) || quantity < 1) {
     quantity = 1;
   }
@@ -10,13 +9,12 @@ function updateCartQuantity(action, productId) {
   if (action === 'decrease') {
     quantity = quantity > 1 ? quantity--: 1; 
   } else if (action === 'increase') {
-    quantity = quantity < 10 ? quantity++ : 10; 
+    quantity = quantity <= 10 ? quantity++ : 10; 
   }
 
   quantityInput.value = quantity ;
 
-  console.log(quantity)
-console.log("the quaity inout",quantityInput)
+console.log("the auntity from fend",quantity)
 
   fetch("/cart/update", {
     method: "PATCH",

@@ -157,8 +157,8 @@ const updateCart = async (req, res) => {
 
   const { productId, quantity } = req.body;
 
-  if (quantity < 1 || quantity >= 10) {
-    return res.status(400).send("Invalid Quantity");
+  if (quantity < 1 || quantity > 10) {
+    return res.status(400).json({error:"Invalid Quantity"});
   }
 
   try {
@@ -198,6 +198,7 @@ const updateCart = async (req, res) => {
         quantity:quantity
       };
 
+      
       return res.json({ success: true, data });
 
     } else {
