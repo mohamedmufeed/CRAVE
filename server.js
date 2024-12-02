@@ -138,7 +138,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")))
 //route settting
 app.use("/admin", adminrouter);
 app.use("/", userRouter)
-
+//contect db
 connectdb();
 app.listen(3000, () => {
   console.log("server is working on 3000");
