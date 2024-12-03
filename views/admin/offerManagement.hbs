@@ -165,7 +165,7 @@
 
       <label for="discountValue">Discount Value:</label>
       <input type="number" id="discountValue" name="discountValue"  min="0" />
-
+<div id="discountValueError" style="color: red;"></div>
       <label for="applicableProducts">Applicable Products:</label>
       <select id="applicableProducts" name="applicableProducts" class="select-group" multiple >
         <option value="all">All Products</option>
@@ -221,17 +221,22 @@
 
       <label for="editDiscountValue">Discount Value:</label>
       <input type="number" id="editDiscountValue" name="discountValue" required min="0" />
+      <div id="editDiscountValueError" style="color: red;"></div>
 
       <label for="editApplicableProducts">Applicable Products:</label>
       <select id="editApplicableProducts" name="applicableProducts" class="select-group" multiple required>
         <option value="all">All Products</option>
-        <!-- Product options will be dynamically inserted here -->
+      {{#each product}}
+        <option value="{{this._id}}">{{this.name}}</option>
+        {{/each}}
       </select>
 
       <label for="editApplicableCategories">Applicable Categories:</label>
       <select id="editApplicableCategories" name="applicableCategories" class="select-group" multiple required>
         <option value="all">All Categories</option>
-        <!-- Category options will be dynamically inserted here -->
+       {{#each category}}
+        <option value="{{this._id}}">{{this.name}}</option>
+        {{/each}}
       </select>
 
       <label for="editExpirationDate">Expiration Date:</label>
@@ -280,14 +285,16 @@ let isValid=true
     data[key]=value
   })
 const{discountValue,discountType}=data
+
+document.getElementById("discountValueError").innerText=""
 const discount=Number(discountValue)
 if(discount <0){
-  alert("Discount values must should be postive number")
+  document.getElementById("discountValueError").innerText="Discount values must should be postive number"
   isValid=false
 
 }
 if(discountType === "percentage"&& discount>30){
-   alert("Discount values must should be less  than ")
+    document.getElementById("discountValueError").innerText="Discount values must should be less  than 30"
    isValid=false
 
 }
@@ -297,6 +304,18 @@ if(isValid=false){
 }
 })
   
+
+    const today = new Date();
+
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); 
+    const day = String(today.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+
+    const expiryDateField = document.getElementById('expirationDate');
+    const editExpiryDateFiled=document.getElementById("editExpirationDate")
+    expiryDateField.min = formattedDate;
+    editExpiryDateFiled.min=formattedDate
 
  
 
@@ -351,14 +370,16 @@ let isValid=true
     data[key]=value
   })
 const{discountValue,discountType}=data
+document.getElementById("editDiscountValueError").innerText=""
 const discount=Number(discountValue)
 if(discount <0){
-  alert("Discount values must should be postive number")
+  document.getElementById("editDiscountValueError").innerText="Discount values must should be postive number"
   isValid=false
 
 }
 if(discountType === "percentage"&& discount>30){
-   alert("Discount values must should be less  than ")
+   document.getElementById("editDiscountValueError").innerText="Discount values must should be less  than 30"
+
    isValid=false
 
 }

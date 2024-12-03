@@ -1,4 +1,4 @@
-// const { document } = require("pdfkit/js/page");
+
 
 
 document.getElementById("checkoutForm").addEventListener("submit", function (e) {
@@ -139,13 +139,13 @@ async function placeOrder(orderDetails) {
         const data = await response.json();
 
         if (data.success) {
-            showToast(data.message, 'success'); // Show success toast
+            showToast(data.message, 'success'); 
         } else {
-            showToast(data.message, 'error'); // Show error toast
+            showToast(data.message, 'error'); 
         }
     } catch (error) {
         console.error('Error placing order:', error);
-        showToast('Internal server error. Please try again.', 'error'); // Handle network or other errors
+        showToast('Internal server error. Please try again.', 'error'); 
     }
 }
 
@@ -186,7 +186,8 @@ function showToast(message, type = 'success') {
 
 
 
-document.getElementById("addressForm").addEventListener("submit", function (event) {
+
+document.getElementById("addressForm").addEventListener("submit", async function (event) {
     event.preventDefault();
 
     const formData = new FormData(this);
@@ -196,121 +197,40 @@ document.getElementById("addressForm").addEventListener("submit", function (even
         addressData[key] = value;
     });
 
-    let isValid = true;
-
-    const {
-        firstName,
-        lastName,
-        email,
-        mobile,
-        addressLine,
-        city,
-        state,
-        pinCode,
-        country
-    } = addressData;
-
-    const  firstNameError= document.getElementById("firstNameError")
-    const lastNameError=document.getElementById("lastNameError")
-   const addressLineError= document.getElementById("addressLineError")
-   const stateError= document.getElementById("stateError")
-   const pinCodeError= document.getElementById("pinCodeError")
-   const cityError= document.getElementById("cityError")
-   const emailError=document.getElementById("emailError")
-   const mobileError= document.getElementById("mobileError")
-
-
-    if (!country || country === "Select a country") {
-        isValid = false;
-        return showToast("Country is required.")
-    }
-    if (!firstName) {
-        isValid = false;
-       
-       return  showToast("First name is required")
-    } else if (firstName.length < 2) {
-        isValid = false;
-        return showToast("First name must be at least 2 characters.")
-    }
-
-    if (!lastName) {
-        isValid = false;
-        return showToast("Last name is required.")
-    } else if (lastName.length < 2) {
-        isValid = false;
-        return showToast("Last name must be at least 2 characters.")
-    }
-
-    if (!addressLine) {
-        isValid = false;
-        return showToast("Address is required.")
-    }
-
-
-    if (!state) {
-        isValid = false;
-        return showToast("State is required.")
-    }
-
-    if (!pinCode) {
-        isValid = false;
-        return showToast("Pincode is required.")
-    } else if (!/^\d{6}$/.test(pinCode)) {
-        isValid = false;
-        return showToast("Pincode must be exactly 6 digits.")
-    }
-    if (!city) {
-        isValid = false;
-        return showToast("City is required.")
-    }
-
-
-
-    if (!email) {
-        isValid = false;
-        return showToast("Email is required.")
-    } else {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            isValid = false;
-            return showToast("Please enter a valid email address.")
-        }
-    }
-
-    if (!mobile) {
-        isValid = false;
-        return showToast("Mobile number is required.")
-    } else if (mobile.length < 10 || mobile.length >10) {
-        isValid = false;
-        return showToast("Mobile number should be at least 10 digits.")
-    }
-
-
-
-
-
-    if (isValid) {
-        fetch("/address/save", {
+    try {
+        const response = await fetch("/address/save", {
             method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(addressData)
-        })
-            .then(response => {
-                if (response.ok) {
-                    showToast("Address saved successfully!", true);
-                    this.reset();
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(addressData),
+        });
+
+        const result = await response.json();
+
+        document.querySelectorAll(".error-message").forEach((element) => {
+            element.innerText = "";
+        });
+
+        if (response.ok) {
+         showToast("Address saved successfully!")
+         location.reload()
+            this.reset(); 
+        } else if (result.errors && Array.isArray(result.errors)) {
+            result.errors.forEach(({ field, message }) => {
+                const errorElement = document.getElementById(`${field}Error`);
+                if (errorElement) {
+                    errorElement.innerText = message;
+                } else {
+                    console.error(`No error container found for field: ${field}`);
                 }
-            })
-            .catch(error => {
-                showToast("An error occurred. Please try again.", false);
             });
+        } else {
+            console.error("Unexpected server response:", result);
+        }
+    } catch (error) {
+        console.error("Fetch error:", error);
+        alert("An error occurred while saving the address. Please try again.");
     }
-    location.reload()
 });
-
-
 
 
 

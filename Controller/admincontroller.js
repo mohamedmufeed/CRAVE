@@ -8,6 +8,9 @@ const HttpStatusCodes = require("../config/httpStatusCode");
 
 
 const loadlogin = async (req, res) => {
+  if(req.session.admin){
+    return res.redirect('/admin/dashboard')
+  }
   res.render("admin/login", {
     message: req.session.message
   });

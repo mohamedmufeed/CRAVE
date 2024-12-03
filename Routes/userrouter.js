@@ -116,6 +116,8 @@ router.get("/invoice/download/:id",invoiceController.invoiceDownload)
 // other 
 router.get("/aboutus",userController.loadAboutus)
 router.get("/services",userController.loadServices)
+router.get("/blog",userController.loadBlog)
+router.get("/contact",userController.loadContact)
 
 router.get("/logout",userController.logout)
 

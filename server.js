@@ -15,7 +15,7 @@ const exphbs = require('express-handlebars');
 require('dotenv').config();
 
 
-
+app.use(nocache());
 app.use(methodOverride('_method'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -34,7 +34,7 @@ app.use((req, res, next) => {
 
 app.use(passport.initialize());
 app.use(passport.session())
-app.use(nocache());
+
 
 
 //Helper

@@ -127,94 +127,50 @@ const defaultAddress = async (req, res) => {
 
 
 const saveBillingAddress = async (req, res) => {
-  const userId = req.session.userId
-  try {
+  const userId = req.session.userId;
+  const { firstName, lastName, email, mobile, addressLine, city, state, pinCode, country } = req.body;
 
-    const { firstName, lastName, email, mobile, addressLine, city, state, pinCode, country } = req.body;
+  const errors = [];
 
+  if (!firstName) errors.push({ field: "firstName", message: "First name is required" });
+  if (!lastName) errors.push({ field: "lastName", message: "Last name is required" });
+  if (!addressLine) errors.push({ field: "addressLine", message: "Address line is required" });
+  if (!city) errors.push({ field: "city", message: "City is required" });
+  if (!state) errors.push({ field: "state", message: "State is required" });
+  if (!country) errors.push({ field: "country", message: "Country is required" });
+  if (firstName && firstName.length < 2) errors.push({ field: "firstName", message: "First name must be at least 2 characters long" });
+  if (lastName && lastName.length < 2) errors.push({ field: "lastName", message: "Last name must be at least 2 characters long" });
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push({ field: "email", message: "Invalid email format" });
+  if (!/^[0-9]{10}$/.test(mobile)) errors.push({ field: "mobile", message: "Mobile number must be 10 digits" });
+  if (addressLine && addressLine.length < 5) errors.push({ field: "addressLine", message: "Address must be at least 5 characters long" });
+  if (!/^[0-9]{6}$/.test(pinCode)) errors.push({ field: "pinCode", message: "Pin code must be 6 digits" });
 
-    if (!firstName) {
-      return res.status(HttpStatusCodes.BAD_REQUEST).json({ field: "firstName", message: "First name is required" });
-    }
-    if (!lastName) {
-      return res.status(HttpStatusCodes.BAD_REQUEST).json({ field: "lastName", message: "Last name is required" });
-    }
-
-
-    if (!addressLine) {
-      return res.status(HttpStatusCodes.BAD_REQUEST).json({ field: "addressLine", message: "Address line is required" });
-    }
-    if (!city) {
-      return res.status(HttpStatusCodes.BAD_REQUEST).json({ field: "city", message: "City is required" });
-    }
-    if (!state) {
-      return res.status(HttpStatusCodes.BAD_REQUEST).json({ field: "state", message: "State is required" });
-    }
-
-    if (!country) {
-      return res.status(HttpStatusCodes.BAD_REQUEST).json({ field: "country", message: "Country is required" });
-    }
-
-    if (firstName.length < 2 || lastName.length < 2) {
-      return res.status(HttpStatusCodes.BAD_REQUEST).json({
-        field: "firstName",
-        message: "First and last name must be at least 2 characters long"
-      });
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(HttpStatusCodes.BAD_REQUEST).json({
-        field: "email",
-        message: "Invalid email format"
-      });
-    }
-
-    const mobileRegex = /^[0-9]{10}$/;
-    if (!mobileRegex.test(mobile)) {
-      return res.status(HttpStatusCodes.BAD_REQUEST).json({
-        field: "mobile",
-        message: "Mobile number must be 10 digits"
-      });
-    }
-
-    if (addressLine.length < 5) {
-      return res.status(HttpStatusCodes.BAD_REQUEST).json({
-        field: "addressLine",
-        message: "Address must be at least 5 characters long"
-      });
-    }
-
-    const pinCodeRegex = /^[0-9]{6}$/;
-    if (!pinCodeRegex.test(pinCode)) {
-      return res.status(HttpStatusCodes.BAD_REQUEST).json({
-        field: "pinCode",
-        message: "Pin code must be 6 digits"
-      });
-    }
-
-    const newAddres = new Address({
-      user: userId,
-      firstName,
-      lastName,
-      email,
-      mobile,
-      addressLine,
-      city,
-      state,
-      pinCode,
-      country,
-
-    })
-
-
-    await newAddres.save()
-   return  res.redirect("/checkOut")
-  } catch (error) {
-    console.error('Error saving address:', error);
-    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Failed to save address' });
+  if (errors.length > 0) {
+      return res.status(400).json({ errors });
   }
-}
+
+  try {
+      const newAddress = new Address({
+          user: userId,
+          firstName,
+          lastName,
+          email,
+          mobile,
+          addressLine,
+          city,
+          state,
+          pinCode,
+          country
+      });
+
+      await newAddress.save();
+      return res.status(200).json({ success: true });
+  } catch (error) {
+      console.error('Error saving address:', error);
+      return res.status(500).json({ error: 'Failed to save address' });
+  }
+};
+
 
 
 const placeOrder = async (req, res) => {
@@ -571,6 +527,7 @@ const orderDetails = async (req, res) => {
 const loadOrder = async (req, res) => {
   try {
 
+    
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 11;
     const skip = (page - 1) * limit;

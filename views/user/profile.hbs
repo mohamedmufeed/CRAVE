@@ -17,18 +17,18 @@
 
 				<div class="collapse navbar-collapse" id="navbarsFurni">
 					<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-						<li class="nav-item ">
+						<li >
 							<a class="nav-link" href="/">Home</a>
 						</li>
-						<li class="active"><a class="nav-link" href="/products">Shop</a></li>
+						<li ><a class="nav-link" href="/products">Shop</a></li>
 						<li><a class="nav-link" href="/aboutus">About us</a></li>
-						<li><a class="nav-link" href="/services">Services</a></li>
-						<li><a class="nav-link" href="blog.html">Blog</a></li>
-						<li><a class="nav-link" href="contact.html">Contact us</a></li>
+				<li><a class="nav-link" href="/services">Services</a></li>
+				<li><a class="nav-link" href="/blog">Blog</a></li>
+				<li><a class="nav-link" href="/contact">Contact us</a></li>
 					</ul>
 
 					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-						<li><a class="nav-link" href="/profile"><img src="/user/css,js/images/user.svg"></a></li>
+						<li class="nav-item "><a class="nav-link" href="/profile"><img src="/user/css,js/images/user.svg"></a></li>
 							<li>
 					<div class="image-container">
 						<a class="nav-link product-image" href="/cart"><img src="/user/css,js/images/cart.svg"></a>
@@ -126,12 +126,7 @@
                   <input type="text" class="form-control" id="fname"  name="username" value="{{user.username}}">
                 </div>
               </div>
-              <div class="col-6">
-                <div class="form-group">
-                  <label class="text-black" for="lname">Last name</label>
-                  <input type="text" class="form-control" id="lname"   >
-                </div>
-              </div>
+            
             </div>
             <div class="form-group">
               <label class="text-black" for="email">Email address</label>
@@ -139,13 +134,7 @@
             </div>
 
 
-            <div class="form-group mb-5">
-              <label class="text-black" for="country">Country</label>
-           <select class="form-control" id="editProductCategory" name="country" required>
-        <option class="form-control" value="usa">USA</option>
-		   <option class="form-control" value="usa">India</option>
-      </select>
-            </div>
+           
 
             <button type="submit" class="btn btn-primary-hover-outline">Update Information</button>
         </form> 

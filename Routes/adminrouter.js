@@ -42,7 +42,7 @@ router.patch("/productManagement/list/:id",productController.listProduct)
 router.patch("/productManagement/unlist/:id",productController.unlistProduct)
 
 //order management 
-router.get("/orderManagement",orderController.loadOrder),
+router.get("/orderManagement",adminAuth.checkSession,orderController.loadOrder),
 router.get("/orderManagement/search", orderController.serchOrder)
 router.patch("/orderManagement/status/:id",orderController.orderStatus)
 router.post("/orderManagement/cancel/:id",orderController.admincancelOrder)
@@ -52,19 +52,19 @@ router.get("/inventory", adminAuth.checkSession,inventoryController.loadInventor
 router.put("/inventory/edit/:id",inventoryController.editInventory)
 
 //offer management 
-router.get("/offerManagement",offerController.loadOffer)
+router.get("/offerManagement", adminAuth.checkSession,offerController.loadOffer)
 router.post("/offerManagement/create",offerController.createOffer)
 router.put("/offerManagement/edit",offerController.editOffer)
 router.post("/offerManagement/delete/:id",offerController.deleteOffer)
 
 //coupon management
-router.get("/couponManagement",couponController.loadCoupon)
+router.get("/couponManagement",adminAuth.checkSession,couponController.loadCoupon)
 router.post("/couponManagement/create",couponController.createCoupon)
 router.put("/couponManagement/edit",couponController.editCoupon)
 router.delete("/couponManagement/delete/:id",couponController.deleteCoupon)
 
 //sales report 
-router.get("/salesReport",adminController.salesReport)
+router.get("/salesReport",adminAuth.checkSession,adminController.salesReport)
 router.get("/downloadSalesReport/pdf", adminController.generatePDFReport);
 router.get("/downloadSalesReport/excel", adminController.generateExcelReport);
 

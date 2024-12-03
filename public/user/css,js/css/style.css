@@ -770,7 +770,7 @@ padding: 20px;
   border: none; /* Remove default border */
   border-bottom: 2px solid #ccc; /* Add a thin line under the input */
   background-color: transparent; /* Make the input background transparent */
-  color: #333; /* Adjust text color */
+  color: #ffff; /* Adjust text color */
   font-size: 16px; /* Increase font size for better visibility */
   outline: none; /* Remove default focus outline */
   transition: border-color 0.3s ease; /* Smooth effect for focus */
@@ -905,4 +905,7 @@ left: 20px;
   height: 30px;
   color: rgb(255, 255, 255);
   background-color: red;
+}
+.error-message{
+  color: rgba(247, 39, 39, 0.757);
 }

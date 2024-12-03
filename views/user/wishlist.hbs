@@ -23,8 +23,8 @@
 				<li class="active"><a class="nav-link" href="/products">Shop</a></li>
 				<li><a class="nav-link" href="/aboutus">About us</a></li>
 				<li><a class="nav-link" href="/services">Services</a></li>
-				<li><a class="nav-link" href="blog.html">Blog</a></li>
-				<li><a class="nav-link" href="contact.html">Contact us</a></li>
+				<li><a class="nav-link" href="/blog">Blog</a></li>
+				<li><a class="nav-link" href="/contact">Contact us</a></li>
 			</ul>
 
 			<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
@@ -96,7 +96,7 @@
 							<tr>
 								{{#each wishlist}}
 								<td class="product-thumbnail">
-									<img src="/uploads/{{this.images.[0]}}" alt="Image" class="img-fluid">
+									<img src="{{this.images.[0]}}" alt="Image" class="img-fluid">
 								</td>
 								<td class="product-name">
 									<h2 class="h5 text-black">{{this.name}}</h2>

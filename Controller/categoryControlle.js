@@ -66,6 +66,7 @@ const loadCategory = async (req, res) => {
   
   const editCategory = async (req, res) => {
     try {
+ 
   
       const { id } = req.params
       const { name, material } = req.body

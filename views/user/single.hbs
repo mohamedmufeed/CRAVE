@@ -26,8 +26,8 @@
 				<li class="active"><a class="nav-link" href="/products">Shop</a></li>
 				<li><a class="nav-link" href="/aboutus">About us</a></li>
 				<li><a class="nav-link" href="/services">Services</a></li>
-				<li><a class="nav-link" href="/services">Blog</a></li>
-				<li><a class="nav-link" href="contact.html">Contact us</a></li>
+				<li><a class="nav-link" href="/blog">Blog</a></li>
+				<li><a class="nav-link" href="/contact">Contact us</a></li>
 			</ul>
 
 			<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
@@ -144,11 +144,11 @@
 				<div class="tab">Return policy</div>
 			</div>
 			<p>{{product.description}}</p>
-			<div class="quantity">
+			{{!-- <div class="quantity">
 				<buttonclass="btn btn-black btn-sm btn-block">-</button>
 					<input type="number" value="1" min="1" />
 					<buttonclass="btn btn-black btn-sm btn-block">+</button>
-			</div>
+			</div> --}}
 
 			<form action="/cart/add" method="post">
 				<input type="hidden" name="productId" value="{{product._id}}">
@@ -180,7 +180,7 @@
 				<!-- Start Column 2 -->
 				<div class="col-12 col-md-4 col-lg-3 mb-5">
 					<a class="product-item" href="/productdetails/{{this.id}}">
-						<img src="/uploads/{{this.images.[0]}}" class="img-fluid product-thumbnail">
+						<img src="{{this.images.[0]}}" class="img-fluid product-thumbnail">
 						<h3 class="product-title">{{this.name}}</h3>
 						<strong class="product-price">₹{{this.price}}</strong>
 
@@ -221,19 +221,6 @@
 				of difference! The lumbar support is incredible, and the cushioning is just right for long hours of
 				work. Highly recommend it if you're looking for comfort and style."</p>
 		</div>
-	</div>
-
-	<div class="add-review-section">
-		<h2 class="add-review-title">Add Your Review</h2>
-		<form class="review-form">
-			<label for="name">Your Name</label>
-			<input type="text" id="name" name="name" required>
-
-			<label for="review">Your Review</label>
-			<textarea id="review" name="review" required></textarea>
-
-			<button class="btn btn-primary" type="submit">Submit Review</button>
-		</form>
 	</div>
 	</div>
 

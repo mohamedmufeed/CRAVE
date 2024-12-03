@@ -106,7 +106,7 @@
               {{/if}}
             </ul>
           </nav>
-{{else}}
+          {{else}}
   </section>
   {{!-- pagination --}}
 
@@ -115,118 +115,176 @@
 
 
 <div class="no-results ">
-        <div class="icon">🔍</div>
-        <div class="message">No results found</div>
-        <div class="sub-message">Try adjusting your search to find what you're looking for.</div>
-    </div>
+  <div class="icon">🔍</div>
+  <div class="message">No results found</div>
+  <div class="sub-message">Try adjusting your search to find what you're looking for.</div>
+</div>
 
 {{/if}}
-  {{!-- end pagination --}}
+{{!-- end pagination --}}
 
-  {{!-- edit category modal --}}
+{{!-- edit category modal --}}
 
-  <div class="modal" id="editCategoryModal" style="display:none">
-    <div class="modal-content">
-      <span class="close" onclick="closeEditModal()">&times;</span>
-      <h2>Edit Category</h2>
-      <form id="editCategoryForm" method="POST" action="/admin/category/edit/{{this._id}}?_method=PUT">
-        <input type="hidden" name="_method" value="PUT" />
-        <label for="categoryName">Category Name:</label>
-        <input type="text" id="categoryName" name="name" value="{{this.name}}" />
-        <label for="categoryMaterial">Material:</label>
-        <input type="text" id="categoryMaterial" name="material" value="{{this.material}}" />
-        <button type="submit" class="btn">Update Category</button>
-      </form>
-    </div>
+<div class="modal" id="editCategoryModal" style="display:none">
+  <div class="modal-content">
+    <span class="close" onclick="closeEditModal()">&times;</span>
+    <h2>Edit Category</h2>
+    <form id="editCategoryForm" method="POST" action="/admin/category/edit/{{this._id}}?_method=PUT">
+      {{!-- <input type="hidden" name="_method" value="PUT" /> --}}
+      <label for="categoryName">Category Name:</label>
+      <input type="text" id="categoryName" name="name" value="{{this.name}}" />
+      <div id="editcategoryError" style="  color: rgba(247, 39, 39, 0.757);" ></div>
+      <label for="categoryMaterial">Material:</label>
+      <input type="text" id="categoryMaterial" name="material" value="{{this.material}}" />
+       <div id="editmaterialError" style="  color: rgba(247, 39, 39, 0.757);" ></div>
+      <button type="submit" class="btn">Update Category</button>
+    </form>
   </div>
+</div>
 
 
 
 
 
-  {{!-- add category modal --}}
+{{!-- add category modal --}}
 
-  <div class="modal" id="addCategoryModal" style="display:none;">
-    <div class="modal-content">
-      <span class="close" onclick="closeaddCategoryModal()">&times;</span>
-      <h2>Add Category</h2>
-      <form id="addCategoryForm" method="POST" action="/admin/category/add">
-        <label for="categoryName">Category Name:</label>
-        <input type="text" id="categoryName" name="name" required />
-
-        <label for="categoryMaterial">Material:</label>
-        <input type="text" id="categoryMaterial" name="material" required />
-
-        <button type="submit" class="btn">Add Category</button>
-      </form>
-    </div>
+<div class="modal" id="addCategoryModal" style="display:none;">
+  <div class="modal-content">
+    <span class="close" onclick="closeaddCategoryModal()">&times;</span>
+    <h2>Add Category</h2>
+    <form id="addCategoryForm" method="POST" action="/admin/category/add">
+      <label for="categoryName">Category Name:</label>
+      <input type="text" id="categoryName" name="name" />
+      <div id="categoryError" style="  color: rgba(247, 39, 39, 0.757);"></div>
+      <label for="categoryMaterial">Material:</label>
+      <input type="text" id="categoryMaterial" name="material" />
+      <div id="materialError" style=" color: rgba(247, 39, 39, 0.757);"></div>
+      <button type="submit" class="btn">Add Category</button>
+    </form>
   </div>
+</div>
 
 
-  <script>
-    //edit modal
-    function openEditCtegoryModal(categoryName, categoryId, categoryMaterial) {
-      document.getElementById("editCategoryModal").style.display = "block";
-      document.getElementById("categoryName").value = categoryName;
-      document.getElementById("categoryMaterial").value = categoryMaterial;
-      document.getElementById("editCategoryForm").action = "/admin/category/edit/" + categoryId;
-    }
+<script>
+  //edit modal
+  function openEditCtegoryModal(categoryName, categoryId, categoryMaterial) {
+    document.getElementById("editCategoryModal").style.display = "block";
+    document.getElementById("categoryName").value = categoryName;
+    document.getElementById("categoryMaterial").value = categoryMaterial;
+    document.getElementById("editCategoryForm").action = `/admin/category/edit/${categoryId}?_method=PUT`;
+  }
 
-    function closeEditModal() {
-      document.getElementById("editCategoryModal").style.display = "none";
-    }
+  function closeEditModal() {
+    document.getElementById("editCategoryModal").style.display = "none";
+  }
 
-    document.getElementById("editCategoryModal").addEventListener("submit",async (event)=>{
-      const data={}
-      const formData=new FormData(event.target)
-      formData.forEach((value,key)=>{
-        data[key]=value
-      })
-       const { material, name } = data
-
-
-      if (material.length < 3) {
-        alert("Material should be greater than 2 letters.");
-        event.preventDefault()
-      } else if (name.length < 2) {
-        alert("Name should be greater than 2 letters.");
-        event.preventDefault()
-      }
-
+  document.getElementById("editCategoryModal").addEventListener("submit", async (event) => {
+    let isValid=true
+    const data = {}
+    const formData = new FormData(event.target)
+    formData.forEach((value, key) => {
+      data[key] = value
     })
+    const { material, name } = data
 
-    //edit modal ends
+ document.getElementById("editcategoryError").innerText = "";
+  document.getElementById("editmaterialError").innerText = "";
+
+  if (material.length < 3) {
+    document.getElementById("editmaterialError").innerText = "Material should be greater than 2 letters.";
+    isValid = false;
+  }
+
+  if (name.length < 2) {
+    document.getElementById("editcategoryError").innerText = "Name should be greater than 2 letters.";
+    isValid = false;
+  }
+
+  if (typeof name !== "string" || !isNaN(name)) {
+    document.getElementById("editcategoryError").innerText = "Name should be a string.";
+    isValid = false;
+  }
+
+  if (typeof material !== "string" || !isNaN(material)) {
+    document.getElementById("editmaterialError").innerText = "Material should be a string.";
+    isValid = false;
+  }
+
+  const pattern = /^[a-zA-Z]+$/;
+  if (!pattern.test(material)) {
+    document.getElementById("editmaterialError").innerText = "Material should contain only alphabetic characters.";
+    isValid = false;
+  }
+
+  if (!pattern.test(name)) {
+    document.getElementById("editcategoryError").innerText = "Name should contain only alphabetic characters.";
+    isValid = false;
+  }
+
+  if (!isValid) {
+    event.preventDefault();
+  }
+
+  })
+
+  //edit modal ends
 
 
-    //add modal starts
+  //add modal starts
 
-    function addCategoryModal() {
-      document.getElementById("addCategoryModal").style.display = "block"
+  function addCategoryModal() {
+    document.getElementById("addCategoryModal").style.display = "block"
 
-    }
-    function closeaddCategoryModal() {
-      document.getElementById("addCategoryModal").style.display = "none"
-    }
+  }
+  function closeaddCategoryModal() {
+    document.getElementById("addCategoryModal").style.display = "none"
+  }
 
-    document.getElementById("addCategoryModal").addEventListener("submit", async (event) => {
-
-      const data = {}
-      const formData = new FormData(event.target)
-      formData.forEach((value, key) => {
-        data[key] = value
-      })
-      const { material, name } = data
-
-
-      if (material.length < 3) {
-        alert("Material should be greater than 2 letters.");
-        event.preventDefault()
-      } else if (name.length < 2) {
-        alert("Name should be greater than 2 letters.");
-        event.preventDefault()
-      }
-
-
-
+  document.getElementById("addCategoryModal").addEventListener("submit", async (event) => {
+let isValid=true
+    const data = {}
+    const formData = new FormData(event.target)
+    formData.forEach((value, key) => {
+      data[key] = value
     })
-  </script>
+    const { material, name } = data
+    document.getElementById("categoryError").innerText = "";
+  document.getElementById("materialError").innerText = "";
+
+  if (material.length < 3) {
+    document.getElementById("materialError").innerText = "Material should be greater than 2 letters.";
+    isValid = false;
+  }
+
+  if (name.length < 2) {
+    document.getElementById("categoryError").innerText = "Name should be greater than 2 letters.";
+    isValid = false;
+  }
+
+  if (typeof name !== "string" || !isNaN(name)) {
+    document.getElementById("categoryError").innerText = "Name should be a string.";
+    isValid = false;
+  }
+
+  if (typeof material !== "string" || !isNaN(material)) {
+    document.getElementById("materialError").innerText = "Material should be a string.";
+    isValid = false;
+  }
+
+  const pattern = /^[a-zA-Z]+$/;
+  if (!pattern.test(material)) {
+    document.getElementById("materialError").innerText = "Material should contain only alphabetic characters.";
+    isValid = false;
+  }
+
+  if (!pattern.test(name)) {
+    document.getElementById("categoryError").innerText = "Name should contain only alphabetic characters.";
+    isValid = false;
+  }
+
+  if (!isValid) {
+    event.preventDefault();
+  }
+
+  })
+</script>

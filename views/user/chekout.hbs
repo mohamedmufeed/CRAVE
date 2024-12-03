@@ -22,7 +22,7 @@
 				</li>
 				<li class="active"><a class="nav-link" href="/products">Shop</a></li>
 				<li><a class="nav-link" href="/aboutus">About us</a></li>
-				<li><a class="nav-link" href="services.html">Services</a></li>
+				<li><a class="nav-link" href="servi">Services</a></li>
 				<li><a class="nav-link" href="blog.html">Blog</a></li>
 				<li><a class="nav-link" href="contact.html">Contact us</a></li>
 			</ul>
@@ -70,14 +70,7 @@
 
 <div class="untree_co-section">
 	<div class="container">
-		<div class="row mb-5">
-			<div class="col-md-12">
-				<div class="border p-4 rounded" role="alert">
-					Returning customer? <a href="#">Click here</a> to login
-				</div>
-			</div>
-		</div>
-
+	
 		<span class="breadcrumb"> <a href="/cart"> Cart /</a> <a href="/checkOut"> Checkout </a> </span>
 
 		<div class="container mt-5">
@@ -99,79 +92,12 @@
 								<strong>Pincode:</strong> {{this.pinCode}}<br>
 								<strong>Country:</strong> {{this.country}}
 							</p>
-							<button type="button" class="btn btn-primary-hover-outline" style="padding: 5px 10px;"
-								data-bs-toggle="modal" data-bs-target="#editModal-{{this._id}}">
-								Edit Address
-							</button>
+							
 						</div>
 					</div>
 				</div>
-				<div class="modal fade" id="editModal-{{this._id}}" tabindex="-1" aria-labelledby="editModalLabel"
-					aria-hidden="true">
-					<div class="modal-dialog">
-						<div class="modal-content">
-							<div class="modal-header">
-								<h5 class="modal-title" id="editModalLabel">Edit Address</h5>
-								<button type="button" class="btn-close" data-bs-dismiss="modal"
-									aria-label="Close"></button>
-							</div>
-							<div class="modal-body">
-								<form action="/profile/address/edit/{{this._id}}" method="POST">
-									<div class="mb-3">
-										<label for="firstName" class="form-label">First Name</label>
-										<input type="text" class="form-control" id="firstName" name="firstName"
-											value="{{this.firstName}}" required>
-									</div>
-									<div class="mb-3">
-										<label for="lastName" class="form-label">Last Name</label>
-										<input type="text" class="form-control" id="lastName" name="lastName"
-											value="{{this.lastName}}" required>
-									</div>
-									<div class="mb-3">
-										<label for="email" class="form-label">Email</label>
-										<input type="email" class="form-control" id="email" name="email"
-											value="{{this.email}}" required>
-									</div>
-									<div class="mb-3">
-										<label for="mobile" class="form-label">Phone Number</label>
-										<input type="text" class="form-control" id="mobile" name="mobile"
-											value="{{this.mobile}}" required>
-									</div>
-									<div class="mb-3">
-										<label for="addressLine" class="form-label">Address</label>
-										<input type="text" class="form-control" id="addressLine" name="addressLine"
-											value="{{this.addressLine}}" required>
-									</div>
-									<div class="mb-3">
-										<label for="city" class="form-label">City</label>
-										<input type="text" class="form-control" id="city" name="city"
-											value="{{this.city}}" required>
-									</div>
-									<div class="mb-3">
-										<label for="state" class="form-label">State</label>
-										<input type="text" class="form-control" id="state" name="state"
-											value="{{this.state}}" required>
-									</div>
-									<div class="mb-3">
-										<label for="pinCode" class="form-label">Pincode</label>
-										<input type="text" class="form-control" id="pinCode" name="pinCode"
-											value="{{this.pinCode}}" required>
-									</div>
-									<div class="mb-3">
-										<label for="country" class="form-label">Country</label>
-										<input type="text" class="form-control" id="country" name="country"
-											value="{{this.country}}" required>
-									</div>
-									<div class="modal-footer">
-										<button type="button" class="btn btn-secondary"
-											data-bs-dismiss="modal">Close</button>
-										<button type="submit" class="btn btn-primary">Save changes</button>
-									</div>
-								</form>
-							</div>
-						</div>
-					</div>
-				</div>
+
+				
 				{{/each}}
 			</div>
 		</div>
@@ -198,7 +124,7 @@
 								<option value="Colombia">Colombia</option>
 								<option value="India">India</option>
 							</select>
-							<div class="invalid-feedback" id="countryError"></div>
+						<span id="countryError" class="error-message"></span>
 
 						</div>
 						<div class="form-group row">
@@ -206,13 +132,14 @@
 								<label for="c_fname" class="text-black">First Name <span
 										class="text-danger">*</span></label>
 								<input type="text" class="form-control" id="firstName" name="firstName">
-<div class="invalid-feedback" id="firstNameError"></div>
+<span id="firstNameError" class="error-message"></span>
+
 							</div>
 							<div class="col-md-6">
 								<label for="c_lname" class="text-black">Last Name <span
 										class="text-danger">*</span></label>
 								<input type="text" class="form-control" id="lastName" name="lastName">
-                        <div class="invalid-feedback" id="lastNameError"></div>
+<span id="lastNameError" class="error-message"></span>
 							</div>
 						</div>
 
@@ -224,7 +151,7 @@
 										class="text-danger">*</span></label>
 								<input type="text" class="form-control" id="addressLine" name="addressLine"
 									placeholder="Street address">
-									                        <div class="invalid-feedback" id="addressLineError"></div>
+<span id="addressLineError" class="error-message"></span>
 
 							</div>
 						</div>
@@ -235,21 +162,21 @@
 								<label for="c_state_country" class="text-black">State  <span
 										class="text-danger">*</span></label>
 								<input type="text" class="form-control" id="state" name="state">
-								                        <div class="invalid-feedback" id="stateError"></div>
+<span id="stateError" class="error-message"></span>
 
 							</div>
 							<div class="col-md-6">
 								<label for="c_postal_zip" class="text-black">Pincode <span
 										class="text-danger">*</span></label>
 								<input type="text" class="form-control" id="pinCode" name="pinCode">
-								                        <div class="invalid-feedback" id="pinCodeError"></div>
+<span id="pinCodeError" class="error-message"></span>
 
 							</div>
 						</div>
 						<div class="col-md-6">
 							<label for="city" class="form-label">City</label>
 							<input type="text" class="form-control" id="city" name="city" >
-							                        <div class="invalid-feedback" id="cityError"></div>
+<span id="cityError" class="error-message"></span>
 
 						</div>
 
@@ -258,14 +185,14 @@
 								<label for="c_email_address" class="text-black">Email Address <span
 										class="text-danger">*</span></label>
 								<input type="text" class="form-control" id="email" name="email">
-								                        <div class="invalid-feedback" id="emailError"></div>
+<span id="emailError" class="error-message"></span>
 
 							</div>
 							<div class="col-md-6">
 								<label for="c_phone" class="text-black">Phone <span class="text-danger">*</span></label>
 								<input type="text" class="form-control" id="mobile" name="mobile"
 									placeholder="Phone Number">
-									                        <div class="invalid-feedback" id="mobileError"></div>
+<span id="mobileError" class="error-message"></span>
 
 							</div>
 						</div>

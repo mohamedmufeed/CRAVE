@@ -27,6 +27,9 @@ const googleCallback=async(req,res)=>{
 
 
 const loadRegister = async (req, res) => {
+  if(req.session.userId){
+    return  res.redirect("/")
+   }
   res.render("user/register", {
     message: req.session.message
   })
@@ -252,6 +255,9 @@ const resendOtp = async (req, res) => {
 
 
 const loadLogin = async (req, res) => {
+  if(req.session.userId){
+   return  res.redirect("/")
+  }
   res.render("user/login", {
     message: req.session.message
   })
@@ -597,7 +603,8 @@ const addAddress = async (req, res) => {
 
 
     await newAddress.save();
-    return res.redirect("/profile/address");
+    // return res.redirect("/profile/address");
+    return res.status(HttpStatusCodes.OK).json({success:true})
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "An error occurred while adding the address." });
@@ -889,13 +896,36 @@ const loadHome = async (req, res) => {
 //other
 
 const loadAboutus= async(req,res)=>{
-  res.render("user/aboutUs")
+   const user=req.session.userId
+   if(!user){
+   return  res.redirect("/login")
+   }
+ return  res.render("user/aboutUs")
   }
 
   const loadServices= async(req,res)=>{
-    res.render("user/services")
+    const user=req.session.userId
+    if(!user){
+    return  res.redirect("/login")
+    }
+    return res.render("user/services")
   }
-  
+
+  const loadBlog= async(req,res)=>{
+    const user=req.session.userId
+    if(!user){
+    return  res.redirect("/login")
+    }
+    return res.render("user/blog")
+  }
+
+  const loadContact= async(req,res)=>{
+    const user=req.session.userId
+    if(!user){
+    return  res.redirect("/login")
+    }
+   return  res.render("user/contact")
+  }
 
 // const load
   
@@ -927,6 +957,8 @@ module.exports = {
   retryPayment,
   loadAboutus,
   googleCallback,
-  loadServices
+  loadServices,
+  loadBlog,
+  loadContact
  
 }
