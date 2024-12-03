@@ -21,10 +21,10 @@
                     <a class="nav-link" href="/">Home</a>
                 </li>
                 <li class="active"><a class="nav-link" href="/products">Shop</a></li>
-               <li><a class="nav-link" href="/aboutus">About us</a></li>
-				<li><a class="nav-link" href="/services">Services</a></li>
-				<li><a class="nav-link" href="/blog">Blog</a></li>
-				<li><a class="nav-link" href="/contact">Contact us</a></li>
+                <li><a class="nav-link" href="/aboutus">About us</a></li>
+                <li><a class="nav-link" href="/services">Services</a></li>
+                <li><a class="nav-link" href="/blog">Blog</a></li>
+                <li><a class="nav-link" href="/contact">Contact us</a></li>
             </ul>
 
             <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
@@ -162,6 +162,7 @@
                                     style="max-width: 120px;">
 
                                     <td>{{this.quantity}}</td>
+
                                 </div>
             </form>
             <td><strong>{{this.singleStatus}}</strong></td>
@@ -188,7 +189,7 @@
                 {{else}}
 
                 <button data-bs-toggle="modal" data-bs-target="#cancelModal"
-                    onclick="Reason('{{../_id}}', '{{this.id}}')" type="button" class="btn btn-black btn-sm">Cancel
+                    onclick="Reason('{{../_id}}','{{this.id}}')" type="button" class="btn btn-black btn-sm">Cancel
                     Order</button>
 
                 {{/if}}
@@ -336,6 +337,8 @@
 <script src="/user/css,js/js/custom.js"></script>
 
 <script>
+    let orderId = null;
+    let productId = null
     document.getElementById("retryPaymentBtn").addEventListener("click", function (e) {
         e.preventDefault();
 
@@ -408,15 +411,10 @@
             });
     });
 
-    let orderId = null;
-    let productId = null;
 
     function Reason(order_id, product_Id) {
-
-        orderId = order_id;
+        orderId = order_id
         productId = product_Id
-        console.log("this is the order id :", orderId)
-        console.log("this is the poduct id:", productId)
     }
 
     async function submitCancelReason() {
