@@ -451,6 +451,8 @@
 
 
     async function submitReturnReason() {
+        console.log("this is the  order id",orderId)
+        console.log("this is the product id",productId)
         const reason = document.getElementById("returnReasonText").value
         if (!reason.trim()) {
             console.log("please enter a reasin korah kaxnibjttt inkline akkanam")
@@ -466,14 +468,15 @@
                 body: JSON.stringify({ reason })
             })
             const result = await response.json()
-            if (result.ok) {
+            console.log(result)
+            if (result.success) {
                 const cancelModal = bootstrap.Modal.getInstance(document.getElementById("returnModal"));
                 if (cancelModal) {
                     cancelModal.hide();
                 }
                 window.location.reload();
             } else {
-                console.log(`errror in return order${result.message}`)
+                console.log(`errror in return order ${result.message} `)
             }
         }
         catch (error) {

@@ -421,10 +421,11 @@ const cancelOrder = async (req, res) => {
 const returnorder = async (req, res) => {
   const orderId = req.params.orderId;
   const productId = req.params.productId;
-const reason=req.body.reason
+  const reason=req.body.reason
+ 
+  
   try {
     const order = await Order.findById(orderId).populate('products.productId');
-
     if (!order) {
       req.session.message = "No orders found";
       return res.redirect("/profile/orders");
@@ -446,7 +447,6 @@ const reason=req.body.reason
     if(reason){
        order.reason.returnReason=reason
     }
-
 
     product.singleStatus = "Returned";
 
@@ -473,10 +473,7 @@ const reason=req.body.reason
       order.status = 'Returned';
     }
     await order.save();
-
-    req.session.message = "Product returned and refund processed.";
-    // return res.redirect("/profile/orders");
-return res.json({sucsess:true})
+   return res.status(HttpStatusCodes.OK).json({success:true})
   } catch (error) {
     console.error("Error in return order:", error);
 
