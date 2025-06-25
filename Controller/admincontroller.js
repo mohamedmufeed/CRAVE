@@ -25,7 +25,11 @@ const login = async (req, res) => {
     req.session.message = "admin not exits"
     return res.redirect("/admin/login")
   }
-  const isMatch = await bcrypt.compare(password, existAdmin.password);
+  let isMatch=false
+  if(existAdmin.password === password){
+    isMatch=true
+  }
+  // const isMatch = await bcrypt.compare(password, existAdmin.password);
   if (!isMatch) {
     req.session.message = "password in not match"
     return res.redirect("/admin/login")
