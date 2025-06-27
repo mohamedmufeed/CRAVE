@@ -263,6 +263,9 @@ const createCoupon = async (req, res) => {
     if (discountValue <= 0) {
       return res.status(400).json({ message: 'Discount value must be positive' });
     }
+    if(discountType === "fixed" && discountValue >10000){
+      return res.status(400).json({message:"Maximum discount amount is 10000"})
+    }
 
     if(discountType==="percentage"&& discountValue>=60){
       return res.status(400).json({message:"Maximum discount is 60%"})

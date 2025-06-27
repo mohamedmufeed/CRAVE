@@ -909,3 +909,26 @@ left: 20px;
 .error-message{
   color: rgba(247, 39, 39, 0.757);
 }
+
+/* Style active page item */
+.pagination .page-item.active .page-link {
+  background-color:#314d43;  /* Change to match CRAV<span>E</span> theme */
+  color: #fff;
+  border-color: #314d43;
+  font-weight: bold;
+  border-radius: 12px;
+}
+
+/* Optional: hover effect */
+.pagination .page-link:hover {
+  background-color: #f5f5f5;
+  color: #333;
+  border-color: #ccc;
+  transition: all 0.3s ease;
+}
+
+/* Optional: spacing and size */
+.pagination .page-link {
+  padding: 8px 16px;
+  border-radius: 6px;
+}

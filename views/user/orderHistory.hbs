@@ -202,6 +202,27 @@
             {{/each}}
             </tbody>
             </table>
+            <div class="pagination-container">
+  <ul class="pagination justify-content-center mt-4">
+    {{#if (gt currentPage 1)}}
+      <li class="page-item ">
+        <a class="page-link" href="?page={{subtract currentPage 1}}">Previous</a>
+      </li>
+    {{/if}}
+
+    {{#each (range 1 totalPages)}}
+      <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+        <a class="page-link" href="?page={{this}}">{{this}}</a>
+      </li>
+    {{/each}}
+
+    {{#if (lt currentPage totalPages)}}
+      <li class="page-item">
+        <a class="page-link" href="?page={{add currentPage 1}}">Next</a>
+      </li>
+    {{/if}}
+  </ul>
+</div>
         </div>
         {{else}}
 
@@ -212,12 +233,8 @@
                 <a href="/products" class="btn btn-black btn-lg">Go to Shop</a>
             </div>
         </div>
-
-
-
-
-
         {{/if}}
+
     </div>
 </div>
 </div>

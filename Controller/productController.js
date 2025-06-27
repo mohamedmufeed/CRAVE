@@ -14,13 +14,13 @@ require('dotenv').config();
 
 
 
-   cloudinary.config({ 
+  cloudinary.config({ 
   cloud_name: 'do4wdvbcy', 
   api_key: '398738496838286', 
   api_secret:process.env.CLOUD_SECRET 
   });
 
-//  user product details
+
 
 const loadProducts = async (req, res) => {
     try {
@@ -29,16 +29,11 @@ const loadProducts = async (req, res) => {
         select:'isListed'
       })
 
-      
-      
       const cartCount = req.session.cartCount
-
       const product=products.filter(product => product.category && product.category.isListed);
       const activeOffers = Array.isArray(product.offersApplied)
       ? product.offersApplied.filter(offer => offer.isActive)
       : [];
-
-  
 
       const firstOffer = activeOffers[0];
       const hasDiscount = firstOffer && product.discountPrice && product.discountPrice < product.price;
@@ -241,17 +236,13 @@ const loadProducts = async (req, res) => {
 const productManagement = async (req, res) => {
     try {
   
-      const totalCategories = await Category.countDocuments(); // Get total number of categories
+      const totalCategories = await Category.countDocuments(); 
       const categories = await Category.find({});
-  
-  
-  
   
       const page = parseInt(req.query.page, 10) || 1;
       const limit = parseInt(req.query.limit, 10) || 7;
       const skip = (page - 1) * limit;
-  
-  
+
       const totalProducts = await Products.countDocuments();
       const products = await Products.find({}).populate('category')
         .skip(skip)

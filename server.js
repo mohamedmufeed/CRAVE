@@ -127,6 +127,24 @@ hbs.registerHelper("and",function(a,b){
 hbs.registerHelper("not",function(a,b){
   return a !==b
 })
+
+hbs.registerHelper("shortId",function(id){
+  return id.toString().slice(-6)
+})
+
+hbs.registerHelper('eq', (a, b) => a === b);
+hbs.registerHelper('gt', (a, b) => a > b);
+hbs.registerHelper('lt', (a, b) => a < b);
+hbs.registerHelper('add', (a, b) => a + b);
+hbs.registerHelper('subtract', (a, b) => a - b);
+
+hbs.registerHelper('range', function (start, end) {
+  let range = [];
+  for (let i = start; i <= end; i++) {
+    range.push(i);
+  }
+  return range;
+});
 //Helper ends
 
 //static seting

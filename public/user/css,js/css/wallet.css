@@ -198,3 +198,26 @@
       width: 100%;
     }
   }
+
+
+  .page-link{
+    color: white;
+    background-color: #304e43;
+    border-radius: 12px;
+  }
+    .page-link:hover{
+    color: white;
+    background-color: #92b4a7;
+    border-radius: 12px;
+  }
+ .pagination .page-item.active .page-link {
+  background-color: #333; 
+  border-color: #331;
+  color: white;
+  font-weight: bold;
+}
+
+.pagination .page-link:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}

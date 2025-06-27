@@ -349,14 +349,14 @@
     }
   });
 
-  document.getElementById('closeModalButton').addEventListener('click', function () {
+ document.getElementById('closeModalButton').addEventListener('click', function () {
     if (cropper) {
       cropper.destroy();
       cropper = null;
     }
     document.getElementById('imageCropperModal').style.display = 'none';
   });
-
+  
 
   // edit modal function  
 
