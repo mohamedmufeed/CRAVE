@@ -396,7 +396,6 @@ for (const file of images) {
       if (!name || !description || !price || !material || !stock || !category) {
         return res.status(400).send('All fields are required.');
       }
-  
       const existingImages = updatedImages ? JSON.parse(updatedImages) : [];
   
     const newImages = req.files && req.files.length > 0 

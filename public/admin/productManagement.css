@@ -1,18 +1,4 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* General Styles */
 * {
   box-sizing: border-box;
@@ -444,4 +430,12 @@ input[type="file"] {
 
 .higlight{
   background-color: #000;
+}
+
+.loading {
+  text-align: center;
+  color: #007bff; 
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
 }
