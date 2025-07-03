@@ -355,7 +355,6 @@ const orderHistory = async (req, res) => {
 
     const message = req.session.message;
     req.session.message = null;
-
     return res.render("user/orderHistory", {
       orders,
       currentPage: page,
@@ -370,7 +369,6 @@ const orderHistory = async (req, res) => {
     }
   }
 };
-
 
 const cancelOrder = async (req, res) => {
   const userId = req.session.userId;

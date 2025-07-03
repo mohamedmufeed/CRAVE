@@ -8,6 +8,7 @@ const orderController=require("../Controller/orderController")
 const couponController=require("../Controller/couponController")
 const cartController=require("../Controller/cartController")
 const invoiceController=require("../Controller/invoiceController")
+const paymenetController=require("../Controller/paymentController")
 const passport = require("passport");
 const userAuth = require("../middlware/userAuth");
 const { route } = require("./adminrouter");
@@ -92,10 +93,10 @@ router.post("/removeCoupon",couponController.removeCoupon)
 router.post("/copondiscount",couponController.total)
 
 // razorpay cntroller 
-router.post("/razorpay",userController.razorpayPayment)
+router.post("/razorpay",paymenetController.razorpayPayment)
 router.get("/thankyou",orderController.thankyou)
-router.post("/payment-sucsess",userController.paymentSuccess)
-router.post("/razorpay/retry/:id",userController.retryPayment)
+router.post("/payment-sucsess",paymenetController.paymentSuccess)
+router.post("/razorpay/retry/:id",paymenetController.retryPayment)
 
 
 //walet
