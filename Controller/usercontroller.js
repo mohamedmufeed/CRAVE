@@ -11,9 +11,7 @@ const saltround = 10
 const HttpStatusCodes = require("../config/httpStatusCode");
 require('dotenv').config();
 const Razorpay = require('razorpay');
-const { error } = require('console')
-const { json } = require('express')
-const { findOne } = require('../Model/adminmodel')
+
 
 
 //register

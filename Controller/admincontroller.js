@@ -77,20 +77,36 @@ const loadUserMangment = async (req, res) => {
 
 
 const searchUser = async (req, res) => {
-  const searchItem = req.query.search;
   try {
-    const query = {
-      $or: [
-        { username: { $regex: searchItem, $options: "i" } },
-        { email: { $regex: searchItem, $options: "i" } }
-      ]
-    };
+    const { search, page = 1 } = req.query;
+    const limit = 10; 
+    const skip = (page - 1) * limit;
+    const escapeRegex = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const query = search
+      ? {
+          $or: [
+            { username: { $regex: escapeRegex(search), $options: 'i' } },
+            { email: { $regex: escapeRegex(search), $options: 'i' } },
+          ],
+        }
+      : {};
 
-    const users = await User.find(query);
-    res.render("admin/userManagement", { users, searchItem });
+    const users = await User.find(query).skip(skip).limit(limit).lean();
+    const totalUsers = await User.countDocuments(query);
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    res.json({
+      users,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages,
+        previousPage: parseInt(page) > 1 ? parseInt(page) - 1 : null,
+        nextPage: parseInt(page) < totalPages ? parseInt(page) + 1 : null,
+      },
+    });
   } catch (error) {
-    console.error("Error in search users:", error);
-    res.status(500).json({ message: "An error occurred while searching for users." });
+    console.error('Search error:', error.stack);
+    res.status(500).json({ message: 'Error searching users', error: error.message });
   }
 };
 

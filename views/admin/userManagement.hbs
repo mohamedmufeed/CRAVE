@@ -6,8 +6,8 @@
     </div>
     <nav class="menu">
       <ul>
-              <li><a href="/admin/dashboard">Dashboard</a></li>
-          <li><a href="/admin/productManagement">Products</a></li>
+        <li><a href="/admin/dashboard">Dashboard</a></li>
+        <li><a href="/admin/productManagement">Products</a></li>
         <li><a href="/admin/orderManagement">Orders</a></li>
         <li><a href="/admin/couponManagement">Coupon</a></li>
         <li><a href="/admin/inventory">Inventory</a></li>
@@ -21,99 +21,92 @@
   </aside>
 
   <!-- Main Content -->
-  <div class="main-content">
-    <header class="dashboard-header">
-      <h1>User Management</h1>
-      {{!-- search  starts --}}
-   <div>
-  <form class="form-inline my-2 my-lg-0" action="/admin/userManagement/search" method="GET">
-    <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
- 
-  </form>
-</div>
+<div class="main-content">
+  <header class="dashboard-header">
+    <h1>User Management</h1>
+    <div>
+      <form class="form-inline my-2 my-lg-0" action="/admin/userManagement/search" method="GET" id="searchForm">
+        <input
+          class="form-control mr-sm-2"
+          type="search"
+          name="search"
+          id="searchInput"
+          placeholder="Search"
+          aria-label="Search"
+        />
+        <div id="searchLoading" class="loading" style="display: none;">Loading...</div>
+      </form>
+    </div>
+  </header>
 
-     {{!-- serch ends --}}
-    </header>
-
-    <!-- User Table Section -->
-    <section class="user-table">
-      <h2>All Users</h2>
-      <div class="table-container">
-        <table >
-          <thead >
+  <!-- User Table Section -->
+  <section class="user-table">
+    <h2>All Users</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody">
+          {{#each users}}
             <tr>
-       
-              <th>Username</th>
-              <th >Email</th>
-              <th>Status</th>
-              <th >Actions</th>
+              <td>{{this.username}}</td>
+              <td>{{this.email}}</td>
+              <td>{{#if this.isBlocked}}Blocked{{else}}Active{{/if}}</td>
+              <td class="action-buttons">
+                {{#if this.isBlocked}}
+                  <form action="/admin/userManagement/unblock/{{this._id}}?_method=PATCH" method="POST">
+                    <button type="submit" class="btn unblock-btn">Unblock</button>
+                  </form>
+                {{else}}
+                  <form action="/admin/userManagement/block/{{this._id}}?_method=PATCH" method="POST">
+                    <button type="submit" class="btn block-btn">Block</button>
+                  </form>
+                {{/if}}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-          
-            {{#each users}}
-              <tr>
-           
-                <td>{{this.username}}</td>
-                <td>{{this.email}}</td>
-                <td>{{#if this.isBlocked}}Blocked{{else}}Active{{/if}}</td>
-               <td class="action-buttons">
-  {{#if this.isBlocked}}
-    <form action="/admin/userManagement/unblock/{{this._id}}?_method=PATCH" method="POST">
-      <button type="submit" class="btn unblock-btn">Unblock</button>
-    </form>
-  {{else}}
-    <form action="/admin/userManagement/block/{{this._id}}?_method=PATCH" method="POST">
-      <button type="submit" class="btn block-btn">Block</button>
-    </form>
-  {{/if}}
-  
-  
- 
-</td>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-              </tr>
-            {{/each}}
-          </tbody>
-        </table>
-       
-      </div>
-      
-    </section>
-
- {{!-- pagination --}}
-
-<nav aria-label="Page navigation">
-    <ul class="pagination justify-content-center pages custom-pagination" >
-        {{#if previousPage}}
+  <!-- Pagination remains unchanged -->
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center pages custom-pagination">
+      {{#if previousPage}}
         <li class="page-item">
-            <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-            </a>
+          <a class="page-link" href="?page={{previousPage}}" aria-label="Previous">
+            <span aria-hidden="true">«</span>
+          </a>
         </li>
-        {{/if}}
-
-        {{#each (range 1 totalPages)}}
+      {{/if}}
+      {{#each (range 1 totalPages)}}
         <li class="page-item {{#if (isEqual this ../currentPage)}}active{{/if}}">
-            <a class="page-link" href="?page={{this}}">{{this}}</a>
+          <a class="page-link" href="?page={{this}}">{{this}}</a>
         </li>
-        {{/each}}
-
-        {{#if nextPage}}
+      {{/each}}
+      {{#if nextPage}}
         <li class="page-item">
-            <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
+          <a class="page-link" href="?page={{nextPage}}" aria-label="Next">
+            <span aria-hidden="true">»</span>
+          </a>
         </li>
-        {{/if}}
+      {{/if}}
     </ul>
-</nav>
+  </nav>
+</div>
+<script src="/admin/js/userManagement.js"></script>
 
- {{!-- end pagination --}}
+ 
 
-    
-  </div>
 
-  <script src="/js/script.js"></script> <!-- Link to your JavaScript file -->
+
+  {{!-- <script src="/js/script.js"></script>  --}}
 
 
