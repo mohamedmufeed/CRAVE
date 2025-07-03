@@ -2,10 +2,6 @@ const Razorpay = require('razorpay');
 const Address = require("../Model/addresModel")
 const Cart = require("../Model/cartModel")
 const Order =require("../Model/orderModel")
-const WalletTransaction = require('../Model/walletModel')
-const User = require("../Model/usermodel")
-const Products=require("../Model/productModel")
-const bcrypt = require("bcrypt");
 const logger = require('../config/logger');
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,

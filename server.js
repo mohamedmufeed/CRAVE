@@ -8,9 +8,6 @@ const session = require("express-session");
 const connectdb = require('./db/connectdb');
 const nocache = require("nocache")
 const methodOverride = require('method-override');
-const multer = require('multer');
-const { upload } = require("./Controller/ imageController");
-const exphbs = require('express-handlebars'); 
 require('dotenv').config();
 const morgan = require('morgan');
 const logger = require('./config/logger');

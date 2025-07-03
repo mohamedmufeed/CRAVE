@@ -777,7 +777,6 @@ module.exports = {
   validateforgotOtp,
   loadresetPassword,
   resetPassword,
-
   loadAboutus,
   googleCallback,
   loadServices,

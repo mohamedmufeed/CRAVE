@@ -1,9 +1,6 @@
-const mongoose = require("mongoose");
-
 const User = require("../Model/usermodel");
 const Category = require("../Model/categoryModel");
 const Products = require("../Model/productModel");
-const { serchProducts } = require("./usercontroller");
 const HttpStatusCodes = require("../config/httpStatusCode");
 const cloudinary = require("cloudinary").v2;
 const streamifier = require("streamifier");

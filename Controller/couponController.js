@@ -4,8 +4,6 @@ const Coupon = require("../Model/couponModel")
 const Category = require("../Model/categoryModel")
 const Products = require("../Model/productModel")
 const HttpStatusCodes = require("../config/httpStatusCode");
-const { serchProducts } = require("./usercontroller");
-const couponModel = require("../Model/couponModel");
 const logger = require("../config/logger");
 
 

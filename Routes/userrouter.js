@@ -10,8 +10,8 @@ const cartController=require("../Controller/cartController")
 const invoiceController=require("../Controller/invoiceController")
 const paymenetController=require("../Controller/paymentController")
 const passport = require("passport");
-const userAuth = require("../middlware/userAuth");
-const { route } = require("./adminrouter");
+
+
 
 //  signup
 router.get("/register", userController.loadRegister);

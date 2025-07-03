@@ -1,5 +1,4 @@
 const mongoose=require("mongoose");
-const { schema } = require("./adminmodel");
 const Schema = mongoose.Schema;
 
 const  reviewSchema=  new Schema({

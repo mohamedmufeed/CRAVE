@@ -3,7 +3,6 @@ const User = require("../Model/usermodel")
 const PDFDocument = require('pdfkit');
 const Order = require("../Model/orderModel")
 const ExcelJS = require('exceljs');
-const bcrypt = require("bcrypt");
 const HttpStatusCodes = require("../config/httpStatusCode");
 const logger = require('../config/logger');
 

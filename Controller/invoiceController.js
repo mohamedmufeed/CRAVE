@@ -1,6 +1,5 @@
 const Order = require("../Model/orderModel");
 const PDFDocument = require('pdfkit');
-const fs = require("fs");
 const logger = require("../config/logger");
 
 function createInvoice(invoice, res) {
