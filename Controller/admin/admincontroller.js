@@ -1,10 +1,10 @@
-const Admin = require("../Model/adminmodel");
-const User = require("../Model/usermodel")
+const Admin = require("../../Model/adminmodel");
+const User = require("../../Model/usermodel")
 const PDFDocument = require('pdfkit');
-const Order = require("../Model/orderModel")
+const Order = require("../../Model/orderModel")
 const ExcelJS = require('exceljs');
-const HttpStatusCodes = require("../config/httpStatusCode");
-const logger = require('../config/logger');
+const HttpStatusCodes = require("../../config/httpStatusCode");
+const logger = require('../../config/logger');
 
 
 const loadlogin = async (req, res) => {

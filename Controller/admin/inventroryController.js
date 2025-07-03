@@ -1,8 +1,8 @@
 
-const Products = require("../Model/productModel")
+const Products = require("../../Model/productModel")
 
-const HttpStatusCodes = require("../config/httpStatusCode");
-const logger = require("../config/logger");
+const HttpStatusCodes = require("../../config/httpStatusCode");
+const logger = require("../../config/logger");
 
 
 const loadInventory = async (req, res) => {

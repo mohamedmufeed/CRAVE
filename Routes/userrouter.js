@@ -1,15 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../Controller/usercontroller");
-const wishlistController=require("../Controller/wishlistController")
-const walletController=require("../Controller/walletController")
-const productController=require("../Controller/productController")
-const orderController=require("../Controller/orderController")
-const couponController=require("../Controller/couponController")
-const cartController=require("../Controller/cartController")
-const invoiceController=require("../Controller/invoiceController")
-const paymenetController=require("../Controller/paymentController")
+const userController = require("../Controller/user/usercontroller");
+const wishlistController=require("../Controller/user/wishlistController")
+const walletController=require("../Controller/user/walletController")
+const productController=require("../Controller/user/productController")
+const orderController=require("../Controller/user/orderController")
+const couponController=require("../Controller/user/couponController")
+const cartController=require("../Controller/user/cartController")
+const invoiceController=require("../Controller/user/invoiceController")
+const paymenetController=require("../Controller/user/paymentController")
 const passport = require("passport");
+const profileController=require("../Controller/user/profileController")
+const addressController=require("../Controller/user/addressController")
+const homeController=require("../Controller/user/homeController")
 
 
 
@@ -36,7 +39,7 @@ router.get("/auth/google", passport.authenticate("google", { scope: ['profile', 
 router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/register' }), userController.googleCallback);
 
 //home page
-router.get("/", userController.loadHome)
+router.get("/", homeController.loadHome)
 
 
 //product page 
@@ -50,16 +53,16 @@ router.get("/products/search",productController.userserchProducts)
 //profile page
 
 
-router.get("/profile", userController.profile)
-router.post("/profile/edit", userController.editProfile)
-router.post("/profile/editpassword", userController.editPassword)
+router.get("/profile", profileController.profile)
+router.post("/profile/edit", profileController.editProfile)
+router.post("/profile/editpassword", profileController.editPassword)
 
  //profile address page 
 
-router.get("/profile/address", userController.loadAddress)
-router.post("/profile/addAddress", userController.addAddress)
-router.post("/profile/address/edit/:id", userController.editAddress)
-router.delete("/profile/address/delete/:id", userController.deleteAddress)
+router.get("/profile/address", addressController.loadAddress)
+router.post("/profile/addAddress", addressController.addAddress)
+router.post("/profile/address/edit/:id", addressController.editAddress)
+router.delete("/profile/address/delete/:id", addressController.deleteAddress)
 
 // cart  
 router.get("/cart", cartController.loadCart)
@@ -115,10 +118,10 @@ router.post("/reset-password",userController.resetPassword)
 router.get("/invoice/download/:id",invoiceController.invoiceDownload)
 
 // other 
-router.get("/aboutus",userController.loadAboutus)
-router.get("/services",userController.loadServices)
-router.get("/blog",userController.loadBlog)
-router.get("/contact",userController.loadContact)
+router.get("/aboutus",homeController.loadAboutus)
+router.get("/services",homeController.loadServices)
+router.get("/blog",homeController.loadBlog)
+router.get("/contact",homeController.loadContact)
 
 router.get("/logout",userController.logout)
 

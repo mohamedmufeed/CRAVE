@@ -1,15 +1,15 @@
-const WalletTransaction = require('../Model/walletModel')
-const User = require("../Model/usermodel")
-const Address = require("../Model/addresModel")
-const Products=require("../Model/productModel")
-const Cart = require("../Model/cartModel")
-const Order = require("../Model/orderModel")
+const WalletTransaction = require('../../Model/walletModel')
+const User = require("../../Model/usermodel")
+const Address = require("../../Model/addresModel")
+const Products=require("../../Model/productModel")
+const Cart = require("../../Model/cartModel")
+const Order = require("../../Model/orderModel")
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const crypto = require('crypto');
 const saltround = 10
-const HttpStatusCodes = require("../config/httpStatusCode");
-const logger = require('../config/logger')
+const HttpStatusCodes = require("../../config/httpStatusCode");
+const logger = require('../../config/logger')
 require('dotenv').config();
 
 
@@ -409,243 +409,6 @@ const resetPassword = async (req, res) => {
   }
 }
 
-
-//profile
-
-
-const profile = async (req, res) => {
-  try {
-    const userid = req.session.userId
-    const cartCount = req.session.cartCount
-    const user = await User.findOne({ _id: userid ,isBlocked:false})
-    if(!user){
-      res.status(HttpStatusCodes.BAD_REQUEST).redirect("/login")
-    }
-    res.render("user/profile", {
-      user,
-      message: req.session.message,
-      cartCount
-
-    })
-    req.session.message = null;
-  } catch (error) {
-
-    logger.error("Error in  loading profile:", error);
-    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).render("404");
-
-  }
-}
-
-const editProfile = async (req, res) => {
-  try {
-    const userId = req.session.userId
-    const { username, email, country } = req.body
-
-    const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
-    if (!emailPattern.test(email)) {
-      req.session.message = "Please enter a valid email";
-      return res.redirect("/profile");
-    }
-
-    const existingUser = await User.findOne({ email, _id: { $ne: userId } });
-    if (existingUser) {
-      req.session.message = "Email is already in use by another account";
-      return res.redirect("/profile");
-    }
-
-
-    const usernamePattern = /^[A-Za-z]+$/;
-    if (!usernamePattern.test(username)) {
-      req.session.message = "Invalid username";
-      return res.redirect("/profile");
-    }
-
-    if (!email || !username) {
-      req.session.message = "All fields are required";
-      return res.redirect("/profile");
-    }
-
-    await User.findByIdAndUpdate(userId, {
-      username,
-      email,
-      country
-    })
-    req.session.message = "Profile Updated sucseesfully"
-    res.redirect("/profile")
-
-  } catch (error) {
-    logger.error(error);
-    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Error updating profile");
-  }
-}
-
-
-
-const editPassword = async (req, res) => {
-  const userId = req.session.userId
-  const { oldpassword, newpassword, cpassword } = req.body
-
-
-  if (!userId) {
-    return res.redirect("/login")
-  }
-  try {
-    const user = await User.findById(userId)
-
-    if (!user || !user.password) {
-      return res.status(HttpStatusCodes.BAD_REQUEST).json({ message: 'User not found or password not set.' });
-    }
-    const isMatch = await bcrypt.compare(oldpassword, user.password);
-
-    if (!isMatch) {
-      req.session.message = "Old passwords is not correct";
-      return res.redirect("/profile");
-    }
-
-    if(newpassword === oldpassword){
-      req.session.message = "Please enter a new password";
-      return res.redirect("/profile");
-    }
-    const passwordPattern= /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-
-    if (!passwordPattern.test(newpassword)) {
-      req.session.message = "Password must include an uppercase letter, a lowercase letter, a number, and a special character";
-      return res.redirect("/profile");
-    }
-
-    if (newpassword !== cpassword) {
-      req.session.message = "New password and confirmation do not match.";
-      return res.redirect("/profile");
-    }
-
-    const hashedPassword = await bcrypt.hash(newpassword, 10);
-    user.password = hashedPassword;
-    await user.save();
-    req.session.message = "Password changed successfully!";
-
-    res.redirect("/profile")
-  } catch (error) {
-    logger.error("Error updating password:", error);
-    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'An error occurred while updating the password.' });
-  }
-}
-
-//address maanagement
-
-
-const loadAddress = async (req, res) => {
-  try {
-    const userId = req.session.userId;
-    if(!userId){
-       return res.redirect("/login")
-    }
-    const cartCount = req.session.cartCount
-    const addresses = await Address.find({ user: userId });
-    res.render("user/address", { addresses, message: req.session.message, cartCount });
-    req.session.message = null;
-  } catch (error) {
-    logger.error("Error on Loading Address",error);
-return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({message:"internal server error"})
-  }
-}
-
-const addAddress = async (req, res) => {
-  try {
-    const { firstName, lastName, email, mobile, addressLine, city, state, pinCode, country } = req.body;
-
-
-    const errors = {};
-
-    if (!firstName) errors.firstName = "First name is required.";
-    if (!lastName) errors.lastName = "Last name is required.";
-    if (!email) errors.email = "Email is required.";
-    if (!mobile) errors.mobile = "Mobile number is required.";
-    if (!addressLine) errors.addressLine = "Address is required.";
-    if (!city) errors.city = "City is required.";
-    if (!state) errors.state = "State is required.";
-    if (!pinCode) errors.pinCode = "Pincode is required.";
-    if (!country) errors.country = "Country is required.";
-
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (email && !emailRegex.test(email)) {
-      errors.email = "Please enter a valid email address.";
-    }
-
-    const mobileRegex = /^[0-9]{10}$/;
-    if (mobile && !mobileRegex.test(mobile)) {
-      errors.mobile = "Please enter a valid 10-digit mobile number.";
-    }
-
-    const pinCodeRegex = /^[0-9]{6}$/;
-    if (pinCode && !pinCodeRegex.test(pinCode)) {
-      errors.pinCode = "Please enter a valid 6-digit pincode.";
-    }
-
-    if (Object.keys(errors).length > 0) {
-      return res.status(400).json({ errors });
-    }
-
-    const newAddress = new Address({
-      user: req.session.userId,
-      firstName,
-      lastName,
-      email,
-      mobile,
-      addressLine,
-      city,
-      state,
-      pinCode,
-      country,
-    });
-
-
-    await newAddress.save();
-    // return res.redirect("/profile/address");
-    return res.status(HttpStatusCodes.OK).json({success:true})
-  } catch (error) {
-    logger.error(error);
-    return res.status(500).json({ message: "An error occurred while adding the address." });
-  }
-};
-
-
-
-const editAddress = async (req, res) => {
-  try {
-    const addressId = req.params.id
-    const updatedData = req.body;
-
-    await Address.findByIdAndUpdate(addressId, updatedData)
-    res.redirect("/profile/address")
-  } catch (error) {
-    logger.error("error in edit address", error)
-    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: "An error occurred while editing the address" });
-  }
-
-}
-
-const deleteAddress = async (req, res) => {
-  try {
-    const addressId = req.params.id
-    await Address.findByIdAndDelete(addressId)
-    res.redirect("/profile/address")
-  } catch (error) {
-    logger.error("Error in deleting address:", error);
-    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: "An error occurred while deleting the address" });
-  }
-}
-
-
-
-
-//razorpay
-
-
-
-
-
-
-
 //logout
 
 const logout = async (req, res) => {
@@ -660,98 +423,6 @@ const logout = async (req, res) => {
 
 
 
-
-//home section
-
-
-const getTopSellingProducts= async()=>{
-  const topProducts= await Order.aggregate([
-      {$unwind:"$products"},
-      {$group:{
-          _id:"$products.productId",
-          totalSold:{$sum:"$products.quantity"}
-      }
-  },
-  {$sort:{totalSold:-1}},
-  {$limit:10},
-  {
-      $lookup:{
-          from:"products",
-          localField:"_id",
-          foreignField:"_id",
-          as:"productDetails"
-      }
-  },
-  { $unwind: "$productDetails" },
-  {
-    $match: { "productDetails.isListed": true }  
-  },
-  { $project: {
-      productId: "$_id",
-      name: "$productDetails.name",
-      totalSold: 1
-    }
-  }
-  ])
-  return topProducts
-}
-
-const loadHome = async (req, res) => {
-  try {
-
-
-    const topSellingData= await getTopSellingProducts()
-  
-    const  productId= topSellingData.map(data=>data.productId)
-    const topSellingProducts= await Products.find({_id:{$in:productId}}).limit(3)
-
-    const cartCount = req.session.cartCount
-
-    res.render("user/index", { cartCount,topSellingProducts , message: req.session.message})
-    req.session.message=null
-    
-  } catch (error) {
-    logger.error("error in loading  home page",error)
-      return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({message:"internal server error"})
-  }
-
-}
-
-//other
-
-const loadAboutus= async(req,res)=>{
-   const user=req.session.userId
-   if(!user){
-   return  res.redirect("/login")
-   }
- return  res.render("user/aboutUs")
-  }
-
-  const loadServices= async(req,res)=>{
-    const user=req.session.userId
-    if(!user){
-    return  res.redirect("/login")
-    }
-    return res.render("user/services")
-  }
-
-  const loadBlog= async(req,res)=>{
-    const user=req.session.userId
-    if(!user){
-    return  res.redirect("/login")
-    }
-    return res.render("user/blog")
-  }
-
-  const loadContact= async(req,res)=>{
-    const user=req.session.userId
-    if(!user){
-    return  res.redirect("/login")
-    }
-   return  res.render("user/contact")
-  }
-
-// const load
   
 
 module.exports = {
@@ -762,25 +433,11 @@ module.exports = {
   loadVerifyOtp,
   login,
   resendOtp,
-  loadHome,
-  profile,
-  editProfile,
-  loadAddress,
-  addAddress,
-  editAddress,
-  deleteAddress,
-  editPassword,
-
   logout,
   loadForgotPassword,
   forgotEmailValid,
   validateforgotOtp,
   loadresetPassword,
   resetPassword,
-  loadAboutus,
   googleCallback,
-  loadServices,
-  loadBlog,
-  loadContact
- 
 }

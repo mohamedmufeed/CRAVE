@@ -1,5 +1,5 @@
-const logger = require("../config/logger");
-const Order = require("../Model/orderModel")
+const logger = require("../../config/logger");
+const Order = require("../../Model/orderModel")
 
 const getTopSellingProducts = async () => {
   const topProducts = await Order.aggregate([

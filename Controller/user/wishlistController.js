@@ -1,8 +1,8 @@
 
-const User = require("../Model/usermodel")
-const Products = require("../Model/productModel")
-const Cart = require("../Model/cartModel");
-const logger = require("../config/logger");
+const User = require("../../Model/usermodel")
+const Products = require("../../Model/productModel")
+const Cart = require("../../Model/cartModel");
+const logger = require("../../config/logger");
 require('dotenv').config();
 
 

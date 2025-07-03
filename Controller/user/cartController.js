@@ -1,9 +1,9 @@
 
-const Products = require("../Model/productModel")
-const Cart = require("../Model/cartModel")
-const Coupon = require("../Model/couponModel")
-const HttpStatusCodes = require("../config/httpStatusCode");
-const logger = require("../config/logger");
+const Products = require("../../Model/productModel")
+const Cart = require("../../Model/cartModel")
+const Coupon = require("../../Model/couponModel")
+const HttpStatusCodes = require("../../config/httpStatusCode");
+const logger = require("../../config/logger");
 require('dotenv').config();
 
 

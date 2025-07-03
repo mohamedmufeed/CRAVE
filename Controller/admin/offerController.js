@@ -1,8 +1,8 @@
 
-const Category = require("../Model/categoryModel")
-const Products = require("../Model/productModel")
-const Offer = require("../Model/offerModel");
-const logger = require("../config/logger");
+const Category = require("../../Model/categoryModel")
+const Products = require("../../Model/productModel")
+const Offer = require("../../Model/offerModel");
+const logger = require("../../config/logger");
 
 
 //admin offer controller starts here

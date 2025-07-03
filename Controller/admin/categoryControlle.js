@@ -1,8 +1,7 @@
 
-const Category = require("../Model/categoryModel")
-
-const HttpStatusCodes = require("../config/httpStatusCode");
-const logger = require("../config/logger");
+const Category = require("../../Model/categoryModel")
+const HttpStatusCodes = require("../../config/httpStatusCode");
+const logger = require("../../config/logger");
 
 //admin category coontroller strats
 

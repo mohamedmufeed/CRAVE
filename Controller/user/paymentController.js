@@ -1,8 +1,8 @@
 const Razorpay = require('razorpay');
-const Address = require("../Model/addresModel")
-const Cart = require("../Model/cartModel")
-const Order =require("../Model/orderModel")
-const logger = require('../config/logger');
+const Address = require("../../Model/addresModel")
+const Cart = require("../../Model/cartModel")
+const Order =require("../../Model/orderModel")
+const logger = require('../../config/logger');
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,

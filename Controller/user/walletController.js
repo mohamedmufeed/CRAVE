@@ -1,8 +1,8 @@
 
-const logger = require("../config/logger");
-const User = require("../Model/usermodel")
+const logger = require("../../config/logger");
+const User = require("../../Model/usermodel")
 
-const Wallet = require("../Model/walletModel")
+const Wallet = require("../../Model/walletModel")
 
 
 

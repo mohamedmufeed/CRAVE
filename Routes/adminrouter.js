@@ -1,15 +1,15 @@
 const express = require("express");
 const router = express.Router();
-const adminController = require("../Controller/admincontroller");
-const productController=require("../Controller/productController")
-const orderController=require("../Controller/orderController")
-const offerController=require("../Controller/offerController")
-const inventoryController=require("../Controller/inventroryController")
-const couponController=require("../Controller/couponController")
-const categoryController=require("../Controller/categoryControlle")
-const dashboardController=require("../Controller/dashboardController")
+const adminController = require("../Controller/admin/admincontroller");
+const productController=require("../Controller/admin/productController")
+const orderController=require("../Controller/admin/orderController")
+const offerController=require("../Controller/admin/offerController")
+const inventoryController=require("../Controller/admin/inventroryController")
+const couponController=require("../Controller/admin/couponController")
+const categoryController=require("../Controller/admin/categoryControlle")
+const dashboardController=require("../Controller/admin/dashboardController")
 const  adminAuth=require("../middlware/adminauth")
-const imagesController=require("../Controller/ imageController")
+const imagesController=require("../Controller/admin/ imageController")
 // Define the routes/
 
 //login

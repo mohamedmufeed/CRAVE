@@ -1,6 +1,6 @@
-const Order = require("../Model/orderModel");
+const Order = require("../../Model/orderModel");
 const PDFDocument = require('pdfkit');
-const logger = require("../config/logger");
+const logger = require("../../config/logger");
 
 function createInvoice(invoice, res) {
   let doc = new PDFDocument({ size: "A4", margin: 50 });
