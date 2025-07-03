@@ -5,6 +5,7 @@ const Order = require("../Model/orderModel")
 const ExcelJS = require('exceljs');
 const bcrypt = require("bcrypt");
 const HttpStatusCodes = require("../config/httpStatusCode");
+const logger = require('../config/logger');
 
 
 const loadlogin = async (req, res) => {
@@ -117,7 +118,7 @@ const blockUser = async (req, res) => {
     await User.findByIdAndUpdate(userId, { isBlocked: true })
     res.redirect("/admin/userManagement")
   } catch (error) {
-    console.log("Error blocking user:", error);
+    logger.error("Error blocking user:", error);
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Server Error");
   }
 }
@@ -129,7 +130,7 @@ const unblockUser = async (req, res) => {
     await User.findByIdAndUpdate(userId, { isBlocked: false })
     res.redirect("/admin/userManagement")
   } catch (error) {
-    console.log(error)
+  logger.error("Error on Unblocking User",error)
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("server error")
   }
 }
@@ -244,6 +245,7 @@ const getSalesReport = async (time, startDate, endDate) => {
 
     return { salesReport, overallSummary: overallSummary[0] };
   } catch (error) {
+    logger.error("Error on sales Report")
     throw new Error(`Error in aggregation: ${error.message}`);
   }
 };

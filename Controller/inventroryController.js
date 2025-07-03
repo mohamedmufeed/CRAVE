@@ -2,6 +2,7 @@
 const Products = require("../Model/productModel")
 
 const HttpStatusCodes = require("../config/httpStatusCode");
+const logger = require("../config/logger");
 
 
 const loadInventory = async (req, res) => {
@@ -32,7 +33,7 @@ const loadInventory = async (req, res) => {
   
   
     } catch (error) {
-      console.error("error in  load inventry :", error)
+      logger.error("error in  load inventry :", error)
     }
   
   }
@@ -63,7 +64,7 @@ const loadInventory = async (req, res) => {
       await Products.findByIdAndUpdate(prdoductId, { name, price, stock })
       res.redirect("/admin/inventory")
     } catch (error) {
-      console.log(error)
+      logger.log(error)
     }
   
   }

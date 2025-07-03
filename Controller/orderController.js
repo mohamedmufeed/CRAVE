@@ -6,6 +6,7 @@ const Cart = require("../Model/cartModel");
 const Order = require("../Model/orderModel");
 const Wallet = require("../Model/walletModel");
 const HttpStatusCodes = require("../config/httpStatusCode");
+const logger = require("../config/logger");
 require("dotenv").config();
 
 // user order controllr and    checkout stars
@@ -34,7 +35,7 @@ const loadCheckOut = async (req, res) => {
       if (item.quantity > item.productId.stock) {
         req.session.message = `The requested quantity for "${item.productId.name}" exceeds the available stock. Please adjust your cart.`;
         req.session.coupon = null;
-        console.log("Coupon cleared");
+        logger.info("Coupon cleared");
         return res.redirect("/cart");
         // return res.status(400).send("invalis quanityt")
       }
@@ -92,7 +93,7 @@ const loadCheckOut = async (req, res) => {
     });
     req.session.message = null;
   } catch (error) {
-    console.error("Error loading checkout:", error);
+    logger.error("Error loading checkout:", error);
   }
 };
 
@@ -105,7 +106,7 @@ const defaultAddress = async (req, res) => {
 
     await Address.findByIdAndUpdate(addressId, { isDefault: true });
   } catch (error) {
-    console.error("Error setting default address:", error);
+    logger.error("Error setting default address:", error);
     return res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: "Internal server error inn" });
@@ -184,7 +185,7 @@ const saveBillingAddress = async (req, res) => {
     await newAddress.save();
     return res.status(200).json({ success: true });
   } catch (error) {
-    console.error("Error saving address:", error);
+    logger.error("Error saving address:", error);
     return res.status(500).json({ error: "Failed to save address" });
   }
 };
@@ -311,7 +312,7 @@ const placeOrder = async (req, res) => {
 
     return res.redirect("/thankyou");
   } catch (error) {
-    console.error("Error placing order:", error);
+    logger.error("Error placing order:", error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -363,7 +364,7 @@ const orderHistory = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error fetching order history:", error);
+    logger.error("Error fetching order history:", error);
     if (!res.headersSent) {
       return res.status(500).json({ error: "Internal server error" });
     }
@@ -439,11 +440,10 @@ const cancelOrder = async (req, res) => {
     }
 
     await order.save();
-
     // res.redirect('/profile/orders');
     return res.json({ sucsess: true });
   } catch (error) {
-    console.error("Error in cancel order:", error);
+    logger.error("Error in cancel order:", error);
     res
       .status(500)
       .json({ message: "An error occurred while cancelling the order" });
@@ -508,7 +508,7 @@ const returnorder = async (req, res) => {
     await order.save();
     return res.status(HttpStatusCodes.OK).json({ success: true });
   } catch (error) {
-    console.error("Error in return order:", error);
+    logger.error("Error in return order:", error);
 
     if (!res.headersSent) {
       return res
@@ -548,7 +548,7 @@ const orderDetails = async (req, res) => {
       couponDetails: order.coupon,
     });
   } catch (error) {
-    console.error("Error fetching order details:", error);
+    logger.error("Error fetching order details:", error);
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Server error");
   }
 };
@@ -590,7 +590,7 @@ const loadOrder = async (req, res) => {
       nextPage: nextPage,
     });
   } catch (error) {
-    console.error("Error fetching orders:", error);
+    logger.error("Error fetching orders:", error);
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: "An error occurred while fetching orders." });
@@ -627,7 +627,7 @@ const serchOrder = async (req, res) => {
 
     res.render("admin/orderManagement", { orders, searchItem });
   } catch (error) {
-    console.error("Error in search orders:", error);
+    logger.error("Error in search orders:", error);
     res
       .status(500)
       .json({ message: "An error occurred while searching for orders." });
@@ -659,7 +659,7 @@ const orderStatus = async (req, res) => {
 
     res.redirect("/admin/orderManagement");
   } catch (error) {
-    console.error("Error updating order status:", error);
+    logger.error("Error updating order status:", error);
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: "An error occurred while updating the order status." });
@@ -683,11 +683,9 @@ const admincancelOrder = async (req, res) => {
     });
     order.status = "Cancelled";
     await order.save();
-    console.log(order);
-
     res.redirect("/admin/orderManagement");
   } catch (error) {
-    console.error("error in cancel order form admin side");
+    logger.error("error in cancel order form admin side");
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: "error in canceling order in admin side " });

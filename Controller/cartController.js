@@ -4,6 +4,7 @@ const Cart = require("../Model/cartModel")
 const Coupon = require("../Model/couponModel")
 const HttpStatusCodes = require("../config/httpStatusCode");
 const { productDetails } = require("./productController");
+const logger = require("../config/logger");
 require('dotenv').config();
 
 
@@ -76,7 +77,7 @@ const loadCart = async (req, res) => {
       return res.render("user/cart", { products: [], message: req.session.message, coupon });
     }
   } catch (error) {
-    console.error("Error loading cart: ", error);
+    logger.error("Error loading cart: ", error);
     req.session.message = "An error occurred while loading the cart. Please try again later.";
     return res.status(500).render("404", { message: req.session.message });
   } finally {
@@ -138,8 +139,9 @@ const addCart = async (req, res) => {
     res.redirect("/cart")
 
   } catch (error) {
+      logger.error("error in  add cart", error)
     return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error adding product to cart' });
-    console.error("error in  add cart", error)
+  
   }
 
 
@@ -205,7 +207,7 @@ const updateCart = async (req, res) => {
       return res.status(404).json({ error: "Cart not found for user" });
     }
   } catch (error) {
-    console.error("Error in updating cart:", error);
+    logger.error("Error in updating cart:", error);
     return res.status(500).json({ error: "Error updating cart" });
   }
 };
@@ -241,8 +243,9 @@ const removeCart = async (req, res) => {
       return res.status(HttpStatusCodes.NOT_FOUND).json({ error: 'Cart not found' });
     }
   } catch (error) {
+        logger.error("Error in removing item from cart:", error);
     return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error removing product from cart' });
-    console.error("Error in removing item from cart:", error);
+
   }
 };
 

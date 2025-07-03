@@ -9,6 +9,7 @@ const nodemailer = require("nodemailer");
 const crypto = require('crypto');
 const saltround = 10
 const HttpStatusCodes = require("../config/httpStatusCode");
+const logger = require('../config/logger')
 require('dotenv').config();
 
 
@@ -74,7 +75,7 @@ async function sendVerificationfEmail(email, otp,username) {
     return info.accepted.length > 0
 
   } catch (error) {
-    console.error("error sendign  email", error)
+    logger.error("error sendign  email", error)
     return false
   }
 
@@ -136,10 +137,10 @@ const register = async (req, res) => {
 
     req.session.userOTP = otp;
     req.session.userData = { username, email, password };
-    console.log(`OTP send ${otp}`)
+    logger.info(`OTP send ${otp}`)
     return res.status(200).json({ message: "OTP sent successfully", redirect: "/verify-otp" });
   } catch (error) {
-    console.error("Registration error:", error);
+    logger.error("Registration error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -219,7 +220,7 @@ const verifyOtp = async (req, res) => {
     }
 
   } catch (error) {
-    console.error("Error invalid otp", error)
+    logger.error("Error invalid otp", error)
   }
 }
 
@@ -234,14 +235,14 @@ const resendOtp = async (req, res) => {
 
     const emailSent = sendVerificationfEmail(email, otp)
     if (emailSent) {
-      console.log("Resend otp:", otp);
+      logger.info("Resend otp:", otp);
       return res.status(HttpStatusCodes.OK).json({ success: true, message: "OTP resend sucsessfully" })
     } else {
       return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to resend OTP please try again" })
     }
 
   } catch (error) {
-    console.error("Error resending OTP", error)
+    logger.error("Error resending OTP", error)
     return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "server error please try again" })
   }
 
@@ -291,7 +292,7 @@ const login = async (req, res) => {
     req.session.message="Welcome back! You have successfully logged in."
     return res.status(200).json({ redirectUrl: "/" });
   } catch (error) {
-    console.error("Login error:", error);
+    logger.error("Login error:", error);
     req.session.message = "An error occurred. Please try again.";
     return res.redirect("/login");
   }
@@ -325,7 +326,7 @@ async function sendVerificationfEmailvald(email, otp) {
 
     return true
   } catch (error) {
-    console.error("error sendign  email", error)
+    logger.error("error sendign  email", error)
     return false
   }
 }
@@ -350,7 +351,7 @@ const forgotEmailValid = async (req, res) => {
         req.session.userOtp = otp,
           req.session.email = email
         res.render("user/forgotpassword-otp")
-        console.log("Your otp is :", otp)
+        logger.info("Your otp is :", otp)
       } else {
         res.json({ success: false, message: "Failed to send otp" })
       }
@@ -390,7 +391,6 @@ const loadresetPassword = async (req, res) => {
 const resetPassword = async (req, res) => {
   try {
     const { password, Conformpassword } = req.body
-    console.log(password, Conformpassword)
     const email = req.session.email
     if (password === Conformpassword) {
       const hashedPassword = await bcrypt.hash(password, saltround)
@@ -430,7 +430,7 @@ const profile = async (req, res) => {
     req.session.message = null;
   } catch (error) {
 
-    console.error("Error in  loading profile:", error);
+    logger.error("Error in  loading profile:", error);
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).render("404");
 
   }
@@ -474,7 +474,7 @@ const editProfile = async (req, res) => {
     res.redirect("/profile")
 
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Error updating profile");
   }
 }
@@ -525,7 +525,7 @@ const editPassword = async (req, res) => {
 
     res.redirect("/profile")
   } catch (error) {
-    console.error("Error updating password:", error);
+    logger.error("Error updating password:", error);
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'An error occurred while updating the password.' });
   }
 }
@@ -544,7 +544,7 @@ const loadAddress = async (req, res) => {
     res.render("user/address", { addresses, message: req.session.message, cartCount });
     req.session.message = null;
   } catch (error) {
-    console.log(error);
+    logger.error("Error on Loading Address",error);
 return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({message:"internal server error"})
   }
 }
@@ -603,7 +603,7 @@ const addAddress = async (req, res) => {
     // return res.redirect("/profile/address");
     return res.status(HttpStatusCodes.OK).json({success:true})
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res.status(500).json({ message: "An error occurred while adding the address." });
   }
 };
@@ -618,7 +618,7 @@ const editAddress = async (req, res) => {
     await Address.findByIdAndUpdate(addressId, updatedData)
     res.redirect("/profile/address")
   } catch (error) {
-    console.error("error in edit address", error)
+    logger.error("error in edit address", error)
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: "An error occurred while editing the address" });
   }
 
@@ -630,7 +630,7 @@ const deleteAddress = async (req, res) => {
     await Address.findByIdAndDelete(addressId)
     res.redirect("/profile/address")
   } catch (error) {
-    console.error("Error in deleting address:", error);
+    logger.error("Error in deleting address:", error);
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: "An error occurred while deleting the address" });
   }
 }
@@ -651,7 +651,7 @@ const deleteAddress = async (req, res) => {
 const logout = async (req, res) => {
   req.session.destroy((err) => {
     if (err) {
-      console.log("error in logout", err)
+      logger.error("error in logout", err)
       return res.status(500).send("Error logging out");
     }
     res.redirect("/login")
@@ -711,7 +711,7 @@ const loadHome = async (req, res) => {
     req.session.message=null
     
   } catch (error) {
-    console.error("error in loading  home page",error)
+    logger.error("error in loading  home page",error)
       return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({message:"internal server error"})
   }
 

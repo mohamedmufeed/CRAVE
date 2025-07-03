@@ -1,7 +1,8 @@
 
 const User = require("../Model/usermodel")
 const Products = require("../Model/productModel")
-const Cart = require("../Model/cartModel")
+const Cart = require("../Model/cartModel");
+const logger = require("../config/logger");
 require('dotenv').config();
 
 
@@ -24,7 +25,7 @@ const loadWishlist = async (req, res) => {
       res.render("user/wishlist", { wishlist })
   
     } catch (error) {
-      console.error("error form loading the wishlist ", error)
+      logger.error("error form loading the wishlist ", error)
     }
   
   }
@@ -51,7 +52,7 @@ const loadWishlist = async (req, res) => {
   
   
     } catch (error) {
-      console.error("Error adding product to wishlist:", error);
+      logger.error("Error adding product to wishlist:", error);
       res.status(500).json({ message: 'An error occurred while adding the product to wishlist.' });
     }
   }
@@ -71,7 +72,7 @@ const loadWishlist = async (req, res) => {
         res.status(404).json({ success: false, message: "User not found" });
       }
     } catch (error) {
-      console.error("Error removing product from wishlist:", error);
+      logger.error("Error removing product from wishlist:", error);
       res.status(500).json({ success: false, message: "An error occurred" });
     }
   }
@@ -92,19 +93,19 @@ const loadWishlist = async (req, res) => {
     try {
       const user = await User.findById(userId);
       if (!user) {
-        console.error("User not found with ID:", userId);
+        logger.error("User not found with ID:", userId);
         return res.status(404).json({ error: "User not found" });
       }
   
       const productInWishlist = user.wishList.find(p => p.equals(productId));
       if (!productInWishlist) {
-        console.error("Product not found in wishlist with ID:", productId);
+        logger.error("Product not found in wishlist with ID:", productId);
         return res.status(404).json({ error: "Product not found in wishlist" });
       }
   
       const product = await Products.findById(productId);
       if (!product) {
-        console.error("Product not found in database with ID:", productId);
+        logger.error("Product not found in database with ID:", productId);
         return res.status(404).json({ error: "Product not found in database" });
       }
   
@@ -148,7 +149,7 @@ const loadWishlist = async (req, res) => {
       req.session.cartCount = cart.products.length;
       res.json({ success: true, message: "Product added to cart" });
     } catch (error) {
-      console.error("Error in addCartFromWishlist:", error.message);
+      logger.error("Error in addCartFromWishlist:", error.message);
       res.status(500).json({ error: "An error occurred while adding the product to the cart" });
     }
   };

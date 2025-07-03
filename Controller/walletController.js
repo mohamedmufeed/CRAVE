@@ -1,4 +1,5 @@
 
+const logger = require("../config/logger");
 const User = require("../Model/usermodel")
 
 const Wallet = require("../Model/walletModel")
@@ -15,7 +16,7 @@ const loadWallet = async (req, res) => {
   try {
     const user = await User.findById(userId, 'walletBalance');
     if (!user) {
-      console.error("User not found with ID:", userId);
+      logger.error("User not found with ID:", userId);
       return res.redirect("/login");
     }
 
@@ -39,7 +40,7 @@ const loadWallet = async (req, res) => {
       totalPages
     });
   } catch (error) {
-    console.error("Error in loading wallet:", error);
+    logger.error("Error in loading wallet:", error);
     res.status(500).send("Internal Server Error");
   }
 };

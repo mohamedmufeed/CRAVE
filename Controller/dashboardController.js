@@ -1,3 +1,4 @@
+const logger = require("../config/logger");
 const Order = require("../Model/orderModel")
 
 const getTopSellingProducts = async () => {
@@ -182,7 +183,7 @@ const loadDashboard = async (req, res) => {
       dailySalesData: JSON.stringify(dailySalesData)
     });
   } catch (error) {
-    console.error("Error loading dashboard data:", error);
+    logger.error("Error loading dashboard data:", error);
     res.status(500).send("Error loading dashboard data");
   }
 };

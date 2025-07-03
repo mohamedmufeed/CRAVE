@@ -6,6 +6,7 @@ const WalletTransaction = require('../Model/walletModel')
 const User = require("../Model/usermodel")
 const Products=require("../Model/productModel")
 const bcrypt = require("bcrypt");
+const logger = require('../config/logger');
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
@@ -69,7 +70,7 @@ const razorpayPayment = async (req, res) => {
 
     if (req.session.coupon) {
       const coupon = req.session.coupon;
-      console.log("This is the coupon being applied:", coupon);
+      logger.info("This is the coupon being applied:", coupon);
     
       couponDetails = {
         code: coupon.code,
@@ -106,7 +107,7 @@ const razorpayPayment = async (req, res) => {
 
 
   } catch (error) {
-    console.error("Error in setting Razorpay:", error);
+    logger.error("Error in setting Razorpay:", error);
     res.status(500).json({ error: 'Error creating Razorpay order' });
   }
 };
@@ -131,7 +132,7 @@ const paymentSuccess = async (req, res) => {
         res.json({ success: true });
 
     } catch (error) {
-        console.error("Error in payment success:", error);
+        logger.error("Error in payment success:", error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
@@ -173,7 +174,7 @@ const retryPayment = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error in retry payment:", error);
+    logger.error("Error in retry payment:", error);
     res.status(500).send("Internal server error");
   }
 };

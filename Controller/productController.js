@@ -7,6 +7,7 @@ const { serchProducts } = require("./usercontroller");
 const HttpStatusCodes = require("../config/httpStatusCode");
 const cloudinary = require("cloudinary").v2;
 const streamifier = require("streamifier");
+const logger = require("../config/logger");
 
 require("dotenv").config();
 
@@ -47,7 +48,7 @@ const loadProducts = async (req, res) => {
 
     res.render("user/shop", { product, cartCount, discountLabel });
   } catch (error) {
-    console.error("Error in product handling:", error);
+    logger.error("Error in product handling:", error);
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).render("404");
   }
 };
@@ -106,7 +107,7 @@ const productDetails = async (req, res) => {
     });
   } catch (error) {
     res.status(HttpStatusCodes.NOT_FOUND).render("404");
-    console.error("Product not found", error);
+    logger.error("Product not found", error);
   }
 };
 
@@ -134,7 +135,7 @@ const filterProducts = async (req, res) => {
           } else {
           }
         } catch (error) {
-          console.error("Error finding category:", error);
+          logger.error("Error finding category:", error);
         }
       }
     }
@@ -185,7 +186,7 @@ const filterProducts = async (req, res) => {
     // res.json({ products: product });
     res.render("user/shop", { product });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .send("Internal Server Error");
@@ -211,7 +212,7 @@ const userserchProducts = async (req, res) => {
     const product = await Products.find(query);
     res.render("user/shop", { product, serchItem });
   } catch (error) {
-    console.error("Error in search products:", error);
+    logger.error("Error in search products:", error);
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: "An error occurred while searching for products." });
@@ -238,7 +239,7 @@ const productManagement = async (req, res) => {
       .limit(limit);
 
     if (!products || products.length === 0) {
-      console.log("No products found");
+      logger.log("No products found");
     }
 
     const totalPages = Math.ceil(totalProducts / limit);
@@ -255,7 +256,7 @@ const productManagement = async (req, res) => {
       nextPage: nextPage,
     });
   } catch (error) {
-    console.error("Error in product management:", error.message);
+    logger.error("Error in product management:", error.message);
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .send("An error occurred while fetching products and categories.");
@@ -296,7 +297,7 @@ const adminsearchProduct = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Error in search products:', error.stack);
+    logger.error('Error in search products:', error.stack);
     res.status(500).json({ message: 'Error searching products', error: error.message });
   }
 };
@@ -364,7 +365,7 @@ const addProducts = async (req, res) => {
     await newProduct.save();
     res.redirect("/admin/productManagement");
   } catch (error) {
-    console.error("Error while adding product:", error);
+    logger.error("Error while adding product:", error);
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .send({ message: "Internal Server Error" });
@@ -432,7 +433,7 @@ const editProducts = async (req, res) => {
 
     res.redirect("/admin/productManagement");
   } catch (error) {
-    console.error("Error updating product: ", error.message);
+    logger.error("Error updating product: ", error.message);
     res.status(500).send("Error updating product: " + error.message);
   }
 };
@@ -445,7 +446,7 @@ const listProduct = async (req, res) => {
 
     res.redirect("/admin/productManagement");
   } catch (error) {
-    console.error("Error listing product:", error);
+    logger.error("Error listing product:", error);
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .send("An error occurred while updating the product.");
@@ -459,7 +460,7 @@ const unlistProduct = async (req, res) => {
     await Products.findByIdAndUpdate(productId, { isListed: false });
     res.redirect("/admin/productManagement");
   } catch (error) {
-    console.error("Error unlisting product:", error);
+    logger.error("Error unlisting product:", error);
     res
       .status(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       .send("An error occurred while unlist the product.");

@@ -4,13 +4,13 @@ const path = require("path")
 
 
 
-// Configure memory storage
-const storage = multer.memoryStorage(); // Stores files in memory temporarily
 
-// Set up multer upload
+const storage = multer.memoryStorage(); 
+
+
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 1024 * 1024 * 20 }, // 20MB file limit
+  limits: { fileSize: 1024 * 1024 * 20 }, 
   fileFilter: (req, file, cb) => {
     const filetypes = /jpeg|jpg|png|webp/;
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
@@ -21,8 +21,8 @@ const upload = multer({
       cb(new Error("Images Only!"));
     }
   },
-}).array("images", 3); // Accept up to 3 image files
+}).array("images", 3); 
 
 
-//hiii
+
 module.exports = { upload };

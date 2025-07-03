@@ -6,6 +6,7 @@ const Products = require("../Model/productModel")
 const HttpStatusCodes = require("../config/httpStatusCode");
 const { serchProducts } = require("./usercontroller");
 const couponModel = require("../Model/couponModel");
+const logger = require("../config/logger");
 
 
 //  user coupon controller starst here 
@@ -91,7 +92,6 @@ const applyCoupon = async (req, res) => {
 
     coupon.usageLimit -= 1;
     await coupon.save();
-console.log(coupon)
     return res.json({
       success: true,
       discountAmount,
@@ -102,7 +102,7 @@ console.log(coupon)
   
     
   } catch (error) {
-    console.log('Error applying coupon:', error);
+    logger.log('Error applying coupon:', error);
     return res.status(500).json({ message: 'An error occurred while applying the coupon' });
   }
 };
@@ -130,14 +130,14 @@ try {
 req.session.newTotal=newTotal
 req.session.save(err => {
   if (err) {
-    console.error("Session save error:", err);
+    logger.error("Session save error:", err);
   }
-  console.log("Session saved with newTotal:", req.session.newTotal);
+  logger.info("Session saved with newTotal:", req.session.newTotal);
 });
 
   
 } catch (error) {
-  console.error("Error in total:", error);
+  logger.error("Error in total:", error);
   res.status(500).json({ success: false, message: "An error occurred" });
   
 }
@@ -184,7 +184,7 @@ const loadCoupon = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error in loading coupon management:", error);
+    logger.error("Error in loading coupon management:", error);
     res.status(500).send("Error loading coupons");
   }
 };
@@ -225,7 +225,7 @@ const editCoupon = async (req, res) => {
     
     res.redirect("/admin/couponManagement")
   } catch (error) {
-    console.error("error in edit coupon", error)
+    logger.error("error in edit coupon", error)
      return  res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" })
   }
 }
@@ -291,7 +291,7 @@ const createCoupon = async (req, res) => {
  
     res.redirect("/admin/couponManagement")
   } catch (error) {
-    console.error("error in creating coupon ", error)
+    logger.error("error in creating coupon ", error)
   }
 }
 
@@ -305,7 +305,7 @@ const deleteCoupon = async (req, res) => {
     }
     res.redirect("/admin/couponManagement")
   } catch (error) {
-    console.error("Error in deleting coupon")
+    logger.error("Error in deleting coupon")
     res.status(500).json({ message: 'Server error' });
   }
 }

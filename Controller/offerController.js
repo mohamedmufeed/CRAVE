@@ -1,7 +1,8 @@
 
 const Category = require("../Model/categoryModel")
 const Products = require("../Model/productModel")
-const Offer = require("../Model/offerModel")
+const Offer = require("../Model/offerModel");
+const logger = require("../config/logger");
 
 
 //admin offer controller starts here
@@ -45,7 +46,7 @@ const loadOffer = async (req, res) => {
       });
       
     } catch (error) {
-      console.log("Error in loading offers:", error);
+      logger.log("Error in loading offers:", error);
       res.status(500).send("Error loading offers");
     }
   };
@@ -141,7 +142,7 @@ const loadOffer = async (req, res) => {
   
       res.redirect("/admin/offerManagement");
     } catch (error) {
-      console.error("Error in creating an offer:", error);
+      logger.error("Error in creating an offer:", error);
       res.status(500).json({ message: 'Error creating offer', error: error.message });
     }
   };
@@ -177,7 +178,7 @@ const loadOffer = async (req, res) => {
   
       res.redirect('/admin/offerManagement'); 
     } catch (error) {
-      console.error("Error updating offer:", error);
+      logger.error("Error updating offer:", error);
       res.status(500).send("Failed to update offer.");
     }
   }
@@ -194,7 +195,7 @@ const loadOffer = async (req, res) => {
   
       res.redirect('/admin/offerManagement'); 
     } catch (error) {
-      console.error("Error in deleting offer:", error);
+      logger.error("Error in deleting offer:", error);
       res.status(500).json({ message: 'Server error' });
     }
   };

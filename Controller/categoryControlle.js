@@ -2,6 +2,7 @@
 const Category = require("../Model/categoryModel")
 
 const HttpStatusCodes = require("../config/httpStatusCode");
+const logger = require("../config/logger");
 
 //admin category coontroller strats
 
@@ -9,11 +10,11 @@ const loadCategory = async (req, res) => {
     try {
   
       const page = parseInt(req.query.page, 10) || 1;
-      const limit = parseInt(req.query.limit, 10) || 7; // Set items per page
+      const limit = parseInt(req.query.limit, 10) || 7;
       const skip = (page - 1) * limit;
   
-      // Fetch total number of categories
-      const totalCategories = await Category.countDocuments(); // Get total number of categories
+  
+      const totalCategories = await Category.countDocuments();
   
   
       const categories = await Category.find({})
@@ -40,7 +41,7 @@ const loadCategory = async (req, res) => {
         nextPage: nextPage
       });
     } catch (error) {
-      console.error("Error loading categories:", error);
+      logger.error("Error loading categories:", error);
       res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("An error occurred while loading categories");
     }
   }
@@ -59,7 +60,7 @@ const loadCategory = async (req, res) => {
       res.render("admin/Category", { category })
   
     } catch (error) {
-      console.error("error in  search category ", error)
+      logger.error("error in  search category ", error)
       res.status(500).json({ message: "An error occurred while searching for category." });
     }
   }
@@ -85,7 +86,7 @@ const loadCategory = async (req, res) => {
       res.redirect('/admin/category');
     } catch (error) {
       res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("Somthing went wrong")
-      console.log(error)
+      logger.log(error)
     }
   }
   
@@ -95,7 +96,7 @@ const loadCategory = async (req, res) => {
       await Category.findByIdAndUpdate(categoryId, { isListed: true });
       res.redirect("/admin/category")
     } catch (error) {
-      console.error("Error listing category:", error);
+      logger.error("Error listing category:", error);
       res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("An error occurred while listing the category");
     }
   }
@@ -106,7 +107,7 @@ const loadCategory = async (req, res) => {
       await Category.findByIdAndUpdate(categoryId, { isListed: false });
       res.redirect("/admin/category")
     } catch (error) {
-      console.error("Error unlisting category:", error);
+      logger.error("Error unlisting category:", error);
       res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("An error occurred while  unlisting the category");
     }
   }
@@ -126,7 +127,7 @@ const loadCategory = async (req, res) => {
       await newCategory.save()
       res.redirect("/admin/category")
     } catch (error) {
-      console.error("Error adding category:", error);
+      logger.error("Error adding category:", error);
       res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).send("An error occurred while adding the category.");
   
     }

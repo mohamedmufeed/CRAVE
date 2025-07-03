@@ -1,6 +1,7 @@
 const Order = require("../Model/orderModel");
 const PDFDocument = require('pdfkit');
 const fs = require("fs");
+const logger = require("../config/logger");
 
 function createInvoice(invoice, res) {
   let doc = new PDFDocument({ size: "A4", margin: 50 });
@@ -220,7 +221,7 @@ orderData.total=newTotal
     res.setHeader("Content-Disposition", `attachment; filename=invoice_${orderId}.pdf`);
     createInvoice(orderData, res);
   } catch (error) {
-    console.log("Error in downloading invoice", error);
+    logger.log("Error in downloading invoice", error);
     res.status(500).send("Internal server error");
   }
 }
