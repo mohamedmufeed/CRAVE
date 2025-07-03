@@ -1,0 +1,86 @@
+/* ===== Order Details Page - Black & White Theme ===== */
+.order-details-page {
+  padding: 2rem;
+  background-color: #fff; /* White background */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #111; /* Dark text */
+}
+
+.order-details-page h2 {
+  font-size: 28px;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #000;
+  padding-bottom: 0.5rem;
+  color: #000;
+}
+
+.order-info {
+  background: #f9f9f9; /* Light gray box */
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.order-info p {
+  margin: 0.4rem 0;
+  font-size: 15px;
+}
+
+.order-info strong {
+  display: inline-block;
+  width: 160px;
+  font-weight: bold;
+  color: #000;
+}
+
+.order-details-page h1,
+.order-details-page h3 {
+  font-size: 22px;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #000;
+}
+
+/* ===== Table Styling ===== */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border: 1px solid #000;
+}
+
+.table th,
+.table td {
+  padding: 12px 16px;
+  border: 1px solid #000;
+  text-align: left;
+  font-size: 15px;
+}
+
+.table thead {
+  background-color: #000;
+  color: #fff;
+}
+
+.table img {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* ===== Back Button ===== */
+.btn.btn-secondary {
+  display: inline-block;
+  margin-top: 2rem;
+  padding: 8px 16px;
+  background-color: #000;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn.btn-secondary:hover {
+  background-color: #333;
+}

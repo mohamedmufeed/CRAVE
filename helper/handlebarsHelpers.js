@@ -42,6 +42,8 @@ module.exports = () => {
     return 'No coupon applied.';
   });
 
+  hbs.registerHelper("multiply", (a,b)=>a*b)
+
   hbs.registerHelper('isAllProductsApplicable', (products, applicableProducts) => {
     return products.length === applicableProducts.length;
   });

@@ -1,11 +1,7 @@
 
 const logger = require("../../config/logger");
 const User = require("../../Model/usermodel")
-
 const Wallet = require("../../Model/walletModel")
-
-
-
 const loadWallet = async (req, res) => {
   const userId = req.session.userId;
 

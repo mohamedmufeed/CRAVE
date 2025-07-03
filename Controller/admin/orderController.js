@@ -138,10 +138,30 @@ const admincancelOrder = async (req, res) => {
   }
 };
 
+const orderDetails=async(req,res)=>{
+ try {
+    const orderId = req.params.orderId;
+    const order = await Order.findById(orderId)
+      .populate('userId')
+      .populate('products.productId')
+      .populate("address");
+
+    if (!order) {
+       res.status(HttpStatusCodes.BAD_REQUEST).json({ message: 'Order not found' })
+       return ;
+    }
+    res.render('admin/orderDetails', { order });
+  } catch (err) {
+    logger.error(err);
+    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
+  }
+  }
+
+
 module.exports={
     admincancelOrder,
     orderStatus,
     serchOrder,
     loadOrder,
-
+orderDetails
 }

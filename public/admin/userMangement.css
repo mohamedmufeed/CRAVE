@@ -168,3 +168,11 @@ table, th, td {
 .higlight{
   background-color: #000;
 }
+
+
+.btn-view{
+  color: white;
+  background: black;
+  padding: 5px;
+  border-radius: 5px;
+}

@@ -46,6 +46,8 @@ router.get("/orderManagement",adminAuth.checkSession,orderController.loadOrder),
 router.get("/orderManagement/search", orderController.serchOrder)
 router.patch("/orderManagement/status/:id",orderController.orderStatus)
 router.post("/orderManagement/cancel/:id",orderController.admincancelOrder)
+router.get('/orderManagement/orderdetails/:orderId', adminAuth.checkSession, orderController.orderDetails);
+
 
 //inventory  managemnt 
 router.get("/inventory", adminAuth.checkSession,inventoryController.loadInventory)

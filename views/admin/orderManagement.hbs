@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="/admin/userMangement.css">
+
 <aside class="sidebar">
   <div class="logo">
     <a class="navbar-brand" href="index.html">CRAV<span style="font-weight:lighter;">E</span></a>
@@ -48,6 +49,7 @@
             <th>Products</th>
             <th>Quantity</th>
             <th>Status</th>
+                  <th></th>
             {{!-- <th>Actions</th> --}}
 
           </tr>
@@ -74,7 +76,7 @@
             {{/each}}
           </td>
       <td>
-        <form action="/admin/orderManagement/status/{{this._id}}?_method=PATCH" method="POST" class="status-form  " id="status-dropdown" >
+        <form action="/admin/orderManagement/status/{{this._id}}?_method=PATCH" method="POST" class="status-form   " id="status-dropdown" >
           <select name="status" class="" required onchange="this.form.submit()" {{#if (or (eq this.status "Delivered")(eq this.status "Cancelled"))}}disabled{{/if}}>
             <option value="Pending" {{#if (eq this.status "Pending")}}selected{{/if}}>Pending</option>
             <option value="Confirmed" {{#if (eq this.status "Confirmed")}}selected{{/if}}>Confirmed</option>
@@ -97,7 +99,10 @@
         </form></td> --}}
 
 
-      
+   
+<td>
+  <a href="/admin/orderManagement/orderdetails/{{this._id}}" class=" btn-view btn btn-sm btn-dark">View Details</a>
+</td>
 
           </tr>
           {{/each}}
@@ -146,5 +151,8 @@
 
 
 </div>
-
 <script src="/js/script.js"></script> 
+
+<script>
+
+</script>
