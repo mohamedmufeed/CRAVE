@@ -46,7 +46,19 @@ const loadCoupon = async (req, res) => {
 
 const editCoupon = async (req, res) => {
   try {
-    const { couponId, code, discountType, discountValue, minimumCartValue, maximumPurchaseLimit, usageLimit, applicableProducts, applicableCategories, expiryDate, description } = req.body
+    const {
+      couponId,
+      code,
+      discountType,
+      discountValue,
+      minimumCartValue,
+      maximumPurchaseLimit,
+      usageLimit,
+      applicableProducts: rawApplicableProducts,
+      applicableCategories: rawApplicableCategories,
+      expiryDate,
+      description
+    } = req.body;
 
     if (!code || !discountType || !discountValue || !expiryDate || !description) {
       return res.status(400).json({ message: 'All fields are required' });
@@ -55,16 +67,37 @@ const editCoupon = async (req, res) => {
     if (!['fixed', 'percentage'].includes(discountType)) {
       return res.status(400).json({ message: 'Invalid discount type' });
     }
+
     if (discountValue <= 0) {
       return res.status(400).json({ message: 'Discount value must be positive' });
     }
 
-    if(discountType==="percentage"&& discountValue>=60){
-      return res.status(400).json({message:"Maximum discount is 60%"})
+    if (discountType === "percentage" && discountValue >= 60) {
+      return res.status(400).json({ message: "Maximum discount is 60%" });
     }
+
     if (isNaN(new Date(expiryDate).getTime())) {
       return res.status(400).json({ message: 'Invalid expiration date' });
     }
+
+    // Handle "all" logic for applicableProducts
+    let applicableProducts = rawApplicableProducts;
+    if (applicableProducts === "all" || (Array.isArray(applicableProducts) && applicableProducts.includes("all"))) {
+      const allProducts = await Products.find({});
+      applicableProducts = allProducts.map(product => product._id);
+    } else if (!Array.isArray(applicableProducts)) {
+      applicableProducts = [applicableProducts];
+    }
+
+    // Handle "all" logic for applicableCategories
+    let applicableCategories = rawApplicableCategories;
+    if (applicableCategories === "all" || (Array.isArray(applicableCategories) && applicableCategories.includes("all"))) {
+      const allCategories = await Category.find({});
+      applicableCategories = allCategories.map(category => category._id);
+    } else if (!Array.isArray(applicableCategories)) {
+      applicableCategories = [applicableCategories];
+    }
+
     await Coupon.findByIdAndUpdate(couponId, {
       code,
       discountType,
@@ -76,14 +109,15 @@ const editCoupon = async (req, res) => {
       applicableCategories,
       expiryDate,
       description
-    })
-    
-    res.redirect("/admin/couponManagement")
+    });
+
+    res.redirect("/admin/couponManagement");
   } catch (error) {
-    logger.error("error in edit coupon", error)
-     return  res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" })
+    logger.error("error in edit coupon", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
-}
+};
+
 
 const createCoupon = async (req, res) => {
   try {
