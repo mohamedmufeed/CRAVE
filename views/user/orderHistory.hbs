@@ -62,11 +62,14 @@
 <!--  cancel order  Modal -->
 <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
+
+        <div class="modal-content">        
+
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to cancel order...?</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to cancel order...?</h1>  
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+<p id="cancel-error-tag" style="padding-left: 30px; padding-top: 20px; display: none; color: red;"></p>
             <div class="modal-body">
                 <textarea id="cancelReasonText" class="form-control" placeholder="Enter the reason for cancellation"
                     rows="4"></textarea>
@@ -92,6 +95,7 @@
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to return order...?</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+<p id="return-error-tag" style="padding-left: 30px; padding-top: 20px; display: none; color: red;"></p>
             <div class="modal-body">
                 <textarea id="returnReasonText" class="form-control" placeholder="Enter the reason for cancellation"
                     rows="4"></textarea>
@@ -176,9 +180,8 @@
                 {{#if (eq this.singleStatus "Delivered")}}
 
                 <button data-bs-toggle="modal" data-bs-target="#returnModal"
-                 onclick="Reason('{{../../_id}}','{{../_id}}')"
-
- type="button" class="btn btn-black btn-sm">Return
+                 onclick="Reason('{{../_id}}','{{_id}}')"
+                type="button" class="btn btn-black btn-sm">Return
                     order</button>
 
                 {{else}}

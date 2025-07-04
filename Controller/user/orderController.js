@@ -454,12 +454,14 @@ const returnorder = async (req, res) => {
   const orderId = req.params.orderId;
   const productId = req.params.productId;
   const reason = req.body.reason;
+  console.log("orderId",orderId)
+  console.log("product id",productId)
+  console.log("reason", reason)
 
   try {
     const order = await Order.findById(orderId).populate("products.productId");
-    if (!order) {
-      req.session.message = "No orders found";
-      return res.redirect("/profile/orders");
+   if (!order) {
+      return res.status(404).json({ success: false, message: "No orders found" });
     }
 
     const product = order.products.find(
@@ -467,13 +469,11 @@ const returnorder = async (req, res) => {
     );
 
     if (!product) {
-      req.session.message = "Product not found in the order";
-      return res.redirect("/profile/orders");
+      return res.status(404).json({ success: false, message: "Product not found in the order" });
     }
 
     if (product.singleStatus !== "Delivered") {
-      req.session.message = "Product is not delivered yet, cannot return";
-      return res.redirect("/profile/orders");
+      return res.status(400).json({ success: false, message: "Product is not delivered yet, cannot return" });
     }
     if (reason) {
       order.reason.returnReason = reason;
