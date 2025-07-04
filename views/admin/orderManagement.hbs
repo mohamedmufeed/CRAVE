@@ -24,12 +24,19 @@
 <div class="main-content">
   <header class="dashboard-header">
     <h1>Order Management</h1>
-      <div>
-  <form class="form-inline my-2 my-lg-0" action="/admin/orderManagement/search" method="GET">
-    <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
- 
-  </form>
-</div>
+  <div>
+      <form class="form-inline my-2 my-lg-0" action="/admin/orderManagement/search" method="GET" id="searchForm">
+        <input
+          class="form-control mr-sm-2"
+          type="search"
+          name="search"
+          id="searchInput"
+          placeholder="Search"
+          aria-label="Search"
+        />
+        <div id="searchLoading" class="loading" style="display: none;">Loading...</div>
+      </form>
+    </div>
   </header>
 
   <!-- User Table Section -->
@@ -54,59 +61,46 @@
 
           </tr>
         </thead>
-        <tbody>
-
-          {{#each orders}}
-          <tr>
-              <td>{{shortId this._id}}</td>
-
-            <td>{{this.userId.username}}</td>
-            <td>{{this.total}}</td>
-     
-          <td>  {{this.address.city}}, {{this.address.state}}, </td>
-         <td>{{formatDate this.createdAt}}</td>
-             <td>
-            {{#each this.products}}
-              <div>{{this.name}}</div>
-            {{/each}}
-          </td>
-          <td>
-            {{#each this.products}}
-              <div>{{this.quantity}}</div>
-            {{/each}}
-          </td>
+        <tbody id="orderTableBody">
+  {{#each orders}}
+    <tr>
+      <td>{{shortId this._id}}</td>
+      <td>{{this.userId.username}}</td>
+      <td>{{this.total}}</td>
+      <td>{{this.address.city}}, {{this.address.state}}</td>
+      <td>{{formatDate this.createdAt}}</td>
       <td>
-        <form action="/admin/orderManagement/status/{{this._id}}?_method=PATCH" method="POST" class="status-form   " id="status-dropdown" >
-          <select name="status" class="" required onchange="this.form.submit()" {{#if (or (eq this.status "Delivered")(eq this.status "Cancelled"))}}disabled{{/if}}>
+        {{#each this.products}}
+          <div>{{this.name}}</div>
+        {{/each}}
+      </td>
+      <td>
+        {{#each this.products}}
+          <div>{{this.quantity}}</div>
+        {{/each}}
+      </td>
+      <td>
+        <form action="/admin/orderManagement/status/{{this._id}}?_method=PATCH" method="POST">
+          <select name="status" onchange="this.form.submit()" {{#if (or (eq this.status "Delivered")(eq this.status "Cancelled"))}}disabled{{/if}}>
             <option value="Pending" {{#if (eq this.status "Pending")}}selected{{/if}}>Pending</option>
             <option value="Confirmed" {{#if (eq this.status "Confirmed")}}selected{{/if}}>Confirmed</option>
             <option value="Shipped" {{#if (eq this.status "Shipped")}}selected{{/if}}>Shipped</option>
             <option value="Delivered" {{#if (eq this.status "Delivered")}}selected{{/if}}>Delivered</option>
-         {{#if (and (eq this.paymentMethod "Razorpay") (eq this.paymentStatus "Failed"))}}
-        <option value="Cancelled" disabled>Cancelled</option>
-      {{else}}
-        <option value="Cancelled" {{#if (eq this.status "Cancelled")}}selected{{/if}}>Cancelled</option>
-      {{/if}}
+            {{#if (and (eq this.paymentMethod "Razorpay") (eq this.paymentStatus "Failed"))}}
+              <option value="Cancelled" disabled>Cancelled</option>
+            {{else}}
+              <option value="Cancelled" {{#if (eq this.status "Cancelled")}}selected{{/if}}>Cancelled</option>
+            {{/if}}
           </select>
         </form>
       </td>
-      {{!-- <td>  <form action="/admin/orderManagement/cancel/{{this._id}}" method="POST" style="display:inline;">
-      {{#if (or (eq this.status "Delivered" )(eq this.status "Cancelled")) }}
-          <button type="submit" class="btn btn-dark" disabled >Cancel Order</button>
-          {{else}}
-  <button type="submit" class="btn btn-dark" >Cancel Order</button>
-          {{/if}}
-        </form></td> --}}
+      <td>
+        <a href="/admin/orderManagement/orderdetails/{{this._id}}" class="btn btn-sm btn-dark">View Details</a>
+      </td>
+    </tr>
+  {{/each}}
+</tbody>
 
-
-   
-<td>
-  <a href="/admin/orderManagement/orderdetails/{{this._id}}" class=" btn-view btn btn-sm btn-dark">View Details</a>
-</td>
-
-          </tr>
-          {{/each}}
-        </tbody>
       </table>
 
     </div>
@@ -154,5 +148,88 @@
 <script src="/js/script.js"></script> 
 
 <script>
+function debounce(func, delay) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => func.apply(this, args), delay);
+  };
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  const searchInput = document.getElementById('searchInput');
+  const orderTableBody = document.getElementById('orderTableBody');
+  const loadingIndicator = document.getElementById('searchLoading');
+
+  if (!searchInput || !orderTableBody || !loadingIndicator) {
+    console.error('Missing elements');
+    return;
+  }
+
+  const debouncedSearch = debounce(async (query) => {
+    loadingIndicator.style.display = 'block';
+    try {
+      const response = await fetch(`/admin/orderManagement/search?search=${encodeURIComponent(query)}`);
+      const data = await response.json();
+
+      updateOrderTable(data.orders);
+    } catch (err) {
+      console.error(err);
+      orderTableBody.innerHTML = `<tr><td colspan="9">Error fetching results</td></tr>`;
+    } finally {
+      loadingIndicator.style.display = 'none';
+    }
+  }, 500);
+
+  searchInput.addEventListener('input', (e) => {
+    debouncedSearch(e.target.value);
+  });
+});
+
+function updateOrderTable(orders) {
+  const tbody = document.getElementById('orderTableBody');
+  tbody.innerHTML = '';
+
+  if (!orders || orders.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9">No orders found</td></tr>`;
+    return;
+  }
+
+  orders.forEach(order => {
+    const products = order.products.map(p => `<div>${p.name}</div>`).join('');
+    const quantities = order.products.map(p => `<div>${p.quantity}</div>`).join('');
+    const disabled = order.status === 'Delivered' || order.status === 'Cancelled';
+
+    const statusOptions = ['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled'].map(status => {
+      const selected = status === order.status ? 'selected' : '';
+      const isCancelled = status === 'Cancelled' && order.paymentMethod === 'Razorpay' && order.paymentStatus === 'Failed';
+      const disabledAttr = isCancelled ? 'disabled' : '';
+      return `<option value="${status}" ${selected} ${disabledAttr}>${status}</option>`;
+    }).join('');
+
+    const row = `
+      <tr>
+        <td>${order.shortId}</td>
+        <td>${order.userId?.username || 'N/A'}</td>
+        <td>${order.total}</td>
+        <td>${order.address?.city || ''}, ${order.address?.state || ''}</td>
+        <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+        <td>${products}</td>
+        <td>${quantities}</td>
+        <td>
+          <form action="/admin/orderManagement/status/${order._id}?_method=PATCH" method="POST">
+            <select name="status" onchange="this.form.submit()" ${disabled ? 'disabled' : ''}>
+              ${statusOptions}
+            </select>
+          </form>
+        </td>
+        <td>
+          <a href="/admin/orderManagement/orderdetails/${order._id}" class="btn btn-sm btn-dark">View Details</a>
+        </td>
+      </tr>
+    `;
+    tbody.insertAdjacentHTML('beforeend', row);
+  });
+}
 
 </script>

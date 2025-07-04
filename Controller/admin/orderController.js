@@ -44,11 +44,9 @@ const loadOrder = async (req, res) => {
 };
 
 const serchOrder = async (req, res) => {
-  const searchItem = req.query.search || "";
-
+  const searchItem = req.query.search?.trim() || "";
   try {
-    const regex = new RegExp(searchItem, "i");
-
+    const regex = new RegExp(searchItem, "i")
     const orders = await Order.aggregate([
       {
         $addFields: {
@@ -67,18 +65,37 @@ const serchOrder = async (req, res) => {
       },
     ]);
     await Order.populate(orders, [
-      { path: "userId" },
+      { path: "userId"  },
       { path: "products.productId" },
+      {path:"address"}
     ]);
 
-    res.render("admin/orderManagement", { orders, searchItem });
+    const modifiedOrders = orders.map(order => ({
+      _id: order._id,
+      shortId: order._id.toString().slice(-6),
+      userId: order.userId,
+      address: order.address,
+      total: order.total,
+      createdAt: order.createdAt,
+      status: order.status,
+      paymentMethod: order.paymentMethod,
+      paymentStatus: order.paymentStatus,
+      products: order.products.map(p => ({
+        name: p.productId?.name || 'N/A',
+        quantity: p.quantity
+      }))
+    }));
+
+    return res.json({ orders: modifiedOrders });
   } catch (error) {
     logger.error("Error in search orders:", error);
-    res
-      .status(500)
-      .json({ message: "An error occurred while searching for orders." });
+    return res.status(500).json({
+      message: "An error occurred while searching for orders.",
+    });
   }
 };
+
+
 
 const orderStatus = async (req, res) => {
   const orderId = req.params.id;
