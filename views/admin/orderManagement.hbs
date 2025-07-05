@@ -64,7 +64,7 @@
         <tbody id="orderTableBody">
   {{#each orders}}
     <tr>
-      <td>{{shortId this._id}}</td>
+      <td>#{{shortId this._id}}</td>
       <td>{{this.userId.username}}</td>
       <td>{{this.total}}</td>
       <td>{{this.address.city}}, {{this.address.state}}</td>
