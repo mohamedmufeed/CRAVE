@@ -72,5 +72,9 @@ module.exports = () => {
   return obj.$oid;
 });
 
+hbs.registerHelper('disableIncrease', function(quantity, stock) {
+  return quantity >= 10 || quantity >= stock;
+});
+
 
 };

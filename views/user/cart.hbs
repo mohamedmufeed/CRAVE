@@ -17,10 +17,10 @@
 
 		<div class="collapse navbar-collapse" id="navbarsFurni">
 			<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-				<li >
+				<li>
 					<a class="nav-link" href="/">Home</a>
 				</li>
-				<li ><a class="nav-link" href="/products">Shop</a></li>
+				<li><a class="nav-link" href="/products">Shop</a></li>
 				<li><a class="nav-link" href="/aboutus">About us</a></li>
 				<li><a class="nav-link" href="/services">Services</a></li>
 				<li><a class="nav-link" href="/blog">Blog</a></li>
@@ -67,55 +67,41 @@
 </div>
 <!-- End Hero Section -->
 {{#if message}}
-<div class="toast align-items-center text-bg-danger border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true">
-  <div class="d-flex">
-    <div class="toast-body">
-      {{message}}
-    </div>
-    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-  </div>
+<div id="error-toast" class="toast align-items-center text-bg-danger border-0 position-fixed top-0 end-0 m-3" role="alert"
+	aria-live="assertive" aria-atomic="true">
+	<div class="d-flex">
+		<div class="toast-body">
+			{{message}}
+		</div>
+		<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+			aria-label="Close"></button>
+	</div>
 </div>
 {{/if}}
 <!-- Toast for Confirmation -->
 
 
 
-<div
-  id="confirmation-toast"
-  class="toast position-fixed top-0 start-50 translate-middle-x p-3 border rounded shadow-sm bg-light"
-  role="alert"
-  aria-live="assertive"
-  aria-atomic="true"
-  style="z-index: 1055; display: none; width: 350px;"
->
-  <div class="toast-header bg-black text-white">
-    <strong class="me-auto">Confirmation</strong>
-    <button
-      type="button"
-      class="btn-close btn-close-white"
-      data-bs-dismiss="toast"
-      aria-label="Close"
-    ></button>
-  </div>
-  <div class="toast-body text-center">
-    <p class="mb-3">
-      Are you sure you want to remove this product from your cart?
-    </p>
-    <div class="d-flex justify-content-center gap-2">
-      <button
-        id="confirm-remove"
-        class="btn btn-danger btn-sm px-3"
-      >
-        Remove
-      </button>
-      <button
-        class="btn btn-secondary btn-sm px-3"
-        data-bs-dismiss="toast"
-      >
-        Cancel
-      </button>
-    </div>
-  </div>
+<div id="confirmation-toast"
+	class="toast position-fixed top-0 start-50 translate-middle-x p-3 border rounded shadow-sm bg-light" role="alert"
+	aria-live="assertive" aria-atomic="true" style="z-index: 1055; display: none; width: 350px;">
+	<div class="toast-header bg-black text-white">
+		<strong class="me-auto">Confirmation</strong>
+		<button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+	</div>
+	<div class="toast-body text-center">
+		<p class="mb-3">
+			Are you sure you want to remove this product from your cart?
+		</p>
+		<div class="d-flex justify-content-center gap-2">
+			<button id="confirm-remove" class="btn btn-danger btn-sm px-3">
+				Remove
+			</button>
+			<button class="btn btn-secondary btn-sm px-3" data-bs-dismiss="toast">
+				Cancel
+			</button>
+		</div>
+	</div>
 </div>
 
 
@@ -123,7 +109,7 @@
 
 <div class="untree_co-section before-footer-section">
 	<div class="container">
-		    {{#if products.length}}
+		{{#if products.length}}
 		<div class="row mb-5">
 			<form class="col-md-12" method="post">
 				<div class="site-blocks-table">
@@ -146,8 +132,9 @@
 								</td>
 								<td class="product-name">
 									<h2 class="h5 text-black">{{this.name}}</h2>
+
 								</td>
-								<td  id="">₹{{this.price}}</td>
+								<td id="">₹{{this.price}}</td>
 								<td>
 									<div class="input-group mb-3 d-flex align-items-center quantity-container"
 										style="max-width: 120px;">
@@ -156,31 +143,34 @@
 												onclick="updateCartQuantity('decrease', '{{this.productId._id}}')">&minus;</button>
 										</div>
 										<input type="text" id="quantity-{{this.productId._id}}"
-											class="form-control text-center quantity-amount" min="1" value="{{this.quantity}}"
-											placeholder="" aria-label="Example text with button addon"
+											class="form-control text-center quantity-amount" min="1"
+											value="{{this.quantity}}" placeholder=""
+											aria-label="Example text with button addon"
 											aria-describedby="button-addon1">
-											{{#if (greaterThanOrEqual this.quantity 10)}}
 										<div class="input-group-append">
 											<button class="btn btn-outline-black increase" type="button"
-												onclick="updateCartQuantity('increase', '{{this.productId._id}}')" disabled>&plus;</button>
-										</div>
-										{{else}}
-                                       <div class="input-group-append">
-											<button class="btn btn-outline-black increase" type="button"
-												onclick="updateCartQuantity('increase', '{{this.productId._id}}')">&plus;</button>
+  onclick="updateCartQuantity('increase', '{{productId._id}}')"
+  data-stock="{{stock}}"
+  data-quantity="{{quantity}}">
+  &plus;
+</button>
+
+
 										</div>
 
-										{{/if}}
 									</div>
 
 								</td>
-								<td id="product-total-{{this.productId._id}}">₹{{ formatCurrency (multiply  this.quantity this.price)}}</td>
+								<td id="product-total-{{this.productId._id}}">₹{{ formatCurrency (multiply this.quantity
+									this.price)}}</td>
 			</form>
 
 			<td>
-				<form id="remove-form-{{this.productId._id}}" action="/cart/remove/{{this.productId._id}}?_method=DELETE" method="post">
+				<form id="remove-form-{{this.productId._id}}"
+					action="/cart/remove/{{this.productId._id}}?_method=DELETE" method="post">
 
-					<button type="button" class="btn btn-black btn-sm" onclick="confirmremove('{{this.productId._id}}')">X</button>
+					<button type="button" class="btn btn-black btn-sm"
+						onclick="confirmremove('{{this.productId._id}}')">X</button>
 				</form>
 			</td>
 
@@ -195,18 +185,21 @@
 
 	<div class="row">
 		<div class="col-md-6">
-			
+
 			<div class="row">
 				<div class="col-md-12">
 					<label class="text-black h4" for="coupon">Coupon</label>
 					<p>Enter your coupon code if you have one.</p>
 				</div>
 				<div class="col-md-8 mb-3 mb-md-0">
-					<input type="text" class="form-control py-3" id="coupon" placeholder="Coupon Code" value="{{this.couponCode}}">
+					<input type="text" class="form-control py-3" id="coupon" placeholder="Coupon Code"
+						value="{{this.couponCode}}">
 				</div>
 				<div class="col-md-4">
-					<button id="apply-coupon-button" class="btn btn-black btn-lg py-3 btn-block" style=" font-size: small;">Apply Coupon</button>
-					<button id="remove-coupon-button" class="btn btn-black btn-lg py-3 btn-block me-auto " style=" font-size: small; display: none; ">Remove Coupon</button>
+					<button id="apply-coupon-button" class="btn btn-black btn-lg py-3 btn-block"
+						style=" font-size: small;">Apply Coupon</button>
+					<button id="remove-coupon-button" class="btn btn-black btn-lg py-3 btn-block me-auto "
+						style=" font-size: small; display: none; ">Remove Coupon</button>
 				</div>
 			</div>
 		</div>
@@ -227,7 +220,8 @@
 							<span class="text-black">Total</span>
 						</div>
 						<div class="col-md-6 text-right">
-							<strong class="text-black " id="cart-total">₹{{ formatCurrency this.totalCartPrice}}</strong>
+							<strong class="text-black " id="cart-total">₹{{ formatCurrency
+								this.totalCartPrice}}</strong>
 						</div>
 					</div>
 
@@ -292,17 +286,17 @@
 			{{/each}}
 		</div>
 	</div>
+</div>
+{{else}}
+<!-- Empty Cart Message -->
+<div class="row">
+	<div class="col-md-12 text-center">
+		<h3 class="text-black">Your cart is empty</h3>
+		<p>Start shopping now and add items to your cart!</p>
+		<a href="/products" class="btn btn-black btn-lg">Go to Shop</a>
 	</div>
-	{{else}}
-      <!-- Empty Cart Message -->
-      <div class="row">
-        <div class="col-md-12 text-center">
-          <h3 class="text-black">Your cart is empty</h3>
-          <p>Start shopping now and add items to your cart!</p>
-          <a href="/products" class="btn btn-black btn-lg">Go to Shop</a>
-        </div>
-      </div>
-    {{/if}}
+</div>
+{{/if}}
 </div>
 </div>
 

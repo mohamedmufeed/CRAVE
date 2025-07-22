@@ -62,7 +62,6 @@ const loadCart = async (req, res) => {
 
 
       const applicableCoupons = coupon.filter(coupon => coupon.minimumCartValue <= totalCartPrice);
-
       return res.render("user/cart", {
         products: validProducts,
         totalCartPrice,
@@ -118,17 +117,16 @@ const addCart = async (req, res) => {
       } else {
         const product = await Products.findById(productId)
         const newPrice = product.discountPrice > 0 ? product.discountPrice : product.price;
-        cart.products.push({ productId, quantity: qty, price: newPrice, name: product.name, images: product.images, subTotal: product.price })
+        cart.products.push({ productId, quantity: qty, price: newPrice, name: product.name, images: product.images, subTotal: product.price ,  stock: product.stock })
       }
       await cart.save()
     } else {
 
       const product = await Products.findById(productId);
-
       const newPrice = product.discountPrice > 0 ? product.discountPrice : product.price;
       cart = new Cart({
         userId,
-        products: [{ productId, quantity: qty, price: newPrice, name: product.name, images: product.images, subTotal: product.price }]
+        products: [{ productId, quantity: qty, price: newPrice, name: product.name, images: product.images, subTotal: product.price,  stock: product.stock  }]
       })
       await cart.save()
       req.session.cartCount = cart.products.length;
@@ -157,59 +155,62 @@ const updateCart = async (req, res) => {
   }
 
   const { productId, quantity } = req.body;
+  const parsedQuantity = Number(quantity);
 
-  if (quantity < 1 || quantity > 10) {
-    return res.status(400).json({error:"Invalid Quantity"});
+  if (parsedQuantity < 1 || parsedQuantity > 10) {
+    return res.status(400).json({ error: "Invalid Quantity" });
   }
 
   try {
+    const productDetails = await Products.findOne({ _id: productId }, { price: 1, stock: 1 });
+    if (!productDetails) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    if (parsedQuantity > productDetails.stock) {
+      console.log(`Only ${productDetails.stock} items in stock` )
+      return res.status(400).json({ error: `Only ${productDetails.stock} items in stock` });
+    }
+
     let cart = await Cart.findOne({ userId });
-    if (cart) {
-      const productIndex = cart.products.findIndex(p => p.productId.equals(productId));
-
-      const productDetails = await Products.findOne({ _id: productId }, { price: 1 });
-
-      let productTotal = 0; 
-      let cartTotal = 0;    
-      if (productIndex > -1) {
-        const productPrice = productDetails.price;
-
-        const parsedQuantity = Number(quantity);
-        cart.products[productIndex].quantity = parsedQuantity;
-
-        productTotal = productPrice * parsedQuantity;
-
-        for (let i = 0; i < cart.products.length; i++) {
-          const cartProduct = cart.products[i];
-          const cartProductDetails = await Products.findById(cartProduct.productId);
-          cartTotal += cartProductDetails.price * cartProduct.quantity;
-        }
-      } else {
-        return res.status(404).json({ error: "Product not found in cart" });
-      }
-
-      await cart.save();
-
-      req.session.cartCount = cart.products.length;
-
-      const data = {
-        cartProducts: cart.products,
-        productTotal: productTotal,
-        cartTotal: cartTotal,
-        quantity:quantity
-      };
-
-      
-      return res.json({ success: true, data });
-
-    } else {
+    if (!cart) {
       return res.status(404).json({ error: "Cart not found for user" });
     }
+
+    const productIndex = cart.products.findIndex(p => p.productId.equals(productId));
+    if (productIndex === -1) {
+      return res.status(404).json({ error: "Product not found in cart" });
+    }
+
+    cart.products[productIndex].quantity = parsedQuantity;
+    await cart.save();
+
+    let cartTotal = 0;
+    for (const item of cart.products) {
+      const p = await Products.findById(item.productId);
+      cartTotal += p.price * item.quantity;
+    }
+
+    const productTotal = productDetails.price * parsedQuantity;
+
+    req.session.cartCount = cart.products.length;
+
+    return res.json({
+      success: true,
+      data: {
+        cartProducts: cart.products,
+        productTotal,
+        cartTotal,
+        quantity: parsedQuantity,
+        stock: productDetails.stock
+      }
+    });
   } catch (error) {
-    logger.error("Error in updating cart:", error);
+    console.error("Error updating cart:", error);
     return res.status(500).json({ error: "Error updating cart" });
   }
 };
+
 
 
 

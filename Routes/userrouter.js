@@ -113,7 +113,6 @@ router.post("/forgotpassword-verify-otp",userController.validateforgotOtp)
 router.get("/resetPassword",userController.loadresetPassword)
 router.post("/reset-password",userController.resetPassword)
 
-
 // invoice
 router.get("/invoice/download/:id",invoiceController.invoiceDownload)
 

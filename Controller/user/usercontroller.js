@@ -294,6 +294,7 @@ const login = async (req, res) => {
   } catch (error) {
     logger.error("Login error:", error);
     req.session.message = "An error occurred. Please try again.";
+     return res.status(500).json({ redirectUrl: "/login" });
     return res.redirect("/login");
   }
 };
@@ -330,6 +331,7 @@ async function sendVerificationfEmailvald(email, otp) {
     return false
   }
 }
+
 
 
 const loadForgotPassword = async (req, res) => {
