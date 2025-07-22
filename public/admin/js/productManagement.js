@@ -114,7 +114,7 @@ document.getElementById('cropButton').addEventListener('click', function () {
   }
 });
 
-//  Add Product Form Submission
+
 document.getElementById('addProductForm').addEventListener('submit', async function (e) {
   e.preventDefault();
 
@@ -123,9 +123,7 @@ document.getElementById('addProductForm').addEventListener('submit', async funct
 
 
   submitBtn.disabled = true;
-//  submitBtn.textContent = 'Adding...';
   loadingIndicator.style.display = 'block';
-
   const formData = new FormData(this);
 
   
@@ -163,15 +161,18 @@ document.getElementById('addProductForm').addEventListener('submit', async funct
 });
 
 // Edit Product Modal Functions
-function openEditProductModal(id, name, description, price, material, stock, category, images) {
+function openEditProductModal(id, name, description, price, material, stock, categoryId, images) {
   document.getElementById('editProductName').value = name;
   document.getElementById('editProductDescription').value = description;
   document.getElementById('editProductPrice').value = price;
   document.getElementById('editProductMaterial').value = material;
   document.getElementById('editProductStock').value = stock;
-  document.getElementById('editProductCategory').value = category;
+  // document.getElementById('editProductCategory').value = category;
   document.getElementById('productId').value = id;
-
+    const categorySelect = document.getElementById("editProductCategory");
+  if (categorySelect) {
+    categorySelect.value = categoryId;
+  }
   const existingImagesContainer = document.getElementById('existing-images');
   existingImagesContainer.innerHTML = '';
 
@@ -191,6 +192,7 @@ function openEditProductModal(id, name, description, price, material, stock, cat
     imgElement.style.objectFit = 'cover';
 
     const changeBtn = document.createElement('button');
+    changeBtn.type = 'button';
     changeBtn.textContent = 'Change Image';
     changeBtn.style.marginTop = '5px';
     changeBtn.style.display = 'block';
@@ -204,7 +206,6 @@ function openEditProductModal(id, name, description, price, material, stock, cat
     fileInput.dataset.index = index;
 
     fileInput.addEventListener('change', (event) => {
-      event.preventDefault();
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -279,9 +280,7 @@ function submitEditProductForm(e) {
     return;
   }
 
-  for (let [key, value] of formData.entries()) {
-    console.log(`${key}:`, value);
-  }
+ 
 
   const id = document.getElementById('productId').value;
   fetch(`/admin/product/edit/${id}`, {
@@ -437,6 +436,8 @@ function updateProductTable(products) {
     tbody.appendChild(row);
   });
 }
+
+
 
 // update pagination
 function updatePagination(pagination) {

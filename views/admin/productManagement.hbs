@@ -77,7 +77,7 @@
 
             <td class="action-buttons">
               <button class="btn"
-                onclick="openEditProductModal('{{this._id}}','{{this.name}}','{{this.description}}','{{this.price}}','{{this.material}}','{{this.stock}}','{{this.category.name}}',[{{#each this.images}}'{{this}}'{{#unless @last}},{{/unless}}{{/each}}])">Edit</button>
+                onclick="openEditProductModal('{{this._id}}','{{this.name}}','{{this.description}}','{{this.price}}','{{this.material}}','{{this.stock}}','{{this.category._id}}',[{{#each this.images}}'{{this}}'{{#unless @last}},{{/unless}}{{/each}}])">Edit</button>
 
               {{#if this.isListed}}
               <form action="/admin/productManagement/unlist/{{this._id}}?_method=PATCH" method="POST">
@@ -178,8 +178,7 @@
       <label for="productCategory">Category:</label>
       <select id="editProductCategory" name="category" required>
         {{#each categories}}
-   <option value="{{this._id}}" {{#if (eq this.name ../selectedCategory)}}selected{{/if}}>{{this.name}}</option>
-
+   <option value="{{this._id}}" {{#if (eq this.name this.category.name)}}selected{{/if}}>{{this.name}}</option>
         {{/each}}
       </select>
 
