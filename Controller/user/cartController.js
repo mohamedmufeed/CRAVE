@@ -164,7 +164,7 @@ const updateCart = async (req, res) => {
   }
 
   try {
-    const productDetails = await Products.findOne({ _id: productId }, { price: 1, stock: 1 });
+    const productDetails = await Products.findOne({ _id: productId }, { price: 1, stock: 1 , discountPrice:1 });
     if (!productDetails) {
       return res.status(404).json({ error: "Product not found" });
     }
@@ -190,11 +190,11 @@ const updateCart = async (req, res) => {
     let cartTotal = 0;
     for (const item of cart.products) {
       const p = await Products.findById(item.productId);
-      cartTotal += p.price * item.quantity;
+      const finalPrice= p.discountPrice ? p.discountPrice :p.price
+      cartTotal += finalPrice * item.quantity;
     }
-
-    const productTotal = productDetails.price * parsedQuantity;
-
+const finalPrice= productDetails.discountPrice ? productDetails.discountPrice :productDetails.price
+    const productTotal = finalPrice * parsedQuantity;
     req.session.cartCount = cart.products.length;
 
     return res.json({
