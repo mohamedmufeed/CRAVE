@@ -107,8 +107,6 @@
 			</h1>
 
 
-
-
 			<div class="star">
 				<span class="fa fa-star checked"></span>
 				<span class="fa fa-star checked"></span>
@@ -119,14 +117,18 @@
 
 
 
-			<div class="product-price">
-				{{#if product.discountPrice}}
-				<span>₹{{product.discountPrice}} </span>
-				<del> <span style="color: rgba(73, 73, 73, 0.804); font-size: 17px;"> ₹{{product.price}}</span> </del>
-				{{else}}
-				<span>₹{{product.price}}</span>
-				{{/if}}
-			</div>
+<div class="product-price">
+  {{#if discountLabel}}
+    <span>₹{{discountPrice}}</span>
+    <del>
+      <span style="color: rgba(73, 73, 73, 0.804); font-size: 17px;">₹{{product.price}}</span>
+    </del>
+  {{else}}
+    <span>₹{{product.price}}</span>
+  {{/if}}
+</div>
+
+
 
 			<span class="stock">
 				{{#if product.stock}}

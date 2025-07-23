@@ -53,57 +53,75 @@ const loadProducts = async (req, res) => {
 const productDetails = async (req, res) => {
   try {
     const productId = req.params.id;
-    // find products
-    const product = await Products.findOne({ _id: productId }).populate(
-      "offersApplied"
-    );
-    //filter offer
-    const activeOffers = Array.isArray(product.offersApplied)
-      ? product.offersApplied.filter((offer) => offer.isActive)
-      : [];
 
-    //find related products
+    const product = await Products.findOne({ _id: productId }).populate("offersApplied");
+
+    const currentDate = new Date();
+
+
+    const activeOffers = Array.isArray(product.offersApplied)
+      ? product.offersApplied.filter(
+          (offer) =>
+            offer.isActive &&
+            offer.expirationDate &&
+            new Date(offer.expirationDate) > currentDate
+        )
+      : [];
+const getDiscountAmount = (offer, price) => {
+  if (offer.discountType === 'percentage') {
+    return (offer.discountValue / 100) * price;
+  } else {
+    return offer.discountValue;
+  }
+};
+
+const bestOffer = activeOffers.reduce((maxOffer, currentOffer) => {
+  const currentDiscount = getDiscountAmount(currentOffer, product.price);
+  const currentFinalPrice = product.price - currentDiscount;
+  if (currentFinalPrice <= 0) return maxOffer;
+
+  if (!maxOffer) return currentOffer;
+
+  const maxDiscount = getDiscountAmount(maxOffer, product.price);
+  const maxFinalPrice = product.price - maxDiscount;
+  return currentDiscount > maxDiscount ? currentOffer : maxOffer;
+}, null);
+
+
+let discountPrice = product.price;
+let discountLabel = "";
+
+if (bestOffer) {
+  const discountAmount = getDiscountAmount(bestOffer, product.price);
+  discountPrice = Math.floor(product.price - discountAmount) 
+
+  discountLabel =
+    bestOffer.discountType === "percentage"
+      ? `${bestOffer.discountValue}% off`
+      : `₹${bestOffer.discountValue} off`;
+}
+
     const relatedProducts = await Products.find({
       material: product.material,
       _id: { $ne: productId },
     });
-    // cart count
-    const cartCount = req.session.cartCount;
-    //wishlist
-    let flag = false;
+
+    
     const user = await User.findOne({ _id: req.session.userId });
-    if (user) {
-      if (user.wishList && user.wishList.includes(productId)) {
-        flag = true;
-      }
-    } else {
-      flag = false;
-    }
+    const flag = user?.wishList?.includes(productId) || false;
 
-    const firstOffer = activeOffers[0];
-    const hasDiscount =
-      firstOffer &&
-      product.discountPrice &&
-      product.discountPrice < product.price;
-
-    const discountLabel = hasDiscount
-      ? firstOffer.discountType === "percentage" && firstOffer.discountValue
-        ? ` ${firstOffer.discountValue}% off`
-        : firstOffer.discountValue
-        ? `₹${firstOffer.discountValue} off`
-        : ""
-      : "";
+    const cartCount = req.session.cartCount;
 
     res.render("user/single", {
       product,
-      discountPrice: product.discountPrice || product.price,
+      discountPrice,
       relatedProducts,
       cartCount,
       flag,
       discountLabel,
     });
   } catch (error) {
-    res.status(HttpStatusCodes.NOT_FOUND).render("404");
+    res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).render("404");
     logger.error("Product not found", error);
   }
 };
@@ -216,13 +234,6 @@ const userserchProducts = async (req, res) => {
   }
 };
 
-//user product details ends
-
-// admin products  details
-
-
-
-//admin product details ends
 module.exports = {
   loadProducts,
   productDetails,

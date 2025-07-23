@@ -8,14 +8,14 @@
   <nav class="menu">
     <ul>
       <li><a href="/admin/dashboard">Dashboard</a></li>
-    <li><a href="/admin/productManagement">Products</a></li>
-        <li><a href="/admin/orderManagement">Orders</a></li>
-        <li><a href="/admin/couponManagement">Coupon</a></li>
-        <li><a href="/admin/inventory">Inventory</a></li>
-        <li class="higlight"><a href="/admin/offerManagement">Offers</a></li>
-    <li><a href="/admin/userManagement"> User Management</a></li>
+      <li><a href="/admin/productManagement">Products</a></li>
+      <li><a href="/admin/orderManagement">Orders</a></li>
+      <li><a href="/admin/couponManagement">Coupon</a></li>
+      <li><a href="/admin/inventory">Inventory</a></li>
+      <li class="higlight"><a href="/admin/offerManagement">Offers</a></li>
+      <li><a href="/admin/userManagement"> User Management</a></li>
       <li><a href="/admin/category"> Category</a></li>
-         <li><a href="/admin/salesReport"> Sales Report</a></li>
+      <li><a href="/admin/salesReport"> Sales Report</a></li>
 
     </ul>
   </nav>
@@ -93,12 +93,13 @@
             </td>
             <td>
               <div style="display: flex; gap: 20px;">
-            <button class="btn btn-dark" onclick="openEditOfferModal('{{this.id}}', '{{this.discountType}}', '{{this.discountValue}}', '{{this.description}}', '{{this.expirationDate}}', '{{this.isActive}}', {{json this.applicableProducts}}, {{json this.applicableCategories}})">Edit</button>
+                <button class="btn btn-dark"
+                  onclick="openEditOfferModal('{{this.id}}', '{{this.discountType}}', '{{this.discountValue}}', '{{this.description}}', '{{this.expirationDate}}', '{{this.isActive}}', {{json this.applicableProducts}}, {{json this.applicableCategories}})">Edit</button>
 
 
-<form action="/admin/offerManagement/delete/{{this.id}}" method="post">
-                <button  type="submit" class="btn btn-dark">Delete</button>
-</form>
+                <form action="/admin/offerManagement/delete/{{this.id}}" method="post">
+                  <button type="submit" class="btn btn-dark">Delete</button>
+                </form>
 
               </div>
             </td>
@@ -110,14 +111,14 @@
     </div>
 
   </section>
-{{else}}
-<div class="no-results ">
-        <div class="icon">🔍</div>
-        <div class="message">No results found</div>
-        <div class="sub-message">Try adjusting your search to find what you're looking for.</div>
-    </div>
+  {{else}}
+  <div class="no-results ">
+    <div class="icon">🔍</div>
+    <div class="message">No results found</div>
+    <div class="sub-message">Try adjusting your search to find what you're looking for.</div>
+  </div>
 
-{{/if}}
+  {{/if}}
   {{!-- pagination --}}
 
   <nav aria-label="Page navigation">
@@ -158,16 +159,18 @@
     <form id="CreateOfferForm" method="POST" action="/admin/offerManagement/create">
 
       <label for="discountType">Discount Type:</label>
+      <div id="discountTypeError" class="error-message" style="color: red;"></div>
       <select id="discountType" name="discountType" required>
         <option value="fixed">Fixed</option>
         <option value="percentage">Percentage</option>
       </select>
 
       <label for="discountValue">Discount Value:</label>
-      <input type="number" id="discountValue" name="discountValue"  min="0" />
-<div id="discountValueError" style="color: red;"></div>
+      <div id="discountValueError" class="error-message" style="color: red;"></div>
+      <input type="number" id="discountValue" name="discountValue" min="0" />
+
       <label for="applicableProducts">Applicable Products:</label>
-      <select id="applicableProducts" name="applicableProducts" class="select-group" multiple >
+      <select id="applicableProducts" name="applicableProducts" class="select-group" multiple>
         <option value="all">All Products</option>
         {{#each product}}
         <option value="{{this._id}}">{{this.name}}</option>
@@ -182,6 +185,7 @@
         {{/each}}
       </select>
       <label for="expirationDate">Expiration Date:</label>
+      <div id="expirationDateError" class="error-message" style="color: red;"></div>
       <input type="date" id="expirationDate" name="expirationDate" required style="padding: 8px; font-size: 16px;" />
 
       <div style="display: flex;margin-top: 10px;">
@@ -194,6 +198,7 @@
 
 
       <label for="description">Description:</label>
+      <div id="descriptionError" class="error-message" style="color: red;"></div>
       <textarea id="description" name="description" required placeholder="Describe the offer..."
         style="padding: 8px; font-size: 16px;"></textarea>
 
@@ -204,7 +209,7 @@
 
 {{!-- end craete Offer modal --}}
 
-{{!-- strat edit  offer modal --}}
+{{!-- strat edit offer modal --}}
 
 <div class="modal" id="editOfferModal" style="display:none;">
   <div class="modal-content">
@@ -214,19 +219,21 @@
       <input type="hidden" id="offerId" name="offerId" />
 
       <label for="editDiscountType">Discount Type:</label>
+      <div id="editDiscountTypeError" class="error-message" style="color: red;"></div>
       <select id="editDiscountType" name="discountType" required>
         <option value="fixed">Fixed</option>
         <option value="percentage">Percentage</option>
       </select>
 
       <label for="editDiscountValue">Discount Value:</label>
+      <div id="editDiscountValueError" class="error-message" style="color: red;"></div>
       <input type="number" id="editDiscountValue" name="discountValue" required min="0" />
       <div id="editDiscountValueError" style="color: red;"></div>
 
       <label for="editApplicableProducts">Applicable Products:</label>
       <select id="editApplicableProducts" name="applicableProducts" class="select-group" multiple required>
         <option value="all">All Products</option>
-      {{#each product}}
+        {{#each product}}
         <option value="{{this._id}}">{{this.name}}</option>
         {{/each}}
       </select>
@@ -234,13 +241,16 @@
       <label for="editApplicableCategories">Applicable Categories:</label>
       <select id="editApplicableCategories" name="applicableCategories" class="select-group" multiple required>
         <option value="all">All Categories</option>
-       {{#each category}}
+        {{#each category}}
         <option value="{{this._id}}">{{this.name}}</option>
         {{/each}}
       </select>
 
       <label for="editExpirationDate">Expiration Date:</label>
-      <input type="date" id="editExpirationDate" name="expirationDate" required style="padding: 8px; font-size: 16px;" />
+      <div id="editExpirationDateError" class="error-message" style="color: red;"></div>
+
+      <input type="date" id="editExpirationDate" name="expirationDate" required
+        style="padding: 8px; font-size: 16px;" />
 
       <div style="display: flex;margin-top: 10px;">
         <label for="editIsActive">Active:</label>
@@ -251,6 +261,7 @@
       </div>
 
       <label for="editDescription">Description:</label>
+      <div id="editDescriptionError" class="error-message" style="color: red;"></div>
       <textarea id="editDescription" name="description" required placeholder="Describe the offer..."
         style="padding: 8px; font-size: 16px;"></textarea>
 
@@ -261,11 +272,9 @@
 
 {{!-- end edit editOfferModal --}}
 
-
-<script src="/js/script.js"></script> <!-- Link to your JavaScript file -->
 <script>
 
-//------------add offer modal starts-------------
+  //------------add offer modal starts-------------
 
 
   function openCreateOfferModal() {
@@ -277,120 +286,190 @@
   }
 
 
-document.getElementById("createOfferModal").addEventListener("submit",async (event)=>{
-let isValid=true
-  const data={}
-  const formData=new FormData(event.target)
-  formData.forEach((value,key)=>{
-    data[key]=value
+  document.getElementById("createOfferModal").addEventListener("submit", async (event) => {
+    event.preventDefault()
+    const from = event.target
+    const submitBtn = from.querySelector('button[type="submit"]')
+    submitBtn.disabled = true
+    const errorFields = [
+      "discountType", "discountValue", "expirationDate", "description"
+    ]
+    errorFields.forEach(field => {
+      const el = document.getElementById(`${field}Error`);
+      if (el) el.innerText = '';
+    });
+    const formData = new FormData(from)
+    const data = {}
+    for (const [key, value] of formData.entries()) {
+      if (data[key]) {
+        if (Array.isArray(data[key])) {
+          data[key].push(value);
+        } else {
+          data[key] = [data[key], value];
+        }
+      } else {
+        data[key] = value;
+      }
+    }
+
+
+    try {
+      const response = await fetch(from.action, {
+        method: from.method,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        if (data.errors) {
+          for (const [field, msg] of Object.entries(data.errors)) {
+            const el = document.getElementById(`${field}Error`);
+            if (el) el.innerText = msg;
+          }
+        } else if (data.message) {
+          alert(data.message);
+        }
+      } else {
+        closeCreateOfferModal();
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error('Error submitting create offer:', err);
+      alert('An error occurred. Please try again.');
+    } finally {
+      submitBtn.disabled = false;
+    }
   })
-const{discountValue,discountType}=data
 
-document.getElementById("discountValueError").innerText=""
-const discount=Number(discountValue)
-if(discount <0){
-  document.getElementById("discountValueError").innerText="Discount values must should be postive number"
-  isValid=false
 
-}
-if(discountType === "percentage"&& discount>30){
-    document.getElementById("discountValueError").innerText="Discount values must should be less  than 30"
-   isValid=false
+  const today = new Date();
 
-}
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day}`;
 
-if(isValid=false){
-  event.preventDefault()
-}
-})
-  
-
-    const today = new Date();
-
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0'); 
-    const day = String(today.getDate()).padStart(2, '0');
-    const formattedDate = `${year}-${month}-${day}`;
-
-    const expiryDateField = document.getElementById('expirationDate');
-    const editExpiryDateFiled=document.getElementById("editExpirationDate")
-    expiryDateField.min = formattedDate;
-    editExpiryDateFiled.min=formattedDate
-
- 
-
-// ---------------add modal ends---------------
+  const expiryDateField = document.getElementById('expirationDate');
+  const editExpiryDateFiled = document.getElementById("editExpirationDate")
+  expiryDateField.min = formattedDate;
+  editExpiryDateFiled.min = formattedDate
 
 
 
-//---------------edit modal-------------\
+  // ---------------add modal ends---------------
 
- 
- function openEditOfferModal(id, discountType, discountValue, description, expirationDate, isActive, applicableProducts, applicableCategories) {
-  document.getElementById("offerId").value = id;
-  document.getElementById("editDiscountType").value = discountType;
-  document.getElementById("editDiscountValue").value = discountValue;
-  document.getElementById("editDescription").value = description;
-  document.getElementById("editExpirationDate").value = expirationDate;
 
-  document.getElementById("editIsActive").checked = isActive;
 
-  const productsSelect = document.getElementById("editApplicableProducts");
-  productsSelect.innerHTML = '<option value="all">All Products</option>';
-  applicableProducts.forEach(product => {
-    const option = document.createElement("option");
-    option.value = product._id;
-    option.text = product.name;
-    option.selected = true;
-    productsSelect.appendChild(option);
-  });
+  //---------------edit modal-------------\
 
-  const categoriesSelect = document.getElementById("editApplicableCategories");
-  categoriesSelect.innerHTML = '<option value="all">All Categories</option>';
-  applicableCategories.forEach(category => {
-    const option = document.createElement("option");
-    option.value = category._id;
-    option.text = category.name;
-    option.selected = true;
-    categoriesSelect.appendChild(option);
-  });
 
-  document.getElementById("editOfferModal").style.display = "block";
-}
+  function openEditOfferModal(id, discountType, discountValue, description, expirationDate, isActive, applicableProducts, applicableCategories) {
+    document.getElementById("offerId").value = id;
+    document.getElementById("editDiscountType").value = discountType;
+    document.getElementById("editDiscountValue").value = discountValue;
+    document.getElementById("editDescription").value = description;
 
-function closeEditOfferModal() {
-  document.getElementById("editOfferModal").style.display = "none";
-}
- 
- document.getElementById("editOfferModal").addEventListener("submit",async (event)=>{
-let isValid=true
-  const data={}
-  const formData=new FormData(event.target)
-  formData.forEach((value,key)=>{
-    data[key]=value
+
+    const date = new Date(expirationDate)
+    const formatedDate = date.toISOString().split("T")[0]
+    document.getElementById("editExpirationDate").value = formatedDate;
+
+    document.getElementById("editIsActive").checked = isActive;
+
+    const productsSelect = document.getElementById("editApplicableProducts");
+    productsSelect.innerHTML = '<option value="all">All Products</option>';
+    applicableProducts.forEach(product => {
+      const option = document.createElement("option");
+      option.value = product._id;
+      option.text = product.name;
+      option.selected = true;
+      productsSelect.appendChild(option);
+    });
+
+    const categoriesSelect = document.getElementById("editApplicableCategories");
+    categoriesSelect.innerHTML = '<option value="all">All Categories</option>';
+    applicableCategories.forEach(category => {
+      const option = document.createElement("option");
+      option.value = category._id;
+      option.text = category.name;
+      option.selected = true;
+      categoriesSelect.appendChild(option);
+    });
+
+    document.getElementById("editOfferModal").style.display = "block";
+  }
+
+  function closeEditOfferModal() {
+    document.getElementById("editOfferModal").style.display = "none";
+  }
+
+  document.getElementById("editOfferModal").addEventListener("submit", async (e) => {
+    event.preventDefault()
+
+    const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+
+    const errorFields = [
+      "editDiscountType", "editDiscountValue", "editExpirationDate", "editDescription"
+    ]
+    errorFields.forEach(field => {
+      const el = document.getElementById(`${field}Error`);
+      if (el) el.innerText = '';
+    });
+
+    const formData = new FormData(form)
+    const jsonData = {}
+    for (const [key, value] of formData.entries()) {
+      if (jsonData[key]) {
+        if (Array.isArray(jsonData[key])) {
+          jsonData[key].push(value);
+        } else {
+          jsonData[key] = [jsonData[key], value];
+        }
+      } else {
+        jsonData[key] = value;
+      }
+    }
+    try {
+      const response = await fetch(form.action, {
+        method: form.method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonData),
+      });
+
+      if (!response.ok) {
+        const data = await response.json()
+
+        if (data.errors) {
+          for (const [field, msg] of Object.entries(data.errors)) {
+            const el = document.getElementById(`${field}Error`);
+            if (el) el.innerText = msg;
+          }
+        } else if (data.message) {
+          alert(data.message);
+        }
+      } else {
+        closeEditOfferModal()
+        window.location.reload();
+      }
+
+    } catch (err) {
+      console.error('Error submitting edit offer:', err);
+      alert('An error occurred. Please try again.');
+    } finally {
+      submitBtn.disabled = false;
+    }
+
   })
-const{discountValue,discountType}=data
-document.getElementById("editDiscountValueError").innerText=""
-const discount=Number(discountValue)
-if(discount <0){
-  document.getElementById("editDiscountValueError").innerText="Discount values must should be postive number"
-  isValid=false
 
-}
-if(discountType === "percentage"&& discount>30){
-   document.getElementById("editDiscountValueError").innerText="Discount values must should be less  than 30"
 
-   isValid=false
 
-}
 
-if(isValid=false){
-  event.preventDefault()
-}
-})
 
- 
-
- 
-  
 </script>

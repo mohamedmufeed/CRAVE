@@ -82,9 +82,7 @@ const editCoupon = async (req, res) => {
       errors.discountType = "Invalid discount type";
     }
 
-    if (!['fixed', 'percentage'].includes(discountType)) {
-      return res.status(400).json({ message: 'Invalid discount type' });
-    }
+   
 
      if (!discountValue || isNaN(discountValue) || discountValue <= 0) {
       errors.discountValue = "Discount must be a positive number";

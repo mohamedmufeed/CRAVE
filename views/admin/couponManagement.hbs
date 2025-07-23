@@ -338,10 +338,18 @@
       if (el) el.innerText = '';
     });
     const formData = new FormData(form);
-    const jsonData = {};
-    formData.forEach((value, key) => {
-      jsonData[key] = value;
-    });
+    const jsonData={}
+    for (const [key, value] of formData.entries()) {
+      if (jsonData[key]) {
+        if (Array.isArray(jsonData[key])) {
+          jsonData[key].push(value);
+        } else {
+          jsonData[key] = [jsonData[key], value];
+        }
+      } else {
+        jsonData[key] = value;
+      }
+    }
     try {
       const response = await fetch(form.action, {
         method: form.method,
