@@ -36,7 +36,7 @@
   </header>
   <button class="add-btn" onclick="openCreateCouponModal()">Create Coupon</button>
   <!-- User Table Section -->
-      {{#if coupons}}
+  {{#if coupons}}
   <section class="user-table">
 
     <h2>All Coupon</h2>
@@ -92,8 +92,7 @@
             </td>
             <td>
               <div style="display: flex; gap: 20px;">
-             <button class="btn btn-dark" 
-        onclick="openEditCouponModal('{{this._id}}', 
+                <button class="btn btn-dark" onclick="openEditCouponModal('{{this._id}}', 
                                      '{{this.code}}', 
                                      '{{this.discountType}}', 
                                      '{{this.discountValue}}', 
@@ -104,8 +103,8 @@
                                      {{json this.applicableCategories}}, 
                                      '{{this.expiryDate}}', 
                                      '{{this.description}}')">
-    Edit 
-</button>
+                  Edit
+                </button>
 
 
                 <form action="/admin/couponManagement/delete/{{this.id}}?_method=DELETE" method="post">
@@ -123,13 +122,13 @@
   </section>
   {{else}}
 
-<div class="no-results ">
-        <div class="icon">🔍</div>
-        <div class="message">No results found</div>
-        <div class="sub-message">Try adjusting your search to find what you're looking for.</div>
-    </div>
+  <div class="no-results ">
+    <div class="icon">🔍</div>
+    <div class="message">No results found</div>
+    <div class="sub-message">Try adjusting your search to find what you're looking for.</div>
+  </div>
 
-    {{/if}}
+  {{/if}}
   {{!-- pagination --}}
 
   <nav aria-label="Page navigation">
@@ -170,24 +169,29 @@
     <form id="CreateCouponForm" method="POST" action="/admin/couponManagement/create">
 
       <label for="code">Coupon Code:</label>
+      <div id="couponCodeError" class="error-message" style="color: red;"></div>
       <input type="text" id="code" name="code" required placeholder="Enter coupon code" />
 
       <label for="discountType">Discount Type:</label>
+      <div id="discountTypeError" class="error-message" style="color: red;"></div>
       <select id="discountType" name="discountType" required>
         <option value="fixed">Fixed</option>
         <option value="percentage">Percentage</option>
       </select>
 
       <label for="discountValue">Discount Value:</label>
+      <div id="discountValueError" class="error-message" style="color: red;"></div>
       <input type="number" id="discountValue" name="discountValue" required min="0"
         placeholder="Enter discount value" />
 
       <label for="minimumCartValue">Minimum Cart Value:</label>
+      <div id="minimumCartValueError" class="error-message" style="color: red;"></div>
       <input type="number" id="minimumCartValue" name="minimumCartValue" min="0"
         placeholder="Enter minimum cart value" />
 
 
       <label for="maximumPurchhaseLimit">Mximum Purchase Limit:</label>
+      <div id="maximumPurchhaseLimitError" class="error-message" style="color: red;"></div>
       <input type="number" id="maximumPurchhaseLimit" name="maximumPurchaseLimit" min="0"
         placeholder="Enter maximum purchase  Limit" />
 
@@ -211,6 +215,7 @@
       </select>
 
       <label for="expiryDate">Expiration Date:</label>
+      <div id="expiryDateError" class="error-message" style="color: red;"></div>
       <input type="date" id="expiryDate" name="expiryDate" required />
 
       <label for="description">Description:</label>
@@ -235,18 +240,21 @@
       <input type="hidden" id="couponId" name="couponId" />
 
       <label for="code">Coupon Code:</label>
+      <div id="editCodeError" class="error-message" style="color: red;"></div>
       <input type="text" id="editCode" name="code" required placeholder="Enter coupon code" />
 
       <label for="discountType">Discount Type:</label>
+      <div id="editDiscountTypeError" class="error-message" style="color: red;"></div>
       <select id="editDiscountType" name="discountType" required>
         <option value="fixed">Fixed</option>
         <option value="percentage">Percentage</option>
       </select>
 
       <label for="discountValue">Discount Value:</label>
+      <div id="editDiscountValueError" class="error-message" style="color: red;"></div>
       <input type="number" id="editDiscountValue" name="discountValue" required min="0"
         placeholder="Enter discount value" />
-        <div id="discountError" style="color: red;"></div>
+      <div id="discountError" style="color: red;"></div>
 
       <label for="minimumCartValue">Minimum Cart Value:</label>
       <input type="number" id="editMinimumCartValue" name="minimumCartValue" min="0"
@@ -276,6 +284,7 @@
       </select>
 
       <label for="editExpiryDate">Expiration Date:</label>
+      <div id="editExpiryDateError" class="error-message" style="color: red;"></div>
       <input type="date" id="editExpiryDate" name="expiryDate" required />
 
       <label for="editDescription">Description:</label>
@@ -288,9 +297,6 @@
 {{!-- End Edit Coupon Modal --}}
 
 
-
-
-<script src="/js/script.js"></script> <!-- Link to your JavaScript file -->
 <script>
 
   //------------add offer modal starts-------------
@@ -304,45 +310,71 @@
     document.getElementById("createCouponModal").style.display = "none"
   }
 
-    const today = new Date();
+  const today = new Date();
 
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0'); 
-    const day = String(today.getDate()).padStart(2, '0');
-    const formattedDate = `${year}-${month}-${day}`;
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day}`;
 
-    const expiryDateField = document.getElementById('expiryDate');
-    const editExpiryDateFiled=document.getElementById("editExpiryDate")
-    expiryDateField.min = formattedDate;
-    editExpiryDateFiled.min=formattedDate
+  const expiryDateField = document.getElementById('expiryDate');
+  const editExpiryDateFiled = document.getElementById("editExpiryDate")
+  expiryDateField.min = formattedDate;
+  editExpiryDateFiled.min = formattedDate
 
- document.getElementById("createCouponModal").addEventListener("submit",async (event)=>{
-let isValid=true
-  const data={}
-  const formData=new FormData(event.target)
-  formData.forEach((value,key)=>{
-    data[key]=value
-  })
-const{discountValue,discountType}=data
-const discount=Number(discountValue)
-document.getElementById("discountError").innerText=""
+  document.getElementById('CreateCouponForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-if(discount <0){
-  alert()
-  document.getElementById("discountError").innerText="Discount values must should be postive number"
-  isValid=false
+    const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
 
-}
-if(discountType === "percentage"&& discount>30){
-document.getElementById("discountError").innerText="Discount values must should be less  than "
-   isValid=false
+    const errorFields = [
+      'couponCode', 'discountType', 'discountValue', 'minimumCartValue',
+      'maximumPurchhaseLimit', 'expiryDate', 'description'
+    ];
+    errorFields.forEach(field => {
+      const el = document.getElementById(`${field}Error`);
+      if (el) el.innerText = '';
+    });
+    const formData = new FormData(form);
+    const jsonData = {};
+    formData.forEach((value, key) => {
+      jsonData[key] = value;
+    });
+    try {
+      const response = await fetch(form.action, {
+        method: form.method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonData),
+      });
 
-}
+      if (!response.ok) {
+        const data = await response.json();
 
-if(isValid=false){
-  event.preventDefault()
-}
-})
+        if (data.errors) {
+          for (const [field, msg] of Object.entries(data.errors)) {
+            const el = document.getElementById(`${field}Error`);
+            if (el) el.innerText = msg;
+          }
+        } else if (data.message) {
+          alert(data.message);
+        }
+      } else {
+        closeCreateCouponModal();
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error('Error submitting create coupon:', err);
+      alert('An error occurred. Please try again.');
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+
+
 
 
   // ---------------add modal ends---------------
@@ -359,8 +391,11 @@ if(isValid=false){
     document.getElementById("editMinimumCartValue").value = minimumCartValue;
     document.getElementById("editMaximumPurchaseLimit").value = maximumPurchaseLimit;
     document.getElementById("editUsageLimit").value = usageLimit;
-    document.getElementById("editExpiryDate").value = expiryDate;
     document.getElementById("editDescription").value = description;
+    document.getElementById("editExpiryDate").value = expiryDate;
+    const date = new Date(expiryDate)
+    const formatedDate = date.toISOString().split("T")[0]
+    document.getElementById("editExpiryDate").value = formatedDate;
 
     const productsSelect = document.getElementById("editApplicableProducts");
     productsSelect.innerHTML = '<option value="all">All Products</option>';
@@ -384,6 +419,75 @@ if(isValid=false){
 
     document.getElementById("editCouponModal").style.display = "block";
   }
+
+  document.getElementById('EditCouponForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+const errorKeyMap = {
+  code: 'editCode',
+  discountType: 'editDiscountType',
+  discountValue: 'editDiscountValue',
+  minimumCartValue: 'editMinimumCartValue',
+  maximumPurchaseLimit: 'editMaximumPurchaseLimit',
+  expiryDate: 'editExpiryDate',
+  description: 'editDescription'
+};
+
+    Object.values(errorKeyMap).forEach(fieldId => {
+    const el = document.getElementById(`${fieldId}Error`);
+    if (el) el.innerText = '';
+  });
+
+    const formData = new FormData(form);
+    const jsonData = {};
+
+    for (const [key, value] of formData.entries()) {
+      if (jsonData[key]) {
+        if (Array.isArray(jsonData[key])) {
+          jsonData[key].push(value);
+        } else {
+          jsonData[key] = [jsonData[key], value];
+        }
+      } else {
+        jsonData[key] = value;
+      }
+    }
+
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonData),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        if (data.errors) {
+          for (const [field, msg] of Object.entries(data.errors)) {
+    const domKey = errorKeyMap[field] || field;
+    const el = document.getElementById(`${domKey}Error`);
+    if (el) el.innerText = msg;
+  }
+        } else if (data.message) {
+          alert(data.message);
+        }
+      } else {
+        closeEditCouponModal();
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error('Error submitting edit coupon:', err);
+      alert('An error occurred. Please try again.');
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+
 
   function closeEditCouponModal() {
     document.getElementById("editCouponModal").style.display = "none";

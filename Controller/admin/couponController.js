@@ -60,27 +60,53 @@ const editCoupon = async (req, res) => {
       description
     } = req.body;
 
-    if (!code || !discountType || !discountValue || !expiryDate || !description) {
-      return res.status(400).json({ message: 'All fields are required' });
+    console.log(
+       couponId,
+      code,
+      discountType,
+      discountValue,
+      minimumCartValue,
+      maximumPurchaseLimit,
+      usageLimit,
+  rawApplicableProducts,
+     rawApplicableCategories,
+      expiryDate,
+      description
+    )
+
+       const errors = {};
+
+    if (!code) errors.couponCode = "Coupon code is required";
+
+   if (!discountType || !['fixed', 'percentage'].includes(discountType)) {
+      errors.discountType = "Invalid discount type";
     }
 
     if (!['fixed', 'percentage'].includes(discountType)) {
       return res.status(400).json({ message: 'Invalid discount type' });
     }
 
-    if (discountValue <= 0) {
-      return res.status(400).json({ message: 'Discount value must be positive' });
+     if (!discountValue || isNaN(discountValue) || discountValue <= 0) {
+      errors.discountValue = "Discount must be a positive number";
+    } else {
+      if (discountType === "fixed" && discountValue > 10000) {
+        errors.discountValue = "Maximum fixed discount is ₹10,000";
+      }
+      if (discountType === "percentage" && discountValue >= 60) {
+        errors.discountValue = "Maximum percentage discount is 60%";
+      }
     }
 
-    if (discountType === "percentage" && discountValue >= 60) {
-      return res.status(400).json({ message: "Maximum discount is 60%" });
+     if (!expiryDate || isNaN(new Date(expiryDate).getTime())) {
+      errors.expiryDate = "Invalid expiration date";
     }
 
-    if (isNaN(new Date(expiryDate).getTime())) {
-      return res.status(400).json({ message: 'Invalid expiration date' });
+    if (!description) errors.description = "Description is required";
+
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).json({ errors });
     }
 
-    // Handle "all" logic for applicableProducts
     let applicableProducts = rawApplicableProducts;
     if (applicableProducts === "all" || (Array.isArray(applicableProducts) && applicableProducts.includes("all"))) {
       const allProducts = await Products.find({});
@@ -89,7 +115,6 @@ const editCoupon = async (req, res) => {
       applicableProducts = [applicableProducts];
     }
 
-    // Handle "all" logic for applicableCategories
     let applicableCategories = rawApplicableCategories;
     if (applicableCategories === "all" || (Array.isArray(applicableCategories) && applicableCategories.includes("all"))) {
       const allCategories = await Category.find({});
@@ -111,7 +136,7 @@ const editCoupon = async (req, res) => {
       description
     });
 
-    res.redirect("/admin/couponManagement");
+     return res.status(200).json({ success: true });
   } catch (error) {
     logger.error("error in edit coupon", error);
     return res.status(500).json({ message: "Internal server error" });
@@ -121,13 +146,42 @@ const editCoupon = async (req, res) => {
 
 const createCoupon = async (req, res) => {
   try {
-
-    const { code, discountType, discountValue, minimumCartValue, maximumPurchaseLimit, usageLimit, expiryDate, description } = req.body
-
-
+    const {
+    code, discountType, discountValue, minimumCartValue, maximumPurchaseLimit, usageLimit, expiryDate, description
+    } = req.body;
     let applicableProducts = req.body.applicableProducts;
     let applicableCategories = req.body.applicableCategories;
 
+    const errors = {};
+
+    if (!code) errors.couponCode = "Coupon code is required";
+
+    if (!discountType || !['fixed', 'percentage'].includes(discountType)) {
+      errors.discountType = "Invalid discount type";
+    }
+
+    if (!discountValue || isNaN(discountValue) || discountValue <= 0) {
+      errors.discountValue = "Discount must be a positive number";
+    } else {
+      if (discountType === "fixed" && discountValue > 10000) {
+        errors.discountValue = "Maximum fixed discount is ₹10,000";
+      }
+      if (discountType === "percentage" && discountValue >= 60) {
+        errors.discountValue = "Maximum percentage discount is 60%";
+      }
+    }
+
+    if (!expiryDate || isNaN(new Date(expiryDate).getTime())) {
+      errors.expiryDate = "Invalid expiration date";
+    }
+
+    if (!description) errors.description = "Description is required";
+
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).json({ errors });
+    }
+
+    // Normalize product/category arrays
     if (applicableProducts === "all" || (Array.isArray(applicableProducts) && applicableProducts.includes("all"))) {
       const allProducts = await Products.find({});
       applicableProducts = allProducts.map(product => product._id);
@@ -136,31 +190,10 @@ const createCoupon = async (req, res) => {
     }
 
     if (applicableCategories === "all" || (Array.isArray(applicableCategories) && applicableCategories.includes("all"))) {
-      const allCategories = await Category.find({}).populate("");
+      const allCategories = await Category.find({});
       applicableCategories = allCategories.map(category => category._id);
     } else if (!Array.isArray(applicableCategories)) {
       applicableCategories = [applicableCategories];
-    }
-
-    if (!code || !discountType || !discountValue || !expiryDate || !description) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
-
-    if (!['fixed', 'percentage'].includes(discountType)) {
-      return res.status(400).json({ message: 'Invalid discount type' });
-    }
-    if (discountValue <= 0) {
-      return res.status(400).json({ message: 'Discount value must be positive' });
-    }
-    if(discountType === "fixed" && discountValue >10000){
-      return res.status(400).json({message:"Maximum discount amount is 10000"})
-    }
-
-    if(discountType==="percentage"&& discountValue>=60){
-      return res.status(400).json({message:"Maximum discount is 60%"})
-    }
-    if (isNaN(new Date(expiryDate).getTime())) {
-      return res.status(400).json({ message: 'Invalid expiration date' });
     }
 
     const coupon = new Coupon({
@@ -173,16 +206,18 @@ const createCoupon = async (req, res) => {
       description,
       applicableProducts,
       applicableCategories,
-      maximumPurchaseLimit
-    })
+      maximumPurchaseLimit,
+    });
 
-    await coupon.save()
- 
-    res.redirect("/admin/couponManagement")
+    await coupon.save();
+    return res.status(200).json({ success: true });
+
   } catch (error) {
-    logger.error("error in creating coupon ", error)
+    console.error("Error creating coupon:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
-}
+};
+
 
 const deleteCoupon = async (req, res) => {
 
