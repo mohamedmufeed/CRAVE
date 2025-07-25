@@ -76,5 +76,7 @@ hbs.registerHelper('disableIncrease', function(quantity, stock) {
   return quantity >= 10 || quantity >= stock;
 });
 
+hbs.registerHelper('ne', (a,b)=>a!=b)
+
 
 };

@@ -149,33 +149,39 @@
 	<div style="display: flex; gap: 10px; align-items: center;">
 	<div class="item-price">₹{{this.price}}</div>
 
-	{{!-- Show Return button only if delivered --}}
-	{{#if (eq this.singleStatus "Delivered")}}
-		<button class="btn"
-			style="background-color: #000000; color: white; padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer;"
-			data-bs-toggle="modal" data-bs-target="#returnModal"
-			onclick="Reason('{{../order._id}}','{{_id}}')">
-			Return Product
-		</button>
-	{{else}}
-		{{!-- Show Cancel button only if not Cancelled or Returned --}}
-		{{#unless (or (eq this.singleStatus "Cancelled") (eq this.singleStatus "Returned"))}}
-			<button class="btn"
-				style="background-color: #000000; color: white; padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer;"
-				data-bs-toggle="modal" data-bs-target="#cancelModal"
-				onclick="Reason('{{../order._id}}','{{_id}}')">
-				Cancel Product
-			</button>
-		{{/unless}}
-	{{/if}}
+
+{{#if (eq ../order.paymentStatus "Failed")}}
+  <span style="color: red; font-weight: bold;">Payment Failed</span>
+
+{{else}}
+  {{#if (and (eq this.singleStatus "Delivered") (eq ../order.paymentStatus "Paid"))}}
+    <button class="btn"
+      style="background-color: #000000; color: white; padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer;"
+      data-bs-toggle="modal" data-bs-target="#returnModal"
+      onclick="Reason('{{../order._id}}','{{_id}}')">
+      Return Product
+    </button>
+  {{else if (and 
+                (not (or (eq this.singleStatus "Cancelled") (eq this.singleStatus "Returned")))
+                (or (eq this.singleStatus "Pending") (eq this.singleStatus "Delivered"))
+            )}}
+    <button class="btn"
+      style="background-color: #000000; color: white; padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer;"
+      data-bs-toggle="modal" data-bs-target="#cancelModal"
+      onclick="Reason('{{../order._id}}','{{_id}}')">
+      Cancel Product
+    </button>
+  {{/if}}
+
+{{/if}}
+
+
+
 </div>
 
 </div>
 {{/each}}
-
 	</div>
-
-
 	<div class="">
 		{{#if couponDetails.code}}
 		<div class="">
