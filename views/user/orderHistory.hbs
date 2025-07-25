@@ -59,57 +59,7 @@
 
 
 
-<!--  cancel order  Modal -->
-<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
 
-        <div class="modal-content">        
-
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to cancel order...?</h1>  
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-<p id="cancel-error-tag" style="padding-left: 30px; padding-top: 20px; display: none; color: red;"></p>
-            <div class="modal-body">
-                <textarea id="cancelReasonText" class="form-control" placeholder="Enter the reason for cancellation"
-                    rows="4"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary" onclick="submitCancelReason()">Submit</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{!-- cancel order modal ends --}}
-
-
-
-{{!-- return order modal starts --}}
-
-<div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to return order...?</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-<p id="return-error-tag" style="padding-left: 30px; padding-top: 20px; display: none; color: red;"></p>
-            <div class="modal-body">
-                <textarea id="returnReasonText" class="form-control" placeholder="Enter the reason for cancellation"
-                    rows="4"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary" onclick="submitReturnReason()">Submit</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-{{!-- return order modal ends --}}
 
 <!-- Start Hero Section -->
 <div class="hero">
@@ -139,113 +89,78 @@
 
 
                                 <th scope="col" class="product-thumbnail">Image</th>
-                                <th scope="col" class="product-name">Product</th>
+                                <th scope="col" class="product-name">Date</th>
                                 <th scope="col" class="product-price">Price</th>
-                                <th scope="col" class="product-quantity">Quantity</th>
 
                                 <th scope="col" class="order-status">Status</th> <!-- Added Order Status -->
+                                <th scope="col" class="order-status">Payment Status</th> <!-- Added Order Status -->
                                 <th scope="col" class="order-action">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 {{#each orders}}
-                                {{#each this.products}}
-
-
-
+                            <tr>
                                 <td class="product-thumbnail">
-                                    <img src="{{this.productId.images.[0]}}" alt="Image" class="img-fluid">
+                               <img src="{{this.products.[0].productId.images.[0]}}" alt="Image" class="img-fluid">
+
                                 </td>
-                                <td class="product-name">
-                                    <h2 class="h5 text-black">{{this.name}}</h2>
-                                </td>
-                                <td>₹{{this.price}}</td>
+                                {{!-- <td>#{{shortId this._id}}</td> --}}
+                                <td>{{formatDate this.createdAt}}</td>
+                                <td>₹{{this.total}}</td>
+                                <td><strong>{{this.status}}</strong></td>
+                                <td><strong>{{this.paymentStatus}}</strong></td>
+                                <td>
+                                    <a href="/profile/orders/orderdetails/{{this._id}}"
+                                        class="btn btn-black btn-sm">View</a>
 
-                                <div class="input-group mb-3 d-flex align-items-center quantity-container"
-                                    style="max-width: 120px;">
-
-                                    <td>{{this.quantity}}</td>
-
-                                </div>
-            </form>
-            <td><strong>{{this.singleStatus}}</strong></td>
-
-
-            <td>
-                <button class="btn">
-                    <a style="text-decoration: none;" href='/profile/orders/orderdetails/{{../_id}}'>View details</a>
-                </button>
-
-                {{#if (eq this.singleStatus "Delivered")}}
-
-                <button data-bs-toggle="modal" data-bs-target="#returnModal"
-                 onclick="Reason('{{../_id}}','{{_id}}')"
-                type="button" class="btn btn-black btn-sm">Return
-                    order</button>
-
-                {{else}}
-                {{#ifRazorpayFailed ../paymentMethod ../paymentStatus}}
-
+                                    {{#if (or (eq this.paymentStatus "Failed") (eq this.paymentStatus "Pending"))}}
+                                 
                 <button id="retryPaymentBtn" type="button" class=" retryPaymentBtn btn btn-black btn-sm"
-                    data-order-id="{{../../_id}}">Retry
+                    data-order-id="{{this._id}}">Retry
                     Payment</button>
+                                    {{/if}}
+                                </td>
+                            </tr>
+                            {{/each}}
 
+                        </tbody>
+                    </table>
+                    <div class="pagination-container">
+                        <ul class="pagination justify-content-center mt-4">
+                            {{#if (gt currentPage 1)}}
+                            <li class="page-item ">
+                                <a class="page-link" href="?page={{subtract currentPage 1}}">Previous</a>
+                            </li>
+                            {{/if}}
+
+                            {{#each (range 1 totalPages)}}
+                            <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+                                <a class="page-link" href="?page={{this}}">{{this}}</a>
+                            </li>
+                            {{/each}}
+
+                            {{#if (lt currentPage totalPages)}}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{add currentPage 1}}">Next</a>
+                            </li>
+                            {{/if}}
+                        </ul>
+                    </div>
+                </div>
                 {{else}}
-                {{#if ( or (eq this.singleStatus "Cancelled")(eq this.singleStatus "Returned"))}}
 
-                {{else}}
-                <button data-bs-toggle="modal" data-bs-target="#cancelModal"
-                 onclick="Reason('{{../../_id}}','{{../_id}}')"
-
- type="button" class="btn btn-black btn-sm">Cancel
-                    Order</button>
- 
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <h3 class="text-black">Your Dont have orders !</h3>
+                        <p>Start shopping now and Make orders!</p>
+                        <a href="/products" class="btn btn-black btn-lg">Go to Shop</a>
+                    </div>
+                </div>
                 {{/if}}
-                {{/ifRazorpayFailed}}
-                {{/if}}
-            </td>
 
-            </tr>
-            {{/each}}
-            {{/each}}
-            </tbody>
-            </table>
-            <div class="pagination-container">
-                <ul class="pagination justify-content-center mt-4">
-                    {{#if (gt currentPage 1)}}
-                    <li class="page-item ">
-                        <a class="page-link" href="?page={{subtract currentPage 1}}">Previous</a>
-                    </li>
-                    {{/if}}
-
-                    {{#each (range 1 totalPages)}}
-                    <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
-                        <a class="page-link" href="?page={{this}}">{{this}}</a>
-                    </li>
-                    {{/each}}
-
-                    {{#if (lt currentPage totalPages)}}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{add currentPage 1}}">Next</a>
-                    </li>
-                    {{/if}}
-                </ul>
-            </div>
         </div>
-        {{else}}
-
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h3 class="text-black">Your Dont have orders !</h3>
-                <p>Start shopping now and Make orders!</p>
-                <a href="/products" class="btn btn-black btn-lg">Go to Shop</a>
-            </div>
-        </div>
-        {{/if}}
-
     </div>
-</div>
 </div>
 
 

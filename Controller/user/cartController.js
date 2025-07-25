@@ -116,6 +116,7 @@ const addCart = async (req, res) => {
 
       } else {
         const product = await Products.findById(productId)
+        console.log("The value",product)
         const newPrice = product.discountPrice > 0 ? product.discountPrice : product.price;
         console.log("the prodcut pro",newPrice)
         cart.products.push({ productId, quantity: qty, price: newPrice, name: product.name, images: product.images, subTotal: product.price ,  stock: product.stock })
@@ -124,6 +125,7 @@ const addCart = async (req, res) => {
     } else {
 
       const product = await Products.findById(productId);
+        console.log("The value",product)
       const newPrice = product.discountPrice > 0 ? product.discountPrice : product.price;
         console.log("the prodcut pro",newPrice)
       cart = new Cart({

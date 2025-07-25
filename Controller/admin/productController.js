@@ -122,6 +122,7 @@ const addProducts = async (req, res) => {
             }
           }
         );
+        
 
         streamifier.createReadStream(file.buffer).pipe(uploadResult);
       });

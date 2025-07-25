@@ -356,6 +356,7 @@ const orderHistory = async (req, res) => {
 
     const message = req.session.message;
     req.session.message = null;
+  
     return res.render("user/orderHistory", {
       orders,
       currentPage: page,
@@ -431,7 +432,7 @@ const cancelOrder = async (req, res) => {
         userId,
         amount: refundAmount,
         transactionType: "Credit",
-        description: `Refund for cancelled product in order`,
+        description: `Refund for cancelled product: ${product.productId.name}`,
       });
       await walletTransaction.save();
 
@@ -454,9 +455,6 @@ const returnorder = async (req, res) => {
   const orderId = req.params.orderId;
   const productId = req.params.productId;
   const reason = req.body.reason;
-  console.log("orderId",orderId)
-  console.log("product id",productId)
-  console.log("reason", reason)
 
   try {
     const order = await Order.findById(orderId).populate("products.productId");

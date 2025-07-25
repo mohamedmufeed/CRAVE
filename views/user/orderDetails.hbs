@@ -67,6 +67,59 @@
 
 
 
+<!--  cancel order  Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to cancel order...?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <p id="cancel-error-tag" style="padding-left: 30px; padding-top: 20px; display: none; color: red;"></p>
+            <div class="modal-body">
+                <textarea id="cancelReasonText" class="form-control" placeholder="Enter the reason for cancellation"
+                    rows="4"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" onclick="submitCancelReason()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- cancel order modal ends --}}
+
+
+
+{{!-- return order modal starts --}}
+
+<div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure you want to return order...?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <p id="return-error-tag" style="padding-left: 30px; padding-top: 20px; display: none; color: red;"></p>
+            <div class="modal-body">
+                <textarea id="returnReasonText" class="form-control" placeholder="Enter the reason for cancellation"
+                    rows="4"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" onclick="submitReturnReason()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{!-- return order modal ends --}}
+
+
 
 
 <div class="order-container ms-auto me-auto mt-5 mb-5">
@@ -85,15 +138,41 @@
 	<div class="order-items">
 		<h2 class="product-thumbnail">Items in Your Order</h2>
 		{{#each order.products}}
-		<div class="item">
-			<img src="{{this.productId.images.[0]}}" alt="Product Image" class="img-fluid">
-			<div class="item-details">
-				<h3>{{this.name}}</h3>
-				<p>Quantity: {{this.quantity}}</p>
-			</div>
-			<div class="item-price">₹{{this.price}}</div>
-		</div>
-		{{/each}}
+<div class="item">
+	<img src="{{this.productId.images.[0]}}" alt="Product Image" class="img-fluid">
+	<div class="item-details">
+		<h3>{{this.name}}</h3>
+		<p>Product Status: {{this.singleStatus}}</p>
+		<p>Quantity: {{this.quantity}}</p>
+	</div>
+
+	<div style="display: flex; gap: 10px; align-items: center;">
+	<div class="item-price">₹{{this.price}}</div>
+
+	{{!-- Show Return button only if delivered --}}
+	{{#if (eq this.singleStatus "Delivered")}}
+		<button class="btn"
+			style="background-color: #000000; color: white; padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer;"
+			data-bs-toggle="modal" data-bs-target="#returnModal"
+			onclick="Reason('{{../order._id}}','{{_id}}')">
+			Return Product
+		</button>
+	{{else}}
+		{{!-- Show Cancel button only if not Cancelled or Returned --}}
+		{{#unless (or (eq this.singleStatus "Cancelled") (eq this.singleStatus "Returned"))}}
+			<button class="btn"
+				style="background-color: #000000; color: white; padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer;"
+				data-bs-toggle="modal" data-bs-target="#cancelModal"
+				onclick="Reason('{{../order._id}}','{{_id}}')">
+				Cancel Product
+			</button>
+		{{/unless}}
+	{{/if}}
+</div>
+
+</div>
+{{/each}}
+
 	</div>
 
 
@@ -141,17 +220,17 @@
 		<h2>Order Status</h2>
 		<p> Delivery Status: {{order.status}}</p>
 		<p>Payment Status: {{order.paymentStatus}}</p>
-		<p>Estimated delivery: {{formatDate deliveryDate}}</p> 
+		<p>Estimated delivery: {{formatDate deliveryDate}}</p>
 	</div>
 	{{#if (eq order.status "Cancelled")}}
 	<button class="btn" disabled>
-		<a style="color: #000000; text-decoration: none;" href="/invoice/download/{{order._id}}" >Invoice Dowload</a>
+		<a style="color: #000000; text-decoration: none;" href="/invoice/download/{{order._id}}">Invoice Dowload</a>
 
 	</button>
 
 	{{else}}
-<button class="btn" >
-		<a style="color: #fff; text-decoration: none;" href="/invoice/download/{{order._id}}" >Invoice Dowload</a>
+	<button class="btn">
+		<a style="color: #fff; text-decoration: none;" href="/invoice/download/{{order._id}}">Invoice Dowload</a>
 
 	</button>
 
@@ -266,3 +345,4 @@
 <script src="/user/css,js/js/bootstrap.bundle.min.js"></script>
 <script src="/user/css,js/js/tiny-slider.js"></script>
 <script src="/user/css,js/js/custom.js"></script>
+<script src="/user/css,js/js/orderDetails.js"></script>

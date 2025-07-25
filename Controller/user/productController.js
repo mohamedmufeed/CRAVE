@@ -50,6 +50,8 @@ const loadProducts = async (req, res) => {
   }
 };
 
+
+
 const productDetails = async (req, res) => {
   try {
     const productId = req.params.id;
@@ -99,6 +101,8 @@ if (bestOffer) {
     bestOffer.discountType === "percentage"
       ? `${bestOffer.discountValue}% off`
       : `₹${bestOffer.discountValue} off`;
+       product.discountPrice = discountPrice;
+       await product.save()
 }
 
     const relatedProducts = await Products.find({
@@ -111,7 +115,6 @@ if (bestOffer) {
     const flag = user?.wishList?.includes(productId) || false;
 
     const cartCount = req.session.cartCount;
-
     res.render("user/single", {
       product,
       discountPrice,
@@ -125,6 +128,8 @@ if (bestOffer) {
     logger.error("Product not found", error);
   }
 };
+
+
 
 const filterProducts = async (req, res) => {
   const {
